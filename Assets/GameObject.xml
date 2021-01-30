@@ -1,0 +1,7 @@
+<set>
+  <tiles>
+<tile name="wallTopCorner" symmetry="X" weight="1.0"/>
+<tile name="wallTopEnd" symmetry="X" weight="1.0"/>
+	</tiles>
+<neighbors>	</neighbors>
+</set>
