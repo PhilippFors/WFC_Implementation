@@ -99,7 +99,7 @@ MonoBehaviour:
   coords: {x: 0, y: 0}
   size: {x: 6, y: 6, z: 6}
   sides:
-  - side: 0
+  - side: 180
     connection: 0
     subSides:
     - side: 5
@@ -108,7 +108,7 @@ MonoBehaviour:
       connection: 2
     - side: 6
       connection: 0
-  - side: 1
+  - side: 0
     connection: 0
     subSides:
     - side: 5
@@ -117,7 +117,7 @@ MonoBehaviour:
       connection: 0
     - side: 6
       connection: 0
-  - side: 2
+  - side: 270
     connection: 0
     subSides:
     - side: 6
@@ -126,7 +126,7 @@ MonoBehaviour:
       connection: 0
     - side: 5
       connection: 1
-  - side: 3
+  - side: 90
     connection: 0
     subSides:
     - side: 6

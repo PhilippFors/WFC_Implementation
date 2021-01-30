@@ -36,41 +36,41 @@ namespace MyWFC
                     switch (s.side)
                     {
                         case Sides.Left:
-                            // for (int i = 0; i < s.subSides.Count; i++)
-                            // {
-                            //     ConnectionColor(s.subSides[i].connection);
-                            //     Gizmos.DrawCube(new Vector3(-size.x / 2, 0, (-1 + i) * size.x / 3), Vector3.one);
-                            // }
-                            ConnectionColor(s.connection);
-                            Gizmos.DrawCube(new Vector3(-size.x / 2, 0, 0), Vector3.one / 4f);
+                            for (int i = 0; i < s.subSides.Count; i++)
+                            {
+                                ConnectionColor(s.subSides[i].connection);
+                                Gizmos.DrawCube(new Vector3(-size.x / 2, 0, (-1 + i) * size.x / 3), Vector3.one);
+                            }
+                            // ConnectionColor(s.connection);
+                            // Gizmos.DrawCube(new Vector3(-size.x / 2, 0, 0), Vector3.one / 4f);
 
                             break;
                         case Sides.Right:
-                            // for (int i = 0; i < s.subSides.Count; i++)
-                            // {
-                            //     ConnectionColor(s.subSides[i].connection);
-                            //     Gizmos.DrawCube(new Vector3(size.x / 2, 0, (-1 + i) * size.x / 3), Vector3.one);
-                            // }
-                            ConnectionColor(s.connection);
-                            Gizmos.DrawCube(new Vector3(size.x / 2, 0, 0), Vector3.one / 4f);
+                            for (int i = 0; i < s.subSides.Count; i++)
+                            {
+                                ConnectionColor(s.subSides[i].connection);
+                                Gizmos.DrawCube(new Vector3(size.x / 2, 0, (-1 + i) * size.x / 3), Vector3.one);
+                            }
+                            // ConnectionColor(s.connection);
+                            // Gizmos.DrawCube(new Vector3(size.x / 2, 0, 0), Vector3.one / 4f);
                             break;
                         case Sides.Back:
-                            // for (int i = 0; i < s.subSides.Count; i++)
-                            // {
-                            //     ConnectionColor(s.subSides[i].connection);
-                            //     Gizmos.DrawCube(new Vector3((-1 + i) * size.z / 3, 0, -size.z / 2), Vector3.one);
-                            // }
-                            ConnectionColor(s.connection);
-                            Gizmos.DrawCube(new Vector3(0, 0, -size.z / 2), Vector3.one / 4f);
+                            for (int i = 0; i < s.subSides.Count; i++)
+                            {
+                                ConnectionColor(s.subSides[i].connection);
+                                Gizmos.DrawCube(new Vector3((-1 + i) * size.z / 3, 0, -size.z / 2), Vector3.one);
+                            }
+                            // ConnectionColor(s.connection);
+                            // Gizmos.DrawCube(new Vector3(0, 0, -size.z / 2), Vector3.one / 4f);
                             break;
                         case Sides.Front:
-                            // for (int i = 0; i < s.subSides.Count; i++)
-                            // {
-                            //     ConnectionColor(s.subSides[i].connection);
-                            //     Gizmos.DrawCube(new Vector3((-1 + i) * size.z / 3, 0, size.z / 2), Vector3.one);
-                            // }
-                            ConnectionColor(s.connection);
-                            Gizmos.DrawCube(new Vector3(0, 0, size.z / 2), Vector3.one / 4f);
+                            for (int i = 0; i < s.subSides.Count; i++)
+                            {
+                                ConnectionColor(s.subSides[i].connection);
+                                Gizmos.DrawCube(new Vector3((-1 + i) * size.z / 3, 0, size.z / 2), Vector3.one);
+                            }
+                            // ConnectionColor(s.connection);
+                            // Gizmos.DrawCube(new Vector3(0, 0, size.z / 2), Vector3.one / 4f);
                             break;
                     }
                 }

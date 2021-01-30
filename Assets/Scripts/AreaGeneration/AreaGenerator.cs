@@ -7,9 +7,9 @@ public class AreaGenerator : MonoBehaviour
     [SerializeField] GameObject generatorPrefab;
 
     [SerializeField] List<GameObject> tilePrefabs = new List<GameObject>();
-    public TileSet tileSet;
+    public MyWFC.TileSet tileSet;
     public List<Area> areaList = new List<Area>();
-    public List<Tessera.TesseraGenerator> generators = new List<Tessera.TesseraGenerator>();
+    // public List<Tessera.TesseraGenerator> generators = new List<Tessera.TesseraGenerator>();
     public bool loaded = false;
     private void Start()
     {
@@ -25,7 +25,7 @@ public class AreaGenerator : MonoBehaviour
     }
     public void StartAreaGenerator(GridTile[] tile)
     {
-        generators.Clear();
+        // generators.Clear();
         if (areaList.Count != 0)
             foreach (Area a in areaList)
                 if (Application.isPlaying) Destroy(a.parent); else DestroyImmediate(a.parent);
@@ -34,9 +34,9 @@ public class AreaGenerator : MonoBehaviour
 
         foreach (GridTile t in tile)
         {
-            GenerateArea(t);
+            // GenerateArea(t);
         }
-        StartCoroutine(StartGenerator());
+        // StartCoroutine(StartGenerator());
         StartCoroutine(CheckForFinsihed());
     }
 
@@ -60,43 +60,43 @@ public class AreaGenerator : MonoBehaviour
         }
         return i == areaList.Count;
     }
-    void GenerateArea(GridTile tile)
-    {
-        Area a = new Area(new GameObject("Area " + tile.index), tile);
-        areaList.Add(a);
+    // void GenerateArea(GridTile tile)
+    // {
+    //     Area a = new Area(new GameObject("Area " + tile.index), tile);
+    //     areaList.Add(a);
 
-        GameObject newGeneratorObj = Instantiate(generatorPrefab, Vector3.zero, Quaternion.identity);
-        Tessera.TesseraGenerator generator = newGeneratorObj.GetComponentInChildren<Tessera.TesseraGenerator>();
-        newGeneratorObj.transform.position = tile.position;
-        newGeneratorObj.transform.parent = a.parent.transform;
+    //     GameObject newGeneratorObj = Instantiate(generatorPrefab, Vector3.zero, Quaternion.identity);
+    //     Tessera.TesseraGenerator generator = newGeneratorObj.GetComponentInChildren<Tessera.TesseraGenerator>();
+    //     newGeneratorObj.transform.position = tile.position;
+    //     newGeneratorObj.transform.parent = a.parent.transform;
 
-        List<Tessera.TileEntry> tesseraTiles = new List<Tessera.TileEntry>();
-        generator.tiles = new List<Tessera.TileEntry>();
-        foreach (GameObject g in tileSet.tiles)
-        {
-            Tessera.TesseraTile t = g.GetComponent<Tessera.TesseraTile>();
-            Tessera.TileEntry tileEntry = new Tessera.TileEntry();
-            tileEntry.tile = t;
-            tileEntry.weight = g.GetComponent<MyWFC.MyTile>().weight;
+    //     List<Tessera.TileEntry> tesseraTiles = new List<Tessera.TileEntry>();
+    //     generator.tiles = new List<Tessera.TileEntry>();
+    //     foreach (GameObject g in tileSet.tiles)
+    //     {
+    //         Tessera.TesseraTile t = g.GetComponent<Tessera.TesseraTile>();
+    //         Tessera.TileEntry tileEntry = new Tessera.TileEntry();
+    //         tileEntry.tile = t;
+    //         tileEntry.weight = g.GetComponent<MyWFC.MyTile>().weight;
 
-            generator.tiles.Add(tileEntry);
-        }
+    //         generator.tiles.Add(tileEntry);
+    //     }
 
-        generator.size = new Vector3Int(tile.width / (int)generator.tileSize.x, 1, tile.height / (int)generator.tileSize.z);
-        generators.Add(generator);
-    }
+    //     generator.size = new Vector3Int(tile.width / (int)generator.tileSize.x, 1, tile.height / (int)generator.tileSize.z);
+    //     generators.Add(generator);
+    // }
 
-    IEnumerator StartGenerator()
-    {
-        Tessera.TesseraGenerateOptions t = new Tessera.TesseraGenerateOptions();
-        t.multithreaded = true;
-        for (int i = 0; i < generators.Count; i++)
-        {
-            yield return generators[i].StartGenerate(t);
+    // IEnumerator StartGenerator()
+    // {
+    //     // Tessera.TesseraGenerateOptions t = new Tessera.TesseraGenerateOptions();
+    //     // t.multithreaded = true;
+    //     // for (int i = 0; i < generators.Count; i++)
+    //     // {
+    //     //     yield return generators[i].StartGenerate(t);
 
-            areaList[i].generated = true;
-        }
-    }
+    //     //     areaList[i].generated = true;
+    //     // }
+    // }
 }
 
 [System.Serializable]

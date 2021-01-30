@@ -13,42 +13,39 @@ namespace MyWFC
             {
                 for (int j = i; j < tileset.Count; j++)
                 {
+                    var rotA = tileset[i].rotation;
+                    var rotB = tileset[j].rotation;
+
                     var tileA = tileset[i].tileSides; //Reference Tile
                     var tileB = tileset[j].tileSides; // Tile to check against
                     foreach (TileSide sideA in tileA)
                     {
-                        var rotA = tileset[i].rotation;
                         foreach (TileSide sideB in tileB)
                         {
-                            var rotB = tileset[j].rotation;
 
                             switch (sideA.side)
                             {
                                 case Sides.Left:
-                                    if (sideB.side.Equals(Sides.Right) && sideA.connection.Equals(sideB.connection))
+                                    if (sideB.side.Equals(Sides.Right) && CompareSides(sideA, rotA, sideB, rotB, Direction.LEFT, connectionGroups))
                                     {
-                                        // if (CompareSides(sideA, rotA, sideB, rotB, Direction.LEFT, connectionGroups))
                                         model.AddAdjacency(new Tile(i), new Tile(j), -1, 0, 0);
                                     }
                                     break;
                                 case Sides.Right:
-                                    if (sideB.side.Equals(Sides.Left) && sideA.connection.Equals(sideB.connection))
+                                    if (sideB.side.Equals(Sides.Left) && CompareSides(sideA, rotA, sideB, rotB, Direction.RIGHT, connectionGroups))
                                     {
-                                        // if (CompareSides(sideA, rotA, sideB, rotB, Direction.RIGHT, connectionGroups))
                                         model.AddAdjacency(new Tile(i), new Tile(j), 1, 0, 0);
                                     }
                                     break;
                                 case Sides.Front:
-                                    if (sideB.side.Equals(Sides.Back) && sideA.connection.Equals(sideB.connection))
+                                    if (sideB.side.Equals(Sides.Back) && CompareSides(sideA, rotA, sideB, rotB, Direction.UP, connectionGroups))
                                     {
-                                        // if (CompareSides(sideA, rotA, sideB, rotB, Direction.DOWN, connectionGroups))
                                         model.AddAdjacency(new Tile(i), new Tile(j), 0, 1, 0);
                                     }
                                     break;
                                 case Sides.Back:
-                                    if (sideB.side.Equals(Sides.Front) && sideA.connection.Equals(sideB.connection))
+                                    if (sideB.side.Equals(Sides.Front) && CompareSides(sideA, rotA, sideB, rotB, Direction.DOWN, connectionGroups))
                                     {
-                                        // if (CompareSides(sideA, rotA, sideB, rotB, Direction.UP, connectionGroups))
                                         model.AddAdjacency(new Tile(i), new Tile(j), 0, -1, 0);
                                     }
                                     break;

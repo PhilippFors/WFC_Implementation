@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+namespace MyWFC{
 [CreateAssetMenu(fileName = "tile set", menuName = "Tiles/Tileset")]
 public class TileSet : ScriptableObject
 {
@@ -70,3 +71,4 @@ public class TilesetCompare : IComparer<GameObject>
     }
 }
 #endif
+}

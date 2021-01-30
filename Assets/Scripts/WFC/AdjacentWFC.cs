@@ -4,6 +4,7 @@ using UnityEngine;
 using DeBroglie;
 using DeBroglie.Topo;
 using DeBroglie.Models;
+
 namespace MyWFC
 {
     [AddComponentMenu("Adjacent WFC")]
