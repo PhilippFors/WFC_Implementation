@@ -98,41 +98,44 @@ MonoBehaviour:
   hasRotation: 0
   coords: {x: 0, y: 0}
   size: {x: 6, y: 6, z: 6}
-  sides:
-  - side: 180
+  side1:
+    side: 180
     connection: 0
     subSides:
-    - side: 5
+    - side: 1
       connection: 0
-    - side: 4
+    - side: 2
       connection: 0
-    - side: 6
+    - side: 0
       connection: 0
-  - side: 0
+  side2:
+    side: 0
     connection: 0
     subSides:
-    - side: 5
+    - side: 1
       connection: 0
-    - side: 4
+    - side: 2
       connection: 0
-    - side: 6
+    - side: 0
       connection: 0
-  - side: 270
+  side3:
+    side: 270
     connection: 0
     subSides:
-    - side: 5
+    - side: 1
       connection: 0
-    - side: 4
+    - side: 2
       connection: 0
-    - side: 6
+    - side: 0
       connection: 0
-  - side: 90
+  side4:
+    side: 90
     connection: 0
     subSides:
-    - side: 5
+    - side: 1
       connection: 0
-    - side: 4
+    - side: 2
       connection: 0
-    - side: 6
+    - side: 0
       connection: 0
   showGizmo: 1

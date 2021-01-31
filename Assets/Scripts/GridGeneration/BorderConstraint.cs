@@ -7,18 +7,33 @@ namespace MyWFC
 {
     public class BorderConstraint : CustomConstraint
     {
-        [SerializeField] MyTile borderTile;
+        [SerializeField] List<MyTile> borderTiles = new List<MyTile>();
 
         public override void SetConstraint(TilePropagator propagator, RuntimeTile[] tileSet)
         {
-            var constraint = new DeBroglie.Constraints.BorderConstraint()
-            {
-                Tiles = WFCUtil.FindTilesArr(tileSet, borderTile.ID),
-                Sides = BorderSides.XMax | BorderSides.XMin | BorderSides.YMin | BorderSides.YMax,
-            };
+            List<int> l = new List<int>();
+            foreach (MyTile t in borderTiles)
+                l.Add(t.ID);
 
-            if (useConstraint)
-                constraint.Init(propagator);
+            var Tiles = WFCUtil.FindTilesArr(tileSet, l.ToArray()),
+            // var constraint = new DeBroglie.Constraints.BorderConstraint()
+            // {
+            //     Tiles = WFCUtil.FindTilesArr(tileSet, l.ToArray()),
+            //     Sides = BorderSides.XMax | BorderSides.XMin | BorderSides.YMin | BorderSides.YMax,
+            // };
+            for (int i = 0; i < propagator.Topology.Width; i++)
+                for (int j = 0; j < propagator.Topology.Height; i++)
+                {
+                    foreach (Tile t in Tiles)
+                        if (!propagator.IsSelected(i, j, 0, t))
+                        {
+
+                        }
+                }
+
+
+            // if (useConstraint)
+            //     constraint.Init(propagator);
         }
     }
 }

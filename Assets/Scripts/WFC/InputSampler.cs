@@ -206,49 +206,31 @@ namespace MyWFC
             }
         }
     }
-    [System.Serializable]
-    public class RuntimeTile
-    {
-        public RuntimeTile(int id, int r, int w = 1, bool sym = false, GameObject o = null, List<TileSide> sides = null)
-        {
-            ID = id;
-            rotation = r;
-            obj = o;
-            weight = w;
-            tileSides = sides;
-        }
-        public GameObject obj;
-        public List<TileSide> tileSides = new List<TileSide>();
-        public int ID;
-        public int rotation;
-        public int weight;
-        public bool symmetry;
-    }
-}
 
 #if UNITY_EDITOR
-[CustomEditor(typeof(MyWFC.InputSampler), true)]
-public class InputEditor : Editor
-{
-    public override void OnInspectorGUI()
+    [CustomEditor(typeof(MyWFC.InputSampler), true)]
+    public class InputEditor : Editor
     {
-        MyWFC.InputSampler t = (MyWFC.InputSampler)target;
-
-        if (GUILayout.Button("Train"))
+        public override void OnInspectorGUI()
         {
-            t.Train();
+            MyWFC.InputSampler t = (MyWFC.InputSampler)target;
+
+            if (GUILayout.Button("Train"))
+            {
+                t.Train();
+            }
+            DrawDefaultInspector();
         }
-        DrawDefaultInspector();
     }
-}
 #endif
 
-public static class MyExtension
-{
-    public static T[] MySubArray<T>(this T[] data, int index, int length)
+    public static class MyExtension
     {
-        T[] result = new T[length];
-        Array.Copy(data, index, result, 0, length);
-        return result;
+        public static T[] MySubArray<T>(this T[] data, int index, int length)
+        {
+            T[] result = new T[length];
+            Array.Copy(data, index, result, 0, length);
+            return result;
+        }
     }
 }

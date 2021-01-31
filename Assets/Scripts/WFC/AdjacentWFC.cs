@@ -19,11 +19,6 @@ namespace MyWFC
         public bool useSample;
         AdjacentModel model;
 
-        ConnectionGroup FindConnectionGroup(Connections c)
-        {
-            return connectionGroups.Find(x => x.connectionA.Equals(c) || x.connectionB.Equals(c));
-        }
-
         protected override IEnumerator StartGenerate()
         {
             maxRoutines = 0;
@@ -51,24 +46,29 @@ namespace MyWFC
                 if (rotations > 1)
                     for (int i = 0; i < tileSet.tiles.Count; i++)
                     {
-                        var t = tileSet.tiles[i].GetComponent<MyTile>();
+                        MyTile t = tileSet.tiles[i].GetComponent<MyTile>();
+
                         if (t.hasRotation)
                             for (int j = 0; j < rotations; j++)
                             {
-                                var rot = j * 90;
-                                List<TileSide> l = new List<TileSide>();
-                                foreach (TileSide s in t.sides)
+                                int rot = j * 90;
+                                if (rot == 0)
                                 {
-                                    l.Add(new TileSide() { side = s.side, connection = s.connection });
+                                    runtimeTiles.Add(new RuntimeTile(t.ID, rot, t.weight, false, tileSet.tiles[i], t.sides));
                                 }
-                                for (int sideIndex = 0; sideIndex < l.Count; sideIndex++)
+                                else
                                 {
-                                    int s = (int)l[sideIndex].side + rot;
-                                    if (s >= 360)
-                                        s -= 360;
-                                    l[sideIndex].side = (Sides)s;
+                                    List<TileSide> l = AdjacentUtil.TileSideCopy(t.sides);
+                                    for (int sideIndex = 0; sideIndex < t.sides.Count; sideIndex++)
+                                    {
+                                        int s = (int)l[sideIndex].side + rot;
+                                        if (s >= 360)
+                                            s -= 360;
+
+                                        l[sideIndex].side = (Sides)s;
+                                    }
+                                    runtimeTiles.Add(new RuntimeTile(t.ID, rot, t.weight, false, tileSet.tiles[i], l));
                                 }
-                                runtimeTiles.Add(new RuntimeTile(t.ID, rot, t.weight, false, tileSet.tiles[i], l));
                             }
                         else
                         {
@@ -89,7 +89,7 @@ namespace MyWFC
             {
                 sample = TopoArray.Create<Tile>(inputSampler.sample, periodicIN);
                 model.AddSample(sample);
-            }                
+            }
 
             topology = new GridTopology(size.x, size.z, periodicOUT);
 
@@ -154,15 +154,15 @@ namespace MyWFC
                         propagator.Select(p.x, p.y, p.z, WFCUtil.FindTilesList(runtimeTiles.ToArray(), maskGenerator.borderTiles));
                     }
                 }
-                foreach (Point p in maskGenerator.passageEdges)
-                {
-                    if (useSample)
-                        propagator.Ban(p.x, p.y, p.z, WFCUtil.FindTile(inputSampler.runtimeTiles, 1));
-                    else
-                    {
-                        propagator.Ban(p.x, p.y, p.z, WFCUtil.FindTile(runtimeTiles.ToArray(), 1));
-                    }
-                }
+                // foreach (Point p in maskGenerator.passageEdges)
+                // {
+                //     if (useSample)
+                //         propagator.Ban(p.x, p.y, p.z, WFCUtil.FindTile(inputSampler.runtimeTiles, 1));
+                //     else
+                //     {
+                //         propagator.Ban(p.x, p.y, p.z, WFCUtil.FindTile(runtimeTiles.ToArray(), 1));
+                //     }
+                // }
             }
         }
 
@@ -195,8 +195,7 @@ namespace MyWFC
             GameObject fab = GetTilePrefab(tile) as GameObject;
             if (fab != null)
             {
-                MyTile newTile = Instantiate(fab, new Vector3(), Quaternion.identity).GetComponent<MyTile>();
-                newTile.coords = new Vector2Int(x, z);
+                GameObject newTile = Instantiate(fab, new Vector3(), Quaternion.identity) as GameObject;
                 Vector3 fscale = newTile.transform.localScale;
                 newTile.transform.parent = output.transform;
                 newTile.transform.localPosition = pos;

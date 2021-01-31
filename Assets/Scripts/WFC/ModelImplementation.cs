@@ -72,6 +72,8 @@ namespace MyWFC
                 Transform ot = transform.Find("output-" + gameObject.name);
                 if (ot != null) { output = ot.gameObject; }
 
+                if (Application.isPlaying) { Destroy(output); } else { DestroyImmediate(output); }
+
                 if (output == null)
                 {
                     output = new GameObject("output-" + gameObject.name);

@@ -92,47 +92,50 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8b07230a99b851448983f34e68545f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ID: 11
-  weight: 1
+  ID: 15
+  weight: 3
   rotationDeg: 0
   hasRotation: 1
   coords: {x: 0, y: 0}
   size: {x: 6, y: 6, z: 6}
-  sides:
-  - side: 180
+  side1:
+    side: 180
     connection: 0
     subSides:
-    - side: 5
+    - side: 1
       connection: 0
-    - side: 4
+    - side: 2
       connection: 2
-    - side: 6
+    - side: 0
       connection: 0
-  - side: 0
+  side2:
+    side: 0
     connection: 0
     subSides:
-    - side: 5
+    - side: 1
       connection: 0
-    - side: 4
+    - side: 2
       connection: 0
-    - side: 6
+    - side: 0
       connection: 0
-  - side: 270
+  side3:
+    side: 270
     connection: 0
     subSides:
-    - side: 6
+    - side: 1
       connection: 0
-    - side: 4
+    - side: 2
       connection: 0
-    - side: 5
+    - side: 0
       connection: 1
-  - side: 90
+  side4:
+    side: 90
     connection: 0
     subSides:
-    - side: 6
+    - side: 1
       connection: 0
-    - side: 4
+    - side: 2
       connection: 0
-    - side: 5
+    - side: 0
       connection: 1
   showGizmo: 1

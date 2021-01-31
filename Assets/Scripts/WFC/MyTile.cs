@@ -15,7 +15,53 @@ namespace MyWFC
         public Vector3Int size = new Vector3Int(1, 1, 1);
 
         [Tooltip("Can be left alone if you use a sample input.")]
-        public List<TileSide> sides = new List<TileSide>();
+        [SerializeField] TileSide side1 = new TileSide();
+        [SerializeField] TileSide side2 = new TileSide();
+        [SerializeField] TileSide side3 = new TileSide();
+        [SerializeField] TileSide side4 = new TileSide();
+
+        public TileSide Side1
+        {
+            set
+            {
+                side1 = value;
+            }
+        }
+        public TileSide Side2
+        {
+            set
+            {
+                side2 = value;
+            }
+        }
+        public TileSide Side3
+        {
+            set
+            {
+                side3 = value;
+            }
+        }
+        public TileSide Side4
+        {
+            set
+            {
+                side4 = value;
+            }
+        }
+
+        [HideInInspector]
+        public List<TileSide> sides
+        {
+            get
+            {
+                List<TileSide> arr = new List<TileSide>();
+                arr.Add(side1);
+                arr.Add(side2);
+                arr.Add(side3);
+                arr.Add(side4);
+                return arr;
+            }
+        }
 
         [SerializeField] bool showGizmo;
 
@@ -120,24 +166,32 @@ namespace MyWFC
         public bool canConnectToSelf = true;
     }
 
+
     [System.Serializable]
     public class TileSide
     {
         public Sides side;
         public Connections connection;
-        public List<SubSide> subSides = new List<SubSide>();
+
+        public List<SubSide> subSides = new List<SubSide>(){new SubSide(){side = UnderSides.Lower, connection = Connections.A},
+                                                            new SubSide(){side = UnderSides.Middle, connection = Connections.A},
+                                                            new SubSide(){side = UnderSides.Upper, connection = Connections.A}};
     }
     [System.Serializable]
     public class SubSide
     {
-        public Sides side;
+        public UnderSides side;
         public Connections connection;
     }
 
 
     public enum Sides
     {
-        Left = 180, Right = 0, Front = 270, Back = 90, Middle = 4, Upper = 5, Lower = -5
+        Left = 180, Right = 0, Front = 270, Back = 90
+    }
+    public enum UnderSides
+    {
+        Upper, Lower, Middle
     }
     public enum Connections
     {
@@ -157,25 +211,19 @@ namespace MyWFC
     [CanEditMultipleObjects]
     public class TileEditor : Editor
     {
+        bool init = false;
         public override void OnInspectorGUI()
         {
             MyTile t = (MyTile)target;
             DrawDefaultInspector();
-            if (t.sides.Count == 0)
+            if (GUILayout.Button("Fill sides"))
             {
-                t.sides.Add(new TileSide() { side = Sides.Left, connection = Connections.A });
-                t.sides.Add(new TileSide() { side = Sides.Right, connection = Connections.A });
-                t.sides.Add(new TileSide() { side = Sides.Front, connection = Connections.A });
-                t.sides.Add(new TileSide() { side = Sides.Back, connection = Connections.A });
-
-                foreach (TileSide s in t.sides)
-                {
-                    s.subSides.Add(new SubSide() { side = Sides.Lower, connection = Connections.A });
-                    s.subSides.Add(new SubSide() { side = Sides.Middle, connection = Connections.A });
-                    s.subSides.Add(new SubSide() { side = Sides.Upper, connection = Connections.A });
-                }
+                t.Side1 = new TileSide() { side = Sides.Left, connection = Connections.A };
+                t.Side2 = new TileSide() { side = Sides.Right, connection = Connections.A };
+                t.Side3 = new TileSide() { side = Sides.Front, connection = Connections.A };
+                t.Side4 = new TileSide() { side = Sides.Back, connection = Connections.A };
+                init = true;
             }
-
             if (GUI.changed)
                 EditorUtility.SetDirty(t);
         }

@@ -16,8 +16,8 @@ namespace MyWFC
         ITopoArray<int> maskInput;
         public List<MaskArea> allAreas;
         public List<Point> areaEdges;
-        public List<Point> passages;
-        public List<Point> passageEdges;
+        [HideInInspector] public List<Point> passages;
+        [HideInInspector] public List<Point> passageEdges;
         public bool[,] mask;
         bool[,] checker;
         GameObject full;

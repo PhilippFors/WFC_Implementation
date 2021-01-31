@@ -2,73 +2,94 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
-namespace MyWFC{
-[CreateAssetMenu(fileName = "tile set", menuName = "Tiles/Tileset")]
-public class TileSet : ScriptableObject
+namespace MyWFC
 {
-    public List<GameObject> tiles = new List<GameObject>();
+    [CreateAssetMenu(fileName = "tile set", menuName = "Tiles/Tileset")]
+    public class TileSet : ScriptableObject
+    {
+        public List<GameObject> tiles = new List<GameObject>();
 
-    public GameObject entrance;
-}
+        public GameObject entrance;
+    }
 
 #if UNITY_EDITOR
-[CustomEditor(typeof(TileSet))]
-[CanEditMultipleObjects]
-public class TileSetEditor : Editor
-{
-    TilesetCompare c = new TilesetCompare();
-    public override void OnInspectorGUI()
+    [CustomEditor(typeof(TileSet))]
+    [CanEditMultipleObjects]
+    public class TileSetEditor : Editor
     {
-        TileSet t = (TileSet)target;
+        TilesetCompare c = new TilesetCompare();
+        public override void OnInspectorGUI()
+        {
+            TileSet t = (TileSet)target;
 
-        if (t.tiles.Count != 0 && t.tiles != null)
-            for (int i = 0; i < t.tiles.Count; i++)
+            if (t.tiles.Count != 0 && t.tiles != null)
+                for (int i = 0; i < t.tiles.Count; i++)
+                {
+
+                    GUILayout.BeginHorizontal();
+                    t.tiles[i] = (GameObject)EditorGUILayout.ObjectField(t.tiles[i], typeof(GameObject), false);
+                    if (t.tiles[i] != null)
+                    {
+                        var MyTile = t.tiles[i].GetComponent<MyWFC.MyTile>();
+                        MyTile.weight = EditorGUILayout.IntField(MyTile.weight);
+                        GUILayout.Label("ID: ");
+                        MyTile.ID = EditorGUILayout.IntField(MyTile.ID);
+                    }
+                    if (GUILayout.Button("Remove"))
+                    {
+                        t.tiles.Remove(t.tiles[i]);
+                    }
+                    GUILayout.EndHorizontal();
+                }
+
+
+            if (GUILayout.Button("Add Tile"))
             {
-
-                GUILayout.BeginHorizontal();
-                t.tiles[i] = (GameObject)EditorGUILayout.ObjectField(t.tiles[i], typeof(GameObject), false);
-                if (t.tiles[i] != null)
-                {
-                    var MyTile = t.tiles[i].GetComponent<MyWFC.MyTile>();
-                    MyTile.weight = EditorGUILayout.IntField(MyTile.weight);
-                }
-                if (GUILayout.Button("Remove"))
-                {
-                    t.tiles.Remove(t.tiles[i]);
-                }
-                GUILayout.EndHorizontal();
+                t.tiles.Add(null);
             }
 
+            if (GUILayout.Button("Sort by ID"))
+                sortarray(t);
 
-        if (GUILayout.Button("Add Tile"))
-        {
-            t.tiles.Add(null);
+            // if (GUILayout.Button("Add all in folder"))
+            // {
+            //     t.tiles = new List<GameObject>();
+            //     string path = AssetDatabase.GetAssetPath(t);
+            //     string[] guids = AssetDatabase
+            //     string[] paths = new string[guids.Length];
+            //     for (int i = 0; i < guids.Length; i++)
+            //     {
+            //         paths[i] = AssetDatabase.GUIDToAssetPath(guids[i]);
+            //     }
+
+            //     Object[] arr = new Object[paths.Length];
+            //     for (int i = 0; i < paths.Length; i++)
+            //     {
+            //         t.tiles.Add((GameObject)AssetDatabase.LoadAssetAtPath(paths[i], typeof(MyTile)));
+            //     }
+
+            // }
+            t.entrance = (GameObject)EditorGUILayout.ObjectField(t.entrance, typeof(GameObject), false);
+            if (GUI.changed)
+            {
+                AssetDatabase.SaveAssets();
+                EditorUtility.SetDirty(t);
+            }
+
         }
 
-        if (GUILayout.Button("Sort by ID"))
-            sortarray(t);
-
-        t.entrance = (GameObject)EditorGUILayout.ObjectField(t.entrance, typeof(GameObject), false);
-        if (GUI.changed)
+        void sortarray(TileSet t)
         {
-            AssetDatabase.SaveAssets();
-            EditorUtility.SetDirty(t);
+            t.tiles.Sort(c);
         }
-
     }
 
-    void sortarray(TileSet t)
+    public class TilesetCompare : IComparer<GameObject>
     {
-        t.tiles.Sort(c);
+        public int Compare(GameObject x, GameObject y)
+        {
+            return x.GetComponent<MyWFC.MyTile>().ID.CompareTo(y.GetComponent<MyWFC.MyTile>().ID);
+        }
     }
-}
-
-public class TilesetCompare : IComparer<GameObject>
-{
-    public int Compare(GameObject x, GameObject y)
-    {
-        return x.GetComponent<MyWFC.MyTile>().ID.CompareTo(y.GetComponent<MyWFC.MyTile>().ID);
-    }
-}
 #endif
 }
