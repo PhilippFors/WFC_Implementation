@@ -10,7 +10,7 @@ namespace MyWFC
     {
         [HideInInspector] public int sizex = 4;
         [HideInInspector] public int sizey = 4;
-        [HideInInspector] public ArrayHelper[] arr;
+        [HideInInspector] public IntArrayHelper[] arr;
         public int[,] sample
         {
             get
@@ -25,15 +25,6 @@ namespace MyWFC
         }
     }
 
-    [System.Serializable]
-    public class ArrayHelper
-    {
-        public ArrayHelper(int size)
-        {
-            v = new int[size];
-        }
-        public int[] v;
-    }
 
     [CustomEditor(typeof(MaskSample))]
     public class SampleEditor : Editor
@@ -47,10 +38,10 @@ namespace MyWFC
 
             if (t.arr == null)
             {
-                t.arr = new ArrayHelper[t.sizex];
+                t.arr = new IntArrayHelper[t.sizex];
                 for (int i = 0; i < t.sizex; i++)
                 {
-                    t.arr[i] = new ArrayHelper(t.sizey);
+                    t.arr[i] = new IntArrayHelper(t.sizey);
                 }
             }
             GUILayout.BeginHorizontal();
@@ -61,11 +52,11 @@ namespace MyWFC
             GUILayout.EndHorizontal();
             if (GUILayout.Button("Set Size"))
             {
-                ArrayHelper[] temp = t.arr;
-                t.arr = new ArrayHelper[t.sizex];
+                IntArrayHelper[] temp = t.arr;
+                t.arr = new IntArrayHelper[t.sizex];
                 for (int i = 0; i < t.sizex; i++)
                 {
-                    t.arr[i] = new ArrayHelper(t.sizey);
+                    t.arr[i] = new IntArrayHelper(t.sizey);
                 }
 
                 for (int i = 0; i < (temp.Length < t.sizex ? temp.Length : t.sizex); i++)
@@ -90,10 +81,10 @@ namespace MyWFC
                 if (GUILayout.Button("Translate Input"))
                 {
                     maskInput.Train();
-                    t.arr = new ArrayHelper[maskInput.sample.GetLength(0)];
+                    t.arr = new IntArrayHelper[maskInput.sample.GetLength(0)];
                     for (int i = 0; i < maskInput.sample.GetLength(0); i++)
                     {
-                        t.arr[i] = new ArrayHelper(maskInput.sample.GetLength(1));
+                        t.arr[i] = new IntArrayHelper(maskInput.sample.GetLength(1));
                     }
 
                     for (int i = 0; i < maskInput.sample.GetLength(0); i++)

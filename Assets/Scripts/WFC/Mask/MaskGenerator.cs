@@ -553,18 +553,18 @@ namespace MyWFC
                         if (y >= map.GetLength(1)) tempY = map.GetLength(1) - 1;
 
 
-                        if (x == 0 || x == map.GetLength(0) - 1 || y == 0 || y == map.GetLength(1) - 1)
-                        {
-                            if (map[tempX, tempY] == 1)
-                                if (!edgePoints.Contains(p))
-                                    edgePoints.Add(p);
-                        }
-                        else
-                        {
-                            if (map[tempX, tempY] == 0)
-                                if (!edgePoints.Contains(p))
-                                    edgePoints.Add(p);
-                        }
+                        // if (x == 0 || x == map.GetLength(0) - 1 || y == 0 || y == map.GetLength(1) - 1)
+                        // {
+                        //     if (map[tempX, tempY] == 1)
+                        //         if (!edgePoints.Contains(p))
+                        //             edgePoints.Add(p);
+                        // }
+                        // else
+                        // {
+                        if (map[tempX, tempY] == 0)
+                            if (!edgePoints.Contains(p))
+                                edgePoints.Add(p);
+                        // }
                     }
                 }
             }
