@@ -7,6 +7,7 @@ namespace MyWFC
     public class MyTile : MonoBehaviour
     {
         public int ID;
+        public bool use = true;
         public int weight;
         public int rotationDeg;
         public bool hasRotation;
@@ -159,15 +160,6 @@ namespace MyWFC
         }
     }
     [System.Serializable]
-    public class ConnectionGroup
-    {
-        public Connections connectionA;
-        public Connections connectionB;
-        public bool canConnectToSelf = true;
-    }
-
-
-    [System.Serializable]
     public class TileSide
     {
         public Sides side;
@@ -195,18 +187,19 @@ namespace MyWFC
     }
     public enum Connections
     {
-        A,
-        B,
-        C,
-        D,
-        E,
-        F,
-        G,
-        H,
-        I,
-        J
+        A = 0,
+        B = 1,
+        C = 2,
+        D = 3,
+        E = 4,
+        F = 5,
+        G = 6,
+        H = 7,
+        I = 8,
+        J = 9
     }
 
+#if UNITY_EDITOR
     [CustomEditor(typeof(MyTile))]
     [CanEditMultipleObjects]
     public class TileEditor : Editor
@@ -228,4 +221,5 @@ namespace MyWFC
                 EditorUtility.SetDirty(t);
         }
     }
+#endif
 }

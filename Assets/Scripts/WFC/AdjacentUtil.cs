@@ -7,7 +7,7 @@ namespace MyWFC
 {
     public static class AdjacentUtil
     {
-        public static void CheckAdjacencies(List<RuntimeTile> tileset, AdjacentModel model, List<ConnectionGroup> connectionGroups)
+        public static void CheckAdjacencies(List<RuntimeTile> tileset, AdjacentModel model, ConnectionGroups connectionGroups)
         {
             for (int i = 0; i < tileset.Count; i++)
             {
@@ -55,7 +55,7 @@ namespace MyWFC
             }
         }
 
-        static bool CompareSides(TileSide sideA, int rotA, Sides side, TileSide sideB, int rotB, List<ConnectionGroup> connectionGroups)
+        static bool CompareSides(TileSide sideA, int rotA, Sides side, TileSide sideB, int rotB, ConnectionGroups connectionGroups)
         {
             SubSide[] arrayA = new SubSide[3];
             SubSide[] arrayB = new SubSide[3];
@@ -98,64 +98,77 @@ namespace MyWFC
                 arrayB = sideB.subSides.ToArray();
                 // Debug.Log(arrayB[0].connection.ToString() + ", " + arrayB[0].side.ToString());
             }
-            List<ConnectionGroup> group = new List<ConnectionGroup>();
 
             for (int i = 0; i < arrayA.Length; i++)
             {
-                if (connectionGroups != null && connectionGroups.Count > 0)
-                    group = FindConnectionGroups(arrayA[i].connection, connectionGroups);
-
-                if (!CheckConnections(arrayA[i], arrayB[i], group))
+                if (!CheckConnections(arrayA[i], arrayB[i], connectionGroups))
                     return false;
             }
 
             return true;
         }
 
-        static bool CheckConnections(SubSide sideA, SubSide sideB, List<ConnectionGroup> groups)
+        static bool CheckConnections(SubSide sideA, SubSide sideB, ConnectionGroups connectionGroups)
         {
-            if (groups != null && groups.Count > 0)
+            for (int x = 0; x < connectionGroups.groups.Length; x++)
             {
-                if (sideA.connection == sideB.connection)
+                if ((int)sideA.connection == x)
                 {
-                    foreach (ConnectionGroup group in groups)
+                    for (int y = 0; y < connectionGroups.groups.Length; y++)
                     {
-                        if (sideA.connection != group.connectionA || sideA.connection != group.connectionB || sideB.connection != group.connectionA || sideB.connection != group.connectionB)
-                            continue;
-
-                        if (group.connectionA.Equals(group.connectionB) && group.canConnectToSelf)
-                            return true;
-                    }
-                }
-                else
-                {
-                    foreach (ConnectionGroup group in groups)
-                    {
-                        if (group.connectionA != group.connectionB)
+                        if ((int)sideB.connection == y)
                         {
-                            var otherConnection = sideA.connection == group.connectionA ? group.connectionB : group.connectionA;
-                            if (sideB.connection.Equals(otherConnection))
+                            if (connectionGroups.groups[x].v[y])
+                            {
+                                if (sideA.connection.Equals(Connections.A) && sideB.connection.Equals(Connections.I) || sideA.connection.Equals(Connections.A) && sideB.connection.Equals(Connections.I))
+                                {
+                                    Debug.Log("There's something wrong at " + x + ", " + y);
+                                }
                                 return true;
-                            otherConnection = sideB.connection == group.connectionA ? group.connectionB : group.connectionB;
-
-                            if (sideA.connection.Equals(otherConnection))
-                                return true;
+                            }
                         }
                     }
+                    break;
                 }
-                return false;
             }
-            else
-            {
-                return sideA.connection.Equals(sideB.connection);
-            }
+            return false;
+            // if (groups != null && groups.Count > 0)
+            // {
+            //     if (sideA.connection == sideB.connection)
+            //     {
+            //         foreach (ConnectionGroup group in groups)
+            //         {
+            //             if (sideA.connection != group.connectionA || sideA.connection != group.connectionB || sideB.connection != group.connectionA || sideB.connection != group.connectionB)
+            //                 continue;
+
+            //             if (group.connectionA.Equals(group.connectionB) && group.canConnectToSelf)
+            //                 return true;
+            //         }
+            //     }
+            //     else
+            //     {
+            //         foreach (ConnectionGroup group in groups)
+            //         {
+            //             if (group.connectionA != group.connectionB)
+            //             {
+            //                 var otherConnection = sideA.connection == group.connectionA ? group.connectionB : group.connectionA;
+            //                 if (sideB.connection.Equals(otherConnection))
+            //                     return true;
+            //                 otherConnection = sideB.connection == group.connectionA ? group.connectionB : group.connectionB;
+
+            //                 if (sideA.connection.Equals(otherConnection))
+            //                     return true;
+            //             }
+            //         }
+            //     }
+            //     return false;
+            // }
+            // else
+            // {
+            //     return sideA.connection.Equals(sideB.connection);
+            // }
         }
 
-        static List<ConnectionGroup> FindConnectionGroups(Connections c, List<ConnectionGroup> connectionGroups)
-        {
-            List<ConnectionGroup> list = connectionGroups.FindAll(x => x.connectionA.Equals(c) || x.connectionB.Equals(c));
-            return list != null && list.Count > 0 ? list : null;
-        }
         public static List<TileSide> TileSideCopy(List<TileSide> sides)
         {
             List<TileSide> list = new List<TileSide>();

@@ -15,7 +15,9 @@ namespace MyWFC
         [Tooltip("Keep rotations to 1 if you have a complete tileset with all rotations")]
         public int rotations = 4;
         public List<RuntimeTile> runtimeTiles;
-        public List<ConnectionGroup> connectionGroups = new List<ConnectionGroup>();
+
+        public ConnectionGroups ConnectionGroups;
+        // public List<ConnectionGroup> connectionGroups = new List<ConnectionGroup>();
         public bool useSample;
         AdjacentModel model;
 
@@ -41,6 +43,7 @@ namespace MyWFC
 
             model = new AdjacentModel();
             model.SetDirections(DirectionSet.Cartesian2d);
+
             if (!useSample)
             {
                 if (rotations > 1)
@@ -48,32 +51,33 @@ namespace MyWFC
                     {
                         MyTile t = tileSet.tiles[i].GetComponent<MyTile>();
 
-                        if (t.hasRotation)
-                            for (int j = 0; j < rotations; j++)
-                            {
-                                int rot = j * 90;
-                                if (rot == 0)
+                        if (t.use)
+                            if (t.hasRotation)
+                                for (int j = 0; j < rotations; j++)
                                 {
-                                    runtimeTiles.Add(new RuntimeTile(t.ID, rot, t.weight, false, tileSet.tiles[i], t.sides));
-                                }
-                                else
-                                {
-                                    List<TileSide> l = AdjacentUtil.TileSideCopy(t.sides);
-                                    for (int sideIndex = 0; sideIndex < t.sides.Count; sideIndex++)
+                                    int rot = j * 90;
+                                    if (rot == 0)
                                     {
-                                        int s = (int)l[sideIndex].side + rot;
-                                        if (s >= 360)
-                                            s -= 360;
-
-                                        l[sideIndex].side = (Sides)s;
+                                        runtimeTiles.Add(new RuntimeTile(t.ID, rot, t.weight, false, tileSet.tiles[i], t.sides));
                                     }
-                                    runtimeTiles.Add(new RuntimeTile(t.ID, rot, t.weight, false, tileSet.tiles[i], l));
+                                    else
+                                    {
+                                        List<TileSide> l = AdjacentUtil.TileSideCopy(t.sides);
+                                        for (int sideIndex = 0; sideIndex < t.sides.Count; sideIndex++)
+                                        {
+                                            int s = (int)l[sideIndex].side + rot;
+                                            if (s >= 360)
+                                                s -= 360;
+
+                                            l[sideIndex].side = (Sides)s;
+                                        }
+                                        runtimeTiles.Add(new RuntimeTile(t.ID, rot, t.weight, false, tileSet.tiles[i], l));
+                                    }
                                 }
+                            else
+                            {
+                                runtimeTiles.Add(new RuntimeTile(t.ID, 0, t.weight, false, tileSet.tiles[i], t.sides));
                             }
-                        else
-                        {
-                            runtimeTiles.Add(new RuntimeTile(t.ID, 0, t.weight, false, tileSet.tiles[i], t.sides));
-                        }
 
                     }
                 else
@@ -93,9 +97,9 @@ namespace MyWFC
 
             topology = new GridTopology(size.x, size.z, periodicOUT);
 
-            CreateMask();
+            this.CreateMask();
             // CheckAdjacencies();
-            AdjacentUtil.CheckAdjacencies(runtimeTiles, model, connectionGroups);
+            AdjacentUtil.CheckAdjacencies(runtimeTiles, model, ConnectionGroups);
             SetFrequencies();
         }
 
@@ -111,13 +115,26 @@ namespace MyWFC
             options.BackTrackDepth = backTrackDepth;
             options.PickHeuristicType = PickHeuristicType.MinEntropy;
 
+            var p = GetPathConstraint();
+            if (p != null)
+                options.Constraints = new[] { p };
+
             propagator = new TilePropagator(model, topology, options);
 
-            ApplyMask();
+            this.ApplyMask();
 
-            AddConstraints();
+            this.AddConstraints();
         }
-
+        DeBroglie.Constraints.PathConstraint GetPathConstraint()
+        {
+            var constraints = GetComponent<MyWFC.PathConstraint>();
+            if (constraints != null)
+            {
+                constraints.SetConstraint(propagator, runtimeTiles.ToArray());
+                return constraints.pathConstraint;
+            }
+            return null;
+        }
         protected override void AddConstraints()
         {
             CustomConstraint[] constraints = GetComponents<CustomConstraint>();
@@ -136,7 +153,7 @@ namespace MyWFC
             {
                 maskGenerator.size = size;
                 maskGenerator.Generate(false);
-                topology = topology.WithMask(TopoArray.Create<bool>(maskGenerator.mask, topology));
+                // topology = topology.WithMask(TopoArray.Create<bool>(maskGenerator.mask, topology));
             }
         }
         protected override void ApplyMask()
@@ -154,6 +171,10 @@ namespace MyWFC
                         propagator.Select(p.x, p.y, p.z, WFCUtil.FindTilesList(runtimeTiles.ToArray(), maskGenerator.borderTiles));
                     }
                 }
+                for (int i = 0; i < size.x; i++)
+                    for (int j = 0; j < size.z; j++)
+                        if (!maskGenerator.mask[i, j])
+                            propagator.Select(i, j, 0, WFCUtil.FindTile(runtimeTiles.ToArray(), 0));
                 // foreach (Point p in maskGenerator.passageEdges)
                 // {
                 //     if (useSample)
@@ -174,7 +195,7 @@ namespace MyWFC
                 {
                     if (useMask)
                     {
-                        if (maskGenerator != null && maskGenerator.mask[x, z])
+                        if (maskGenerator != null)
                         {
                             DrawTile(x, z);
                         }

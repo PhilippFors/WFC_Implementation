@@ -27,13 +27,18 @@ namespace MyWFC
                 {
 
                     GUILayout.BeginHorizontal();
-                    t.tiles[i] = (GameObject)EditorGUILayout.ObjectField(t.tiles[i], typeof(GameObject), false);
+                    t.tiles[i] = (GameObject)EditorGUILayout.ObjectField(t.tiles[i], typeof(GameObject), false, GUILayout.MaxWidth(200f));
                     if (t.tiles[i] != null)
                     {
                         var MyTile = t.tiles[i].GetComponent<MyWFC.MyTile>();
-                        MyTile.weight = EditorGUILayout.IntField(MyTile.weight);
-                        GUILayout.Label("ID: ");
-                        MyTile.ID = EditorGUILayout.IntField(MyTile.ID);
+                        GUILayout.Label("Weight: ", GUILayout.MaxWidth(50f));
+                        MyTile.weight = EditorGUILayout.IntField(MyTile.weight, GUILayout.MaxWidth(30f));
+                        GUILayout.Space(5f);
+                        GUILayout.Label("ID: ", GUILayout.MaxWidth(25f));
+                        MyTile.ID = EditorGUILayout.IntField(MyTile.ID, GUILayout.MaxWidth(30f));
+                        GUILayout.Space(5f);
+                        GUILayout.Label("Use: ", GUILayout.MaxWidth(25f));
+                        MyTile.use = EditorGUILayout.Toggle(MyTile.use, GUILayout.MaxWidth(20f));
                     }
                     if (GUILayout.Button("Remove"))
                     {
