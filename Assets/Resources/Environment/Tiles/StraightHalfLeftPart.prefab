@@ -26,7 +26,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 708510676426471552}
-  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -39.5, y: 0, z: 31}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -93,6 +93,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ID: 11
+  use: 1
   weight: 1
   rotationDeg: 0
   hasRotation: 1
@@ -127,7 +128,7 @@ MonoBehaviour:
     - side: 2
       connection: 0
     - side: 0
-      connection: 1
+      connection: 6
   side4:
     side: 90
     connection: 0
