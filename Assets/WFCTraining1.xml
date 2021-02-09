@@ -1,6 +1,0 @@
-<set>
-  <tiles>
-<tile name="Floor" symmetry="X" weight="1.0"/>
-	</tiles>
-<neighbors>	</neighbors>
-</set>
