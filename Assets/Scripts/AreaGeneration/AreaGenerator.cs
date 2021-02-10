@@ -2,113 +2,160 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AreaGenerator : MonoBehaviour
+namespace LevelGeneration.AreaGeneration
 {
-    [SerializeField] GameObject generatorPrefab;
+    public class AreaGenerator : MonoBehaviour
+    {
+        [SerializeField] GameObject generatorPrefab;
+        public MyWFC.TileSet tileSet;
+        public MyWFC.ConnectionGroups connections;
+        public List<Area> areaList = new List<Area>();
+        public List<MyWFC.AdjacentWFC> generators = new List<MyWFC.AdjacentWFC>();
+        public bool loaded = false;
+        private void Start()
+        {
+            FindPrefabs();
+        }
 
-    [SerializeField] List<GameObject> tilePrefabs = new List<GameObject>();
-    public MyWFC.TileSet tileSet;
-    public List<Area> areaList = new List<Area>();
-    // public List<Tessera.TesseraGenerator> generators = new List<Tessera.TesseraGenerator>();
-    public bool loaded = false;
-    private void Start()
-    {
-        FindPrefabs();
-    }
-    public void FindPrefabs()
-    {
-        // if (generatorPrefab == null)
-        // {
-        //     generatorPrefab = Resources.Load<GameObject>("GeneratorRoot");
-        // }
-        generatorPrefab = Resources.Load<GameObject>("GeneratorRoot");
-    }
-    public void StartAreaGenerator(GridTile[] tile)
-    {
-        // generators.Clear();
-        if (areaList.Count != 0)
+        /// <summary>
+        /// Gets the WFC Generator prefab form the Resources folder.
+        /// </summary>
+        public void FindPrefabs()
+        {
+            if (generatorPrefab == null)
+            {
+                generatorPrefab = Resources.Load<GameObject>("AdjacencyWFC");
+            }
+            // generatorPrefab = Resources.Load<GameObject>("AdjacencyWFC");
+        }
+
+        /// <summary>
+        /// Initates the generation process for each Area.
+        /// </summary>
+        /// <param name="tile"></param>
+        public void StartAreaGenerator(GridGeneration.GridTile[] tile)
+        {
+            generators.Clear();
+            if (areaList.Count != 0)
+                foreach (Area a in areaList)
+                    if (Application.isPlaying) Destroy(a.parent); else DestroyImmediate(a.parent);
+
+            areaList.Clear();
+
+            foreach (GridGeneration.GridTile t in tile)
+            {
+                GenerateArea(t);
+            }
+            StartCoroutine(StartGenerator());
+            StartCoroutine(CheckForFinsihed());
+        }
+
+        IEnumerator CheckForFinsihed()
+        {
+            while (!CheckList())
+            {
+                yield return null;
+            }
+
+            Debug.Log("All Areas Generated!");
+        }
+
+        bool CheckList()
+        {
+            int i = 0;
             foreach (Area a in areaList)
-                if (Application.isPlaying) Destroy(a.parent); else DestroyImmediate(a.parent);
-
-        areaList.Clear();
-
-        foreach (GridTile t in tile)
-        {
-            // GenerateArea(t);
-        }
-        // StartCoroutine(StartGenerator());
-        StartCoroutine(CheckForFinsihed());
-    }
-
-    IEnumerator CheckForFinsihed()
-    {
-        while (!CheckList())
-        {
-            yield return null;
+            {
+                if (a.generated)
+                    i++;
+            }
+            return i == areaList.Count;
         }
 
-        Debug.Log("All Areas Generated!");
-    }
-
-    bool CheckList()
-    {
-        int i = 0;
-        foreach (Area a in areaList)
+        /// <summary>
+        /// Setting up the Area and the WFC generator.
+        /// </summary>
+        /// <param name="tile"></param>
+        void GenerateArea(GridGeneration.GridTile tile)
         {
-            if (a.generated)
-                i++;
+            Area a = new Area(new GameObject("Area " + tile.index), tile);
+            areaList.Add(a);
+
+            GameObject newGeneratorObj = Instantiate(generatorPrefab, Vector3.zero, Quaternion.Euler(0, 0, 0));
+
+            MyWFC.AdjacentWFC generator = newGeneratorObj.GetComponent<MyWFC.AdjacentWFC>();
+            newGeneratorObj.transform.parent = a.parent.transform;
+            newGeneratorObj.transform.localPosition = new Vector3(-tile.width / 2 * tileSet.GridSize + tileSet.GridSize, 0, -tile.height / 2 * tileSet.GridSize + tileSet.GridSize);
+            // newGeneratorObj.transform.position = tile.position;
+            // newGeneratorObj.transform.parent = a.parent.transform;
+
+            generator.tileSet = tileSet;
+            generator.ConnectionGroups = connections;
+            generator.gridSize = tileSet.GridSize;
+            generator.size = new Vector3Int(tile.width, 1, tile.height);
+
+            AddConstraints(a, generator);
+
+            generators.Add(generator);
         }
-        return i == areaList.Count;
-    }
-    // void GenerateArea(GridTile tile)
-    // {
-    //     Area a = new Area(new GameObject("Area " + tile.index), tile);
-    //     areaList.Add(a);
 
-    //     GameObject newGeneratorObj = Instantiate(generatorPrefab, Vector3.zero, Quaternion.identity);
-    //     Tessera.TesseraGenerator generator = newGeneratorObj.GetComponentInChildren<Tessera.TesseraGenerator>();
-    //     newGeneratorObj.transform.position = tile.position;
-    //     newGeneratorObj.transform.parent = a.parent.transform;
+        /// <summary>
+        /// Checks the tileset if there are any possible constraints to use and adds the corresponding component to the generator gameObject.
+        /// </summary>
+        /// <param name="area"></param>
+        /// <param name="generator"></param>
+        void AddConstraints(Area area, MyWFC.AdjacentWFC generator)
+        {
+            var borderC = new MyWFC.BorderConstraint();
+            var fixedC = new MyWFC.FixedTileCostraint();
+            var pathC = new MyWFC.PathConstraint();
 
-    //     List<Tessera.TileEntry> tesseraTiles = new List<Tessera.TileEntry>();
-    //     generator.tiles = new List<Tessera.TileEntry>();
-    //     foreach (GameObject g in tileSet.tiles)
-    //     {
-    //         Tessera.TesseraTile t = g.GetComponent<Tessera.TesseraTile>();
-    //         Tessera.TileEntry tileEntry = new Tessera.TileEntry();
-    //         tileEntry.tile = t;
-    //         tileEntry.weight = g.GetComponent<MyWFC.MyTile>().weight;
+            if (tileSet.entrance != null)
+            {
+                fixedC = generator.gameObject.AddComponent<MyWFC.FixedTileCostraint>();
 
-    //         generator.tiles.Add(tileEntry);
-    //     }
+                var entrance = area.tileInfo.entrance;
+                var exit = area.tileInfo.exit;
 
-    //     generator.size = new Vector3Int(tile.width / (int)generator.tileSize.x, 1, tile.height / (int)generator.tileSize.z);
-    //     generators.Add(generator);
-    // }
+                if (entrance != null)
+                    fixedC.pointList.Add(new MyWFC.MyTilePoint() { point = entrance.position, tile = tileSet.entrance.GetComponent<MyWFC.MyTile>() });
+                if (exit != null)
+                    fixedC.pointList.Add(new MyWFC.MyTilePoint() { point = exit.position, tile = tileSet.entrance.GetComponent<MyWFC.MyTile>() });
+            }
 
-    // IEnumerator StartGenerator()
-    // {
-    //     // Tessera.TesseraGenerateOptions t = new Tessera.TesseraGenerateOptions();
-    //     // t.multithreaded = true;
-    //     // for (int i = 0; i < generators.Count; i++)
-    //     // {
-    //     //     yield return generators[i].StartGenerate(t);
+            if (tileSet.borderTiles.Count > 0)
+            {
+                borderC = generator.gameObject.AddComponent<MyWFC.BorderConstraint>();
+                foreach (GameObject obj in tileSet.borderTiles)
+                {
+                    borderC.borderTiles.Add(obj.GetComponent<MyWFC.MyTile>());
+                }
+            }
 
-    //     //     areaList[i].generated = true;
-    //     // }
-    // }
-}
+            if (tileSet.pathTiles.Count > 0)
+            {
+                pathC = generator.gameObject.AddComponent<MyWFC.PathConstraint>();
+                if (fixedC != null && fixedC.useConstraint)
+                    foreach (MyWFC.MyTilePoint p in fixedC.pointList)
+                        pathC.endPoints.Add(p);
 
-[System.Serializable]
-public class Area
-{
-    public bool generated;
-    public GameObject parent;
-    public GridTile tileInfo;
-    public Area(GameObject g, GridTile tile)
-    {
-        parent = g;
-        tileInfo = tile;
-        parent.transform.position = tile.position;
+                foreach (GameObject obj in tileSet.pathTiles)
+                {
+                    pathC.pathTiles.Add(obj.GetComponent<MyWFC.MyTile>());
+                }
+            }
+        }
+
+        /// <summary>
+        /// Starting the WFC Generators.
+        /// </summary>
+        /// <returns></returns>
+        IEnumerator StartGenerator()
+        {
+            for (int i = 0; i < generators.Count; i++)
+            {
+                yield return generators[i].Generate(true);
+                areaList[i].generated = true;
+            }
+        }
     }
 }

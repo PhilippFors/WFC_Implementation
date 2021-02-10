@@ -7,7 +7,7 @@ namespace MyWFC
 {
     public class BorderConstraint : CustomConstraint
     {
-        [SerializeField] List<MyTile> borderTiles = new List<MyTile>();
+        public List<MyTile> borderTiles = new List<MyTile>();
 
         public override void SetConstraint(TilePropagator propagator, RuntimeTile[] tileSet)
         {

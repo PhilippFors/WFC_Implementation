@@ -28,13 +28,15 @@ namespace MyWFC
             full = (GameObject)Resources.Load("Full");
             empty = (GameObject)Resources.Load("EmptyTile");
         }
-        public override void Generate(bool multithread = false)
+        public override Coroutine Generate(bool multithread = false)
         {
             // inputSampler.Train();
             if (multithread)
-                StartCoroutine(StartGenerate());
+                return StartCoroutine(StartGenerate());
             else
                 StartGenerateSingle();
+
+            return null;
         }
 
         protected override void PrepareModel()

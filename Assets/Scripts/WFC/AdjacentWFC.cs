@@ -128,7 +128,7 @@ namespace MyWFC
         DeBroglie.Constraints.PathConstraint GetPathConstraint()
         {
             var constraints = GetComponent<MyWFC.PathConstraint>();
-            if (constraints != null)
+            if (constraints != null && constraints.useConstraint)
             {
                 constraints.SetConstraint(propagator, runtimeTiles.ToArray());
                 return constraints.pathConstraint;
@@ -141,10 +141,11 @@ namespace MyWFC
             if (constraints != null)
                 foreach (CustomConstraint c in constraints)
                 {
-                    if (useSample)
-                        c.SetConstraint(propagator, inputSampler.runtimeTiles);
-                    else
-                        c.SetConstraint(propagator, runtimeTiles.ToArray());
+                    if (c.useConstraint)
+                        if (useSample)
+                            c.SetConstraint(propagator, inputSampler.runtimeTiles);
+                        else
+                            c.SetConstraint(propagator, runtimeTiles.ToArray());
                 }
         }
         protected void CreateMask()

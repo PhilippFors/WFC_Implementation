@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 95c0d33c68725bf4aaceda30ee8365a7, type: 3}
   m_Name: MainTiles
   m_EditorClassIdentifier: 
+  GridSize: 6
   tiles:
   - {fileID: 2119246436170072979, guid: 292689021d95b3e4e85043cff11c7412, type: 3}
   - {fileID: 7794061096370611554, guid: 30e136b219004b94dae36518f850b001, type: 3}

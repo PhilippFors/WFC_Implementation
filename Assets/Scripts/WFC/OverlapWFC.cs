@@ -12,14 +12,16 @@ namespace MyWFC
         public int n = 2;
         protected DeBroglie.Models.OverlappingModel model;
 
-        public override void Generate(bool multithread)
+        public override Coroutine Generate(bool multithread)
         {
             maxRoutines = 0;
             inputSampler.Train();
             if (multithread)
-                StartCoroutine(StartGenerate());
+                return StartCoroutine(StartGenerate());
             else
                 StartGenerateSingle();
+            
+            return null;
         }
 
         protected override IEnumerator StartGenerate()

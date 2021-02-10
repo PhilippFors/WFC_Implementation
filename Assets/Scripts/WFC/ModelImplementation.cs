@@ -27,13 +27,15 @@ namespace MyWFC
         protected GridTopology topology;
         protected TilePropagator propagator;
 
-        public virtual void Generate(bool multithread = true)
+        public virtual Coroutine Generate(bool multithread = true)
         {
 
             if (multithread)
-                StartCoroutine(StartGenerate());
+                return StartCoroutine(StartGenerate());
             else
                 StartGenerateSingle();
+
+            return null;
         }
 
         protected void StartGenerateSingle()

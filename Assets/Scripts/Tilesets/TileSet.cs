@@ -6,10 +6,14 @@ namespace MyWFC
 {
     [CreateAssetMenu(fileName = "tile set", menuName = "Tiles/Tileset")]
     public class TileSet : ScriptableObject
-    {
-        public List<GameObject> tiles = new List<GameObject>();
+    {   
+        public int GridSize;
+        [HideInInspector] public List<GameObject> tiles = new List<GameObject>();
 
-        public GameObject entrance;
+        [HideInInspector] public GameObject entrance;
+
+        [HideInInspector] public List<GameObject> borderTiles = new List<GameObject>();
+        [HideInInspector] public List<GameObject> pathTiles = new List<GameObject>();
     }
 
 #if UNITY_EDITOR
@@ -21,7 +25,9 @@ namespace MyWFC
         public override void OnInspectorGUI()
         {
             TileSet t = (TileSet)target;
+            
             GUILayout.Label("Tileset", EditorStyles.largeLabel);
+            DrawDefaultInspector();
             if (t.tiles.Count != 0 && t.tiles != null)
                 for (int i = 0; i < t.tiles.Count; i++)
                 {
