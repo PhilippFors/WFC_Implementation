@@ -16,8 +16,9 @@ namespace MyWFC
                     var rotA = tileset[i].rotation;
                     var rotB = tileset[j].rotation;
 
-                    var tileA = tileset[i].sides; //Reference Tile
-                    var tileB = tileset[j].sides; // Tile to check against
+                    var tileA = tileset[i].sides;
+                    var tileB = tileset[j].sides;
+
                     foreach (TileSide sideA in tileA)
                     {
                         foreach (TileSide sideB in tileB)
@@ -57,47 +58,8 @@ namespace MyWFC
 
         static bool CompareSides(TileSide sideA, int rotA, Sides side, TileSide sideB, int rotB, ConnectionGroups connectionGroups)
         {
-            SubSide[] arrayA = new SubSide[3];
-            SubSide[] arrayB = new SubSide[3];
-            if ((rotA == 90 || rotA == 180) && (side == Sides.Left || side == Sides.Right))
-            {
-                arrayA[0] = sideA.subSides[2];
-                arrayA[1] = sideA.subSides[1];
-                arrayA[2] = sideA.subSides[0];
-                // Debug.Log(arrayA[1].connection.ToString() + ", " + arrayA[1].side.ToString());
-            }
-            else if ((rotA == 180 || rotA == 270) && (side == Sides.Front || side == Sides.Back))
-            {
-                arrayA[0] = sideA.subSides[2];
-                arrayA[1] = sideA.subSides[1];
-                arrayA[2] = sideA.subSides[0];
-                // Debug.Log(arrayA[1].connection.ToString() + ", " + arrayA[1].side.ToString());
-            }
-            else
-            {
-                arrayA = sideA.subSides.ToArray();
-                // Debug.Log(arrayA[1].connection.ToString() + ", " + arrayA[1].side.ToString());
-            }
-
-            if ((rotB == 90 || rotB == 180) && (side == Sides.Left || side == Sides.Right))
-            {
-                arrayB[0] = sideB.subSides[2];
-                arrayB[1] = sideB.subSides[1];
-                arrayB[2] = sideB.subSides[0];
-                // Debug.Log(arrayB[0].connection.ToString() + ", " + arrayB[0].side.ToString());
-            }
-            else if ((rotB == 180 || rotB == 270) && (side == Sides.Front || side == Sides.Back))
-            {
-                arrayB[0] = sideB.subSides[2];
-                arrayB[1] = sideB.subSides[1];
-                arrayB[2] = sideB.subSides[0];
-                // Debug.Log(arrayB[0].connection.ToString() + ", " + arrayB[0].side.ToString());
-            }
-            else
-            {
-                arrayB = sideB.subSides.ToArray();
-                // Debug.Log(arrayB[0].connection.ToString() + ", " + arrayB[0].side.ToString());
-            }
+            SubSide[] arrayA = ShuffleArray(sideA, rotA, side);
+            SubSide[] arrayB = ShuffleArray(sideB, rotB, side);
 
             for (int i = 0; i < arrayA.Length; i++)
             {
@@ -108,65 +70,43 @@ namespace MyWFC
             return true;
         }
 
-        static bool CheckConnections(SubSide sideA, SubSide sideB, ConnectionGroups connectionGroups)
+        static SubSide[] ShuffleArray(TileSide tileSide, int rot, Sides side)
+        {
+            SubSide[] arr = new SubSide[3];
+            if ((rot == 90 || rot == 180) && (side == Sides.Left || side == Sides.Right))
+            {
+                arr[0] = tileSide.subSides[2];
+                arr[1] = tileSide.subSides[1];
+                arr[2] = tileSide.subSides[0];
+            }
+            else if ((rot == 180 || rot == 270) && (side == Sides.Front || side == Sides.Back))
+            {
+                arr[0] = tileSide.subSides[2];
+                arr[1] = tileSide.subSides[1];
+                arr[2] = tileSide.subSides[0];
+            }
+            else
+            {
+                arr = tileSide.subSides.ToArray();
+            }
+            return arr;
+        }
+
+        static bool CheckConnections(SubSide subSideA, SubSide subSideB, ConnectionGroups connectionGroups)
         {
             for (int x = 0; x < connectionGroups.groups.Length; x++)
             {
-                if ((int)sideA.connection == x)
+                if ((int)subSideA.connection == x)
                 {
                     for (int y = 0; y < connectionGroups.groups.Length; y++)
                     {
-                        if ((int)sideB.connection == y)
-                        {
-                            if (connectionGroups.groups[x].v[y])
-                            {
-                                if (sideA.connection.Equals(Connections.A) && sideB.connection.Equals(Connections.I) || sideA.connection.Equals(Connections.A) && sideB.connection.Equals(Connections.I))
-                                {
-                                    Debug.Log("There's something wrong at " + x + ", " + y);
-                                }
-                                return true;
-                            }
-                        }
+                        if ((int)subSideB.connection == y && connectionGroups.groups[x].v[y])
+                            return true;
                     }
                     break;
                 }
             }
             return false;
-            // if (groups != null && groups.Count > 0)
-            // {
-            //     if (sideA.connection == sideB.connection)
-            //     {
-            //         foreach (ConnectionGroup group in groups)
-            //         {
-            //             if (sideA.connection != group.connectionA || sideA.connection != group.connectionB || sideB.connection != group.connectionA || sideB.connection != group.connectionB)
-            //                 continue;
-
-            //             if (group.connectionA.Equals(group.connectionB) && group.canConnectToSelf)
-            //                 return true;
-            //         }
-            //     }
-            //     else
-            //     {
-            //         foreach (ConnectionGroup group in groups)
-            //         {
-            //             if (group.connectionA != group.connectionB)
-            //             {
-            //                 var otherConnection = sideA.connection == group.connectionA ? group.connectionB : group.connectionA;
-            //                 if (sideB.connection.Equals(otherConnection))
-            //                     return true;
-            //                 otherConnection = sideB.connection == group.connectionA ? group.connectionB : group.connectionB;
-
-            //                 if (sideA.connection.Equals(otherConnection))
-            //                     return true;
-            //             }
-            //         }
-            //     }
-            //     return false;
-            // }
-            // else
-            // {
-            //     return sideA.connection.Equals(sideB.connection);
-            // }
         }
 
         public static List<TileSide> TileSideCopy(List<TileSide> sides)
@@ -196,6 +136,4 @@ namespace MyWFC
             return list;
         }
     }
-
-
 }

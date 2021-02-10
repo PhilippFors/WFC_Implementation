@@ -93,6 +93,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ID: 5
+  use: 1
   weight: 2
   rotationDeg: 0
   hasRotation: 1
@@ -125,7 +126,7 @@ MonoBehaviour:
     - side: 1
       connection: 0
     - side: 2
-      connection: 2
+      connection: 6
     - side: 0
       connection: 0
   side4:
@@ -135,7 +136,7 @@ MonoBehaviour:
     - side: 1
       connection: 0
     - side: 2
-      connection: 2
+      connection: 6
     - side: 0
       connection: 0
   showGizmo: 1

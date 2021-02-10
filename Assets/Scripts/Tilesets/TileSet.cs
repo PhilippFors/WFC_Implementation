@@ -56,31 +56,12 @@ namespace MyWFC
             if (GUILayout.Button("Sort by ID"))
                 sortarray(t);
 
-            // if (GUILayout.Button("Add all in folder"))
-            // {
-            //     t.tiles = new List<GameObject>();
-            //     string path = AssetDatabase.GetAssetPath(t);
-            //     string[] guids = AssetDatabase
-            //     string[] paths = new string[guids.Length];
-            //     for (int i = 0; i < guids.Length; i++)
-            //     {
-            //         paths[i] = AssetDatabase.GUIDToAssetPath(guids[i]);
-            //     }
-
-            //     Object[] arr = new Object[paths.Length];
-            //     for (int i = 0; i < paths.Length; i++)
-            //     {
-            //         t.tiles.Add((GameObject)AssetDatabase.LoadAssetAtPath(paths[i], typeof(MyTile)));
-            //     }
-
-            // }
             t.entrance = (GameObject)EditorGUILayout.ObjectField(t.entrance, typeof(GameObject), false);
             if (GUI.changed)
             {
-                AssetDatabase.SaveAssets();
                 EditorUtility.SetDirty(t);
+                AssetDatabase.SaveAssets();
             }
-
         }
 
         void sortarray(TileSet t)
