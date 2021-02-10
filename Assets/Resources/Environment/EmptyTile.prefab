@@ -44,6 +44,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ID: 0
+  use: 1
   weight: 1
   rotationDeg: 0
   hasRotation: 0

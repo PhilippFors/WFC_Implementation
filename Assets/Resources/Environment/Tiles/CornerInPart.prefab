@@ -93,6 +93,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ID: 1
+  use: 1
   weight: 2
   rotationDeg: 0
   hasRotation: 1

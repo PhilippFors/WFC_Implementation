@@ -21,7 +21,7 @@ namespace MyWFC
         public override void OnInspectorGUI()
         {
             TileSet t = (TileSet)target;
-
+            GUILayout.Label("Tileset", EditorStyles.largeLabel);
             if (t.tiles.Count != 0 && t.tiles != null)
                 for (int i = 0; i < t.tiles.Count; i++)
                 {
@@ -31,15 +31,28 @@ namespace MyWFC
                     if (t.tiles[i] != null)
                     {
                         var MyTile = t.tiles[i].GetComponent<MyWFC.MyTile>();
+
+                        var tempweight = MyTile.weight;
+                        var tempID = MyTile.ID;
+                        var tempUse = MyTile.use;
+
                         GUILayout.Label("Weight: ", GUILayout.MaxWidth(50f));
                         MyTile.weight = EditorGUILayout.IntField(MyTile.weight, GUILayout.MaxWidth(30f));
+
                         GUILayout.Space(5f);
+
                         GUILayout.Label("ID: ", GUILayout.MaxWidth(25f));
                         MyTile.ID = EditorGUILayout.IntField(MyTile.ID, GUILayout.MaxWidth(30f));
+
                         GUILayout.Space(5f);
+
                         GUILayout.Label("Use: ", GUILayout.MaxWidth(25f));
                         MyTile.use = EditorGUILayout.Toggle(MyTile.use, GUILayout.MaxWidth(20f));
+
+                        if (tempweight != MyTile.weight || tempID != MyTile.ID || tempUse != MyTile.use)
+                            PrefabUtility.SavePrefabAsset(t.tiles[i]);
                     }
+
                     if (GUILayout.Button("Remove"))
                     {
                         t.tiles.Remove(t.tiles[i]);
@@ -47,6 +60,8 @@ namespace MyWFC
                     GUILayout.EndHorizontal();
                 }
 
+            GUILayout.Label("Entrance Tile");
+            t.entrance = (GameObject)EditorGUILayout.ObjectField(t.entrance, typeof(GameObject), false);
 
             if (GUILayout.Button("Add Tile"))
             {
@@ -56,11 +71,10 @@ namespace MyWFC
             if (GUILayout.Button("Sort by ID"))
                 sortarray(t);
 
-            t.entrance = (GameObject)EditorGUILayout.ObjectField(t.entrance, typeof(GameObject), false);
+
             if (GUI.changed)
             {
                 EditorUtility.SetDirty(t);
-                AssetDatabase.SaveAssets();
             }
         }
 

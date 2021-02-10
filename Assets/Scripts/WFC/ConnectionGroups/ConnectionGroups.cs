@@ -54,7 +54,7 @@ namespace MyWFC
                 {
                     bool temp = g.groups[x].v[y];
                     g.groups[x].v[y] = EditorGUILayout.Toggle(g.groups[x].v[y], GUILayout.MaxWidth(20f));
-                    if (temp != g.groups[x].v[y])
+                    if (temp != g.groups[x].v[y] && x != y)
                     {
                         g.groups[y].v[x] = !temp;
                     }
@@ -65,11 +65,8 @@ namespace MyWFC
             if (GUI.changed)
             {
                 EditorUtility.SetDirty(g);
-                AssetDatabase.SaveAssets();
             }
         }
-
-
     }
 #endif
 }
