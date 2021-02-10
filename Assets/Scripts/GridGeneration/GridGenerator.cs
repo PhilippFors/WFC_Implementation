@@ -166,17 +166,17 @@ namespace LevelGeneration.GridGeneration
 
                 switch (newD.direction)
                 {
-                    case Direction.LEFT:
-                        AddNewTile(oldX - 1, oldY, i, Direction.LEFT);
+                    case Side.LEFT:
+                        AddNewTile(oldX - 1, oldY, i, Side.LEFT);
                         break;
-                    case Direction.UP:
-                        AddNewTile(oldX, oldY + 1, i, Direction.UP);
+                    case Side.UP:
+                        AddNewTile(oldX, oldY + 1, i, Side.UP);
                         break;
-                    case Direction.RIGHT:
-                        AddNewTile(oldX + 1, oldY, i, Direction.RIGHT);
+                    case Side.RIGHT:
+                        AddNewTile(oldX + 1, oldY, i, Side.RIGHT);
                         break;
-                    case Direction.DOWN:
-                        AddNewTile(oldX, oldY - 1, i, Direction.DOWN);
+                    case Side.DOWN:
+                        AddNewTile(oldX, oldY - 1, i, Side.DOWN);
                         break;
                 }
             }
@@ -190,7 +190,7 @@ namespace LevelGeneration.GridGeneration
         /// <param name="y">The y position on the grid</param>
         /// <param name="index">Tile index</param>
         /// <param name="d">The direction in which the new grid is placed</param>
-        void AddNewTile(int x, int y, int index, Direction d)
+        void AddNewTile(int x, int y, int index, Side d)
         {
             //if tile placement is illegal, recursive Method call happens until legal placement is found
             if (x < 0 || x >= tileGrid.GetLength(0) || y < 0 || y >= tileGrid.GetLength(1) || tileGrid[x, y] != null)
@@ -198,17 +198,17 @@ namespace LevelGeneration.GridGeneration
                 Directions dir = GetRandomDirection();
                 switch (dir.direction)
                 {
-                    case Direction.LEFT:
-                        AddNewTile(oldX - 1, oldY, index, Direction.LEFT);
+                    case Side.LEFT:
+                        AddNewTile(oldX - 1, oldY, index, Side.LEFT);
                         break;
-                    case Direction.UP:
-                        AddNewTile(oldX, oldY + 1, index, Direction.UP);
+                    case Side.UP:
+                        AddNewTile(oldX, oldY + 1, index, Side.UP);
                         break;
-                    case Direction.RIGHT:
-                        AddNewTile(oldX + 1, oldY, index, Direction.RIGHT);
+                    case Side.RIGHT:
+                        AddNewTile(oldX + 1, oldY, index, Side.RIGHT);
                         break;
-                    case Direction.DOWN:
-                        AddNewTile(oldX, oldY - 1, index, Direction.DOWN);
+                    case Side.DOWN:
+                        AddNewTile(oldX, oldY - 1, index, Side.DOWN);
                         break;
                 }
                 return;
@@ -226,7 +226,7 @@ namespace LevelGeneration.GridGeneration
             t.entrance = new DoorWay();
             tileGrid[oldX, oldY].exit = new DoorWay();
 
-            t.entrance.side = (Direction)((int)d * (-1));
+            t.entrance.side = (Side)((int)d * (-1));
             t.entrance.connected = tileGrid[oldX, oldY].exit;
             t.entrance.position = GetDoorPos(t.entrance.side, t.width, t.height);
             t.previous = tileGrid[oldX, oldY];
@@ -249,15 +249,15 @@ namespace LevelGeneration.GridGeneration
         /// <param name="w">Width of the tile</param>
         /// <param name="h">Height of the tile</param>
         /// <returns></returns>
-        Vector3Int GetDoorPos(Direction side, int w, int h)
+        Vector3Int GetDoorPos(Side side, int w, int h)
         {
-            if (side == Direction.DOWN)
+            if (side == Side.DOWN)
                 return new Vector3Int(Random.Range(1, w - 2), 0, 0);
-            if (side == Direction.LEFT)
+            if (side == Side.LEFT)
                 return new Vector3Int(0, Random.Range(1, h - 2), 0);
-            if (side == Direction.RIGHT)
+            if (side == Side.RIGHT)
                 return new Vector3Int(w - 1, Random.Range(1, h - 2), 0);
-            if (side == Direction.UP)
+            if (side == Side.UP)
                 return new Vector3Int(Random.Range(1, w - 2), h - 1, 0);
 
             return Vector3Int.zero;
@@ -337,24 +337,24 @@ namespace LevelGeneration.GridGeneration
             return tileGrid;
         }
 
-        void AddNewTile(int x, int y, int index, Direction d)
+        void AddNewTile(int x, int y, int index, Side d)
         {
             if (x < 0 || x >= tileGrid.GetLength(0) || y < 0 || y >= tileGrid.GetLength(1) || tileGrid[x, y] != null)
             {
                 Directions dir = GetRandomDirection();
                 switch (dir.direction)
                 {
-                    case Direction.LEFT:
-                        AddNewTile(oldX - 1, oldY, index, Direction.LEFT);
+                    case Side.LEFT:
+                        AddNewTile(oldX - 1, oldY, index, Side.LEFT);
                         break;
-                    case Direction.UP:
-                        AddNewTile(oldX, oldY + 1, index, Direction.UP);
+                    case Side.UP:
+                        AddNewTile(oldX, oldY + 1, index, Side.UP);
                         break;
-                    case Direction.RIGHT:
-                        AddNewTile(oldX + 1, oldY, index, Direction.RIGHT);
+                    case Side.RIGHT:
+                        AddNewTile(oldX + 1, oldY, index, Side.RIGHT);
                         break;
-                    case Direction.DOWN:
-                        AddNewTile(oldX, oldY - 1, index, Direction.DOWN);
+                    case Side.DOWN:
+                        AddNewTile(oldX, oldY - 1, index, Side.DOWN);
                         break;
                 }
                 return;
@@ -366,7 +366,7 @@ namespace LevelGeneration.GridGeneration
             GridTile t = new GridTile(tileGrid[oldX, oldY].position + new Vector3(((tileWidth / 2 + dic["tileDistance"]) + (tileGrid[oldX, oldY].width / 2)) * (x - oldX), 0, ((tileHeight / 2 + dic["tileDistance"]) + (tileGrid[oldX, oldY].height / 2)) * (y - oldY)),
                             index, tileWidth, tileHeight);
             t.entrance.side = d;
-            tileGrid[oldX, oldY].exit.side = (Direction)((int)d * (-1));
+            tileGrid[oldX, oldY].exit.side = (Side)((int)d * (-1));
             tileGrid[x, y] = t;
             oldX = x;
             oldY = y;

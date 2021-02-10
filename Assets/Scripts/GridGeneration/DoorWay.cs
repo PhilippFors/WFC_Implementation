@@ -7,7 +7,7 @@ namespace LevelGeneration
     [System.Serializable]
     public class DoorWay
     {
-        public Direction side;
+        public Side side;
         public Vector3Int position;
         public DoorWay connected;
 
@@ -16,7 +16,7 @@ namespace LevelGeneration
 
         }
 
-        public DoorWay(DoorWay connected, Direction side)
+        public DoorWay(DoorWay connected, Side side)
         {
 
         }

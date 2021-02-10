@@ -17,7 +17,6 @@ namespace MyWFC
         public List<RuntimeTile> runtimeTiles;
 
         public ConnectionGroups ConnectionGroups;
-        // public List<ConnectionGroup> connectionGroups = new List<ConnectionGroup>();
         public bool useSample;
         AdjacentModel model;
 
@@ -37,6 +36,7 @@ namespace MyWFC
 
             Draw();
         }
+
         protected override void PrepareModel()
         {
             runtimeTiles = new List<RuntimeTile>();
@@ -44,6 +44,18 @@ namespace MyWFC
             model = new AdjacentModel();
             model.SetDirections(DirectionSet.Cartesian2d);
 
+            CreateTileRotations();
+
+            topology = new GridTopology(size.x, size.z, periodicOUT);
+
+            this.CreateMask();
+            // CheckAdjacencies();
+            AdjacentUtil.CheckAdjacencies(runtimeTiles, model, ConnectionGroups);
+            SetFrequencies();
+        }
+
+        void CreateTileRotations()
+        {
             if (!useSample)
             {
                 if (rotations > 1)
@@ -94,13 +106,6 @@ namespace MyWFC
                 sample = TopoArray.Create<Tile>(inputSampler.sample, periodicIN);
                 model.AddSample(sample);
             }
-
-            topology = new GridTopology(size.x, size.z, periodicOUT);
-
-            this.CreateMask();
-            // CheckAdjacencies();
-            AdjacentUtil.CheckAdjacencies(runtimeTiles, model, ConnectionGroups);
-            SetFrequencies();
         }
 
         void SetFrequencies()
@@ -148,6 +153,7 @@ namespace MyWFC
                             c.SetConstraint(propagator, runtimeTiles.ToArray());
                 }
         }
+
         protected void CreateMask()
         {
             if (maskGenerator != null && useMask)

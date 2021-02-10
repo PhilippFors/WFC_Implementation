@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 2805206305287786254}
   - component: {fileID: 2805206305287786289}
   - component: {fileID: 2805206305287786291}
+  - component: {fileID: 2805206305380943920}
   m_Layer: 0
   m_Name: LevelGenerator
   m_TagString: Untagged
@@ -59,7 +60,128 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19a6cd02294eb7f4e83cd124a813d3c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  areaList: []
+  generatorPrefab: {fileID: 4313474062284804424, guid: 4e9cfa2a71eb81a4d9cf2055ed64f556,
+    type: 3}
+  tileSet: {fileID: 11400000, guid: 66e1de2a12f84e44bbd216818c9fab20, type: 2}
+  connections: {fileID: 11400000, guid: afddbd52d16b3cd41b6b7832cd8a4bb6, type: 2}
+  areaList:
+  - generated: 1
+    parent: {fileID: 0}
+    tileInfo:
+      position: {x: 0, y: 0, z: 0}
+      index: 0
+      width: 12
+      height: 12
+      bounds:
+        m_Center: {x: 0, y: 0, z: 0}
+        m_Extent: {x: 6, y: 5, z: 6}
+      entrance:
+        side: 0
+        position: {x: 0, y: 0, z: 0}
+      exit:
+        side: 2
+        position: {x: 0, y: 5, z: 0}
+    entrance:
+      side: 0
+      position: {x: 0, y: 0, z: 0}
+    exit:
+      side: 0
+      position: {x: 0, y: 0, z: 0}
+  - generated: 1
+    parent: {fileID: 0}
+    tileInfo:
+      position: {x: -89, y: 0, z: 0}
+      index: 1
+      width: 11
+      height: 10
+      bounds:
+        m_Center: {x: -89, y: 0, z: 0}
+        m_Extent: {x: 5.5, y: 5, z: 5}
+      entrance:
+        side: -2
+        position: {x: 10, y: 5, z: 0}
+      exit:
+        side: 2
+        position: {x: 0, y: 7, z: 0}
+    entrance:
+      side: 0
+      position: {x: 0, y: 0, z: 0}
+    exit:
+      side: 0
+      position: {x: 0, y: 0, z: 0}
+  - generated: 1
+    parent: {fileID: 0}
+    tileInfo:
+      position: {x: -176, y: 0, z: 0}
+      index: 2
+      width: 9
+      height: 12
+      bounds:
+        m_Center: {x: -176, y: 0, z: 0}
+        m_Extent: {x: 4.5, y: 5, z: 6}
+      entrance:
+        side: -2
+        position: {x: 8, y: 4, z: 0}
+      exit:
+        side: 2
+        position: {x: 0, y: 4, z: 0}
+    entrance:
+      side: 0
+      position: {x: 0, y: 0, z: 0}
+    exit:
+      side: 0
+      position: {x: 0, y: 0, z: 0}
+  - generated: 1
+    parent: {fileID: 0}
+    tileInfo:
+      position: {x: -262, y: 0, z: 0}
+      index: 3
+      width: 9
+      height: 10
+      bounds:
+        m_Center: {x: -262, y: 0, z: 0}
+        m_Extent: {x: 4.5, y: 5, z: 5}
+      entrance:
+        side: -2
+        position: {x: 8, y: 1, z: 0}
+      exit:
+        side: 1
+        position: {x: 4, y: 9, z: 0}
+    entrance:
+      side: 0
+      position: {x: 0, y: 0, z: 0}
+    exit:
+      side: 0
+      position: {x: 0, y: 0, z: 0}
+  - generated: 1
+    parent: {fileID: 0}
+    tileInfo:
+      position: {x: -262, y: 0, z: 87}
+      index: 4
+      width: 10
+      height: 9
+      bounds:
+        m_Center: {x: -262, y: 0, z: 87}
+        m_Extent: {x: 5, y: 5, z: 4.5}
+      entrance:
+        side: -1
+        position: {x: 5, y: 0, z: 0}
+      exit:
+        side: 0
+        position: {x: 0, y: 0, z: 0}
+    entrance:
+      side: 0
+      position: {x: 0, y: 0, z: 0}
+    exit:
+      side: 0
+      position: {x: 0, y: 0, z: 0}
+  generators:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  loaded: 0
 --- !u!114 &2805206305287786291
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -74,8 +196,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridWidth: 50
   gridHeight: 50
-  levelLength: 5
-  seed: 0
+  levelLength: 4
+  seed: 183712
   randomSeed: 1
   randomLength: 0
   isLinear: 1
@@ -86,7 +208,7 @@ MonoBehaviour:
       draggable: 1
       expandable: 1
       multipleSelection: 1
-      isExpanded: 0
+      isExpanded: 1
       label:
         m_Text: Keys
         m_Image: {fileID: 0}
@@ -101,7 +223,7 @@ MonoBehaviour:
       elementNameOverride: 
       elementIcon: {fileID: 0}
     reqReferences: {fileID: 0}
-    isExpanded: 0
+    isExpanded: 1
     _keyValues:
     - baseTileSize
     - minTileWidth
@@ -109,6 +231,7 @@ MonoBehaviour:
     - minTileHeight
     - maxTileHeight
     - tileDistance
+    - gridSize
     _keys:
     - baseTileSize
     - minTileWidth
@@ -116,7 +239,8 @@ MonoBehaviour:
     - minTileHeight
     - maxTileHeight
     - tileDistance
-    _values: 14000000280000003c000000280000003c0000000f000000
+    - gridSize
+    _values: 0c000000070000000c000000070000000c0000000d00000006000000
   directions:
   - direction: 1
     weight: 8
@@ -126,4 +250,616 @@ MonoBehaviour:
     weight: 4
   - direction: -2
     weight: 4
-  arr: []
+  arr:
+  - position: {x: 0, y: 0, z: 0}
+    index: 0
+    width: 12
+    height: 12
+    bounds:
+      m_Center: {x: 0, y: 0, z: 0}
+      m_Extent: {x: 6, y: 5, z: 6}
+    entrance:
+      side: 0
+      position: {x: 0, y: 0, z: 0}
+    exit:
+      side: 2
+      position: {x: 0, y: 5, z: 0}
+  - position: {x: -89, y: 0, z: 0}
+    index: 1
+    width: 11
+    height: 10
+    bounds:
+      m_Center: {x: -89, y: 0, z: 0}
+      m_Extent: {x: 5.5, y: 5, z: 5}
+    entrance:
+      side: -2
+      position: {x: 10, y: 5, z: 0}
+    exit:
+      side: 2
+      position: {x: 0, y: 7, z: 0}
+  - position: {x: -176, y: 0, z: 0}
+    index: 2
+    width: 9
+    height: 12
+    bounds:
+      m_Center: {x: -176, y: 0, z: 0}
+      m_Extent: {x: 4.5, y: 5, z: 6}
+    entrance:
+      side: -2
+      position: {x: 8, y: 4, z: 0}
+    exit:
+      side: 2
+      position: {x: 0, y: 4, z: 0}
+  - position: {x: -262, y: 0, z: 0}
+    index: 3
+    width: 9
+    height: 10
+    bounds:
+      m_Center: {x: -262, y: 0, z: 0}
+      m_Extent: {x: 4.5, y: 5, z: 5}
+    entrance:
+      side: -2
+      position: {x: 8, y: 1, z: 0}
+    exit:
+      side: 1
+      position: {x: 4, y: 9, z: 0}
+  - position: {x: -262, y: 0, z: 87}
+    index: 4
+    width: 10
+    height: 9
+    bounds:
+      m_Center: {x: -262, y: 0, z: 87}
+      m_Extent: {x: 5, y: 5, z: 4.5}
+    entrance:
+      side: -1
+      position: {x: 5, y: 0, z: 0}
+    exit:
+      side: 0
+      position: {x: 0, y: 0, z: 0}
+  drawGizmo: 0
+--- !u!114 &2805206305380943920
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2805206305287786290}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3cd8d434676631647816ce2b481d51dc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maskGenerator: {fileID: 0}
+  useMask: 0
+  inputSampler: {fileID: 0}
+  gridSize: 1
+  size: {x: 10, y: 1, z: 10}
+  backTrackDepth: 5
+  periodicIN: 0
+  periodicOUT: 0
+  n: 2
+  borderTiles:
+  - {fileID: 1958754443, guid: 9697a51a06ecf3248ac6408f9bb90b92, type: 3}
+  - {fileID: 1412583204, guid: 30e136b219004b94dae36518f850b001, type: 3}
+  maskSamples:
+  - {fileID: 11400000, guid: 0646658e6e482174db675ff8f8692683, type: 2}
+  - {fileID: 11400000, guid: ad1b79789faba514799222548f41ebbf, type: 2}
+  minAreaSize: 15
+  passageRadius: 2
+  minNeighbours: 3
+  smoothIterations: 3
+  allAreas:
+  - size: 36
+    AreaID: 0
+    pointlist:
+    - x: 4
+      y: 0
+      z: 0
+    - x: 5
+      y: 0
+      z: 0
+    - x: 6
+      y: 0
+      z: 0
+    - x: 7
+      y: 0
+      z: 0
+    - x: 8
+      y: 0
+      z: 0
+    - x: 9
+      y: 0
+      z: 0
+    - x: 9
+      y: 1
+      z: 0
+    - x: 8
+      y: 1
+      z: 0
+    - x: 7
+      y: 1
+      z: 0
+    - x: 6
+      y: 1
+      z: 0
+    - x: 5
+      y: 1
+      z: 0
+    - x: 4
+      y: 1
+      z: 0
+    - x: 4
+      y: 2
+      z: 0
+    - x: 5
+      y: 2
+      z: 0
+    - x: 6
+      y: 2
+      z: 0
+    - x: 7
+      y: 2
+      z: 0
+    - x: 8
+      y: 2
+      z: 0
+    - x: 9
+      y: 2
+      z: 0
+    - x: 9
+      y: 3
+      z: 0
+    - x: 8
+      y: 3
+      z: 0
+    - x: 7
+      y: 3
+      z: 0
+    - x: 6
+      y: 3
+      z: 0
+    - x: 5
+      y: 3
+      z: 0
+    - x: 4
+      y: 3
+      z: 0
+    - x: 4
+      y: 4
+      z: 0
+    - x: 5
+      y: 4
+      z: 0
+    - x: 6
+      y: 4
+      z: 0
+    - x: 7
+      y: 4
+      z: 0
+    - x: 8
+      y: 4
+      z: 0
+    - x: 9
+      y: 4
+      z: 0
+    - x: 9
+      y: 5
+      z: 0
+    - x: 8
+      y: 5
+      z: 0
+    - x: 7
+      y: 5
+      z: 0
+    - x: 6
+      y: 5
+      z: 0
+    - x: 5
+      y: 5
+      z: 0
+    - x: 4
+      y: 5
+      z: 0
+    - x: 3
+      y: 1
+      z: 0
+    - x: 3
+      y: 2
+      z: 0
+    - x: 3
+      y: 3
+      z: 0
+    - x: 6
+      y: 0
+      z: 0
+    - x: 6
+      y: 1
+      z: 0
+    - x: 6
+      y: 2
+      z: 0
+    - x: 6
+      y: 3
+      z: 0
+    - x: 6
+      y: 4
+      z: 0
+    - x: 6
+      y: 5
+      z: 0
+    - x: 6
+      y: 6
+      z: 0
+    - x: 7
+      y: 0
+      z: 0
+    - x: 7
+      y: 1
+      z: 0
+    - x: 7
+      y: 2
+      z: 0
+    - x: 7
+      y: 3
+      z: 0
+    - x: 7
+      y: 4
+      z: 0
+    - x: 7
+      y: 5
+      z: 0
+    - x: 7
+      y: 6
+      z: 0
+    - x: 8
+      y: 0
+      z: 0
+    - x: 8
+      y: 1
+      z: 0
+    - x: 8
+      y: 2
+      z: 0
+    - x: 8
+      y: 3
+      z: 0
+    - x: 8
+      y: 4
+      z: 0
+    - x: 8
+      y: 5
+      z: 0
+    - x: 8
+      y: 6
+      z: 0
+    - x: 9
+      y: 0
+      z: 0
+    - x: 9
+      y: 1
+      z: 0
+    - x: 9
+      y: 2
+      z: 0
+    - x: 9
+      y: 3
+      z: 0
+    - x: 9
+      y: 4
+      z: 0
+    - x: 9
+      y: 5
+      z: 0
+    - x: 7
+      y: 0
+      z: 0
+    - x: 7
+      y: 1
+      z: 0
+    - x: 7
+      y: 2
+      z: 0
+    - x: 7
+      y: 3
+      z: 0
+    - x: 7
+      y: 4
+      z: 0
+    - x: 7
+      y: 5
+      z: 0
+    - x: 7
+      y: 6
+      z: 0
+    - x: 8
+      y: 0
+      z: 0
+    - x: 8
+      y: 1
+      z: 0
+    - x: 8
+      y: 2
+      z: 0
+    - x: 8
+      y: 3
+      z: 0
+    - x: 8
+      y: 4
+      z: 0
+    - x: 8
+      y: 5
+      z: 0
+    - x: 8
+      y: 6
+      z: 0
+    - x: 9
+      y: 0
+      z: 0
+    - x: 9
+      y: 1
+      z: 0
+    - x: 9
+      y: 2
+      z: 0
+    - x: 9
+      y: 3
+      z: 0
+    - x: 9
+      y: 4
+      z: 0
+    - x: 9
+      y: 5
+      z: 0
+    - x: 7
+      y: 0
+      z: 0
+    - x: 7
+      y: 1
+      z: 0
+    - x: 7
+      y: 2
+      z: 0
+    - x: 7
+      y: 3
+      z: 0
+    - x: 7
+      y: 4
+      z: 0
+    - x: 7
+      y: 5
+      z: 0
+    - x: 7
+      y: 6
+      z: 0
+    - x: 8
+      y: 0
+      z: 0
+    - x: 8
+      y: 1
+      z: 0
+    - x: 8
+      y: 2
+      z: 0
+    - x: 8
+      y: 3
+      z: 0
+    - x: 8
+      y: 4
+      z: 0
+    - x: 8
+      y: 5
+      z: 0
+    - x: 8
+      y: 6
+      z: 0
+    - x: 9
+      y: 0
+      z: 0
+    - x: 9
+      y: 1
+      z: 0
+    - x: 9
+      y: 2
+      z: 0
+    - x: 9
+      y: 3
+      z: 0
+    - x: 9
+      y: 4
+      z: 0
+    - x: 9
+      y: 5
+      z: 0
+    edgePoints:
+    - x: 4
+      y: 0
+      z: 0
+    - x: 4
+      y: 1
+      z: 0
+    - x: 4
+      y: 2
+      z: 0
+    - x: 4
+      y: 3
+      z: 0
+    - x: 4
+      y: 4
+      z: 0
+    - x: 9
+      y: 5
+      z: 0
+    - x: 8
+      y: 5
+      z: 0
+    - x: 7
+      y: 5
+      z: 0
+    - x: 6
+      y: 5
+      z: 0
+    - x: 5
+      y: 5
+      z: 0
+    - x: 4
+      y: 5
+      z: 0
+    - x: 3
+      y: 1
+      z: 0
+    - x: 3
+      y: 2
+      z: 0
+    - x: 3
+      y: 3
+      z: 0
+    - x: 6
+      y: 5
+      z: 0
+    - x: 6
+      y: 6
+      z: 0
+    - x: 7
+      y: 5
+      z: 0
+    - x: 7
+      y: 6
+      z: 0
+    - x: 8
+      y: 5
+      z: 0
+    - x: 8
+      y: 6
+      z: 0
+    - x: 9
+      y: 5
+      z: 0
+    - x: 7
+      y: 5
+      z: 0
+    - x: 7
+      y: 6
+      z: 0
+    - x: 8
+      y: 5
+      z: 0
+    - x: 8
+      y: 6
+      z: 0
+    - x: 9
+      y: 5
+      z: 0
+    - x: 7
+      y: 5
+      z: 0
+    - x: 7
+      y: 6
+      z: 0
+    - x: 8
+      y: 5
+      z: 0
+    - x: 8
+      y: 6
+      z: 0
+    - x: 9
+      y: 5
+      z: 0
+    connectedAreas: []
+    isAccessibleFromMain: 1
+    isMainRoom: 1
+  areaEdges:
+  - x: 4
+    y: 0
+    z: 0
+  - x: 4
+    y: 1
+    z: 0
+  - x: 4
+    y: 2
+    z: 0
+  - x: 4
+    y: 3
+    z: 0
+  - x: 4
+    y: 4
+    z: 0
+  - x: 9
+    y: 5
+    z: 0
+  - x: 8
+    y: 5
+    z: 0
+  - x: 7
+    y: 5
+    z: 0
+  - x: 6
+    y: 5
+    z: 0
+  - x: 5
+    y: 5
+    z: 0
+  - x: 4
+    y: 5
+    z: 0
+  - x: 3
+    y: 1
+    z: 0
+  - x: 3
+    y: 2
+    z: 0
+  - x: 3
+    y: 3
+    z: 0
+  - x: 6
+    y: 5
+    z: 0
+  - x: 6
+    y: 6
+    z: 0
+  - x: 7
+    y: 5
+    z: 0
+  - x: 7
+    y: 6
+    z: 0
+  - x: 8
+    y: 5
+    z: 0
+  - x: 8
+    y: 6
+    z: 0
+  - x: 9
+    y: 5
+    z: 0
+  - x: 7
+    y: 5
+    z: 0
+  - x: 7
+    y: 6
+    z: 0
+  - x: 8
+    y: 5
+    z: 0
+  - x: 8
+    y: 6
+    z: 0
+  - x: 9
+    y: 5
+    z: 0
+  - x: 7
+    y: 5
+    z: 0
+  - x: 7
+    y: 6
+    z: 0
+  - x: 8
+    y: 5
+    z: 0
+  - x: 8
+    y: 6
+    z: 0
+  - x: 9
+    y: 5
+    z: 0
+  passages: []
+  passageEdges: []

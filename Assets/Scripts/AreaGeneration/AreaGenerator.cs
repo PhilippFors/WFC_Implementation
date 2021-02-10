@@ -125,9 +125,12 @@ namespace LevelGeneration.AreaGeneration
             if (tileSet.borderTiles.Count > 0)
             {
                 borderC = generator.gameObject.AddComponent<MyWFC.BorderConstraint>();
-                foreach (GameObject obj in tileSet.borderTiles)
+                for (int i = 0; i < tileSet.borderTiles.Count; i++)
                 {
-                    borderC.borderTiles.Add(obj.GetComponent<MyWFC.MyTile>());
+                    if (!tileSet.borderUse[i] || !tileSet.borderTiles[i].GetComponent<MyWFC.MyTile>().use)
+                        continue;
+                    else
+                        borderC.borderTiles.Add(tileSet.borderTiles[i].GetComponent<MyWFC.MyTile>());
                 }
             }
 
@@ -138,10 +141,14 @@ namespace LevelGeneration.AreaGeneration
                     foreach (MyWFC.MyTilePoint p in fixedC.pointList)
                         pathC.endPoints.Add(p);
 
-                foreach (GameObject obj in tileSet.pathTiles)
+                for (int i = 0; i < tileSet.pathTiles.Count; i++)
                 {
-                    pathC.pathTiles.Add(obj.GetComponent<MyWFC.MyTile>());
+                    if (!tileSet.pathUse[i] || !tileSet.pathTiles[i].GetComponent<MyWFC.MyTile>().use)
+                        continue;
+                    else
+                        pathC.pathTiles.Add(tileSet.pathTiles[i].GetComponent<MyWFC.MyTile>());
                 }
+                pathC.pathTiles.Add(tileSet.entrance.GetComponent<MyWFC.MyTile>());
             }
         }
 

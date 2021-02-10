@@ -29,7 +29,6 @@ namespace MyWFC
 
         public virtual Coroutine Generate(bool multithread = true)
         {
-
             if (multithread)
                 return StartCoroutine(StartGenerate());
             else
