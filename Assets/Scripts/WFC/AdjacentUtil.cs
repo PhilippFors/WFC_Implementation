@@ -7,6 +7,12 @@ namespace MyWFC
 {
     public static class AdjacentUtil
     {
+        /// <summary>
+        /// Iterates through the tileset and the subsequent tilesides of each tile to check legal adjacencies.
+        /// </summary>
+        /// <param name="tileset"></param>
+        /// <param name="model"></param>
+        /// <param name="connectionGroups"></param>
         public static void CheckAdjacencies(List<RuntimeTile> tileset, AdjacentModel model, ConnectionGroups connectionGroups)
         {
             for (int i = 0; i < tileset.Count; i++)
@@ -56,6 +62,16 @@ namespace MyWFC
             }
         }
 
+        /// <summary>
+        /// Comparing the sides for two tiles in more detail. Interrupts the check if a subside doesn't match.
+        /// </summary>
+        /// <param name="sideA"></param>
+        /// <param name="rotA"></param>
+        /// <param name="side"></param>
+        /// <param name="sideB"></param>
+        /// <param name="rotB"></param>
+        /// <param name="connectionGroups"></param>
+        /// <returns></returns>
         static bool CompareSides(TileSide sideA, int rotA, Sides side, TileSide sideB, int rotB, ConnectionGroups connectionGroups)
         {
             SubSide[] arrayA = ShuffleArray(sideA, rotA, side);
@@ -70,6 +86,14 @@ namespace MyWFC
             return true;
         }
 
+        /// <summary>
+        /// Due to rotation garbage, the subsides need to be swapped up for proper comparison. Does not impact the original data.
+        /// Idk if there is a better way.
+        /// </summary>
+        /// <param name="tileSide"></param>
+        /// <param name="rot"></param>
+        /// <param name="side"></param>
+        /// <returns></returns>
         static SubSide[] ShuffleArray(TileSide tileSide, int rot, Sides side)
         {
             SubSide[] arr = new SubSide[3];
@@ -92,6 +116,13 @@ namespace MyWFC
             return arr;
         }
 
+        /// <summary>
+        /// Iterates through the connectiongroup and checks if two subsides are equal.
+        /// </summary>
+        /// <param name="subSideA"></param>
+        /// <param name="subSideB"></param>
+        /// <param name="connectionGroups"></param>
+        /// <returns></returns>
         static bool CheckConnections(SubSide subSideA, SubSide subSideB, ConnectionGroups connectionGroups)
         {
             for (int x = 0; x < connectionGroups.groups.Length; x++)
@@ -109,6 +140,12 @@ namespace MyWFC
             return false;
         }
 
+
+        /// <summary>
+        /// I have no idea
+        /// </summary>
+        /// <param name="sides"></param>
+        /// <returns></returns>
         public static List<TileSide> TileSideCopy(List<TileSide> sides)
         {
             List<TileSide> list = new List<TileSide>();

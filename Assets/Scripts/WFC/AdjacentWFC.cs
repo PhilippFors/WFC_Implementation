@@ -54,6 +54,9 @@ namespace MyWFC
             SetFrequencies();
         }
 
+    /// <summary>
+    /// Creates a unique verison of a tile in the tileset for each rotational axis.
+    /// </summary>
         void CreateTileRotations()
         {
             if (!useSample)
@@ -75,6 +78,8 @@ namespace MyWFC
                                     else
                                     {
                                         List<TileSide> l = AdjacentUtil.TileSideCopy(t.sides);
+
+                                        //Hacky way for sides to keep their global orientation so adjacencies much easier to compare.
                                         for (int sideIndex = 0; sideIndex < t.sides.Count; sideIndex++)
                                         {
                                             int s = (int)l[sideIndex].side + rot;
@@ -83,6 +88,7 @@ namespace MyWFC
 
                                             l[sideIndex].side = (Sides)s;
                                         }
+                                        
                                         runtimeTiles.Add(new RuntimeTile(t.ID, rot, t.weight, false, tileSet.tiles[i], l));
                                     }
                                 }
@@ -130,6 +136,7 @@ namespace MyWFC
 
             this.AddConstraints();
         }
+
         DeBroglie.Constraints.PathConstraint GetPathConstraint()
         {
             var constraints = GetComponent<MyWFC.PathConstraint>();
@@ -215,6 +222,11 @@ namespace MyWFC
             }
         }
 
+        /// <summary>
+        /// Instantiates a single tile at position x, y
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="z"></param>
         void DrawTile(int x, int z)
         {
             var tile = modelOutput[x, z];

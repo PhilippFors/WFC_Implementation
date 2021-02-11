@@ -6,9 +6,17 @@ namespace MyWFC
 {
     public class MyTile : MonoBehaviour
     {
+        /// <summary>
+        /// Unique ID for the tile
+        /// </summary>
         public int ID;
         public bool use = true;
+
+        /// <summary>
+        /// The frequenzy of the tile placement
+        /// </summary>
         public int weight;
+
         public int rotationDeg;
         public bool hasRotation;
 

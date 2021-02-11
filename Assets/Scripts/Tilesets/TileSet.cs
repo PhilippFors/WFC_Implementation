@@ -8,12 +8,18 @@ namespace MyWFC
     public class TileSet : ScriptableObject
     {
         public int GridSize;
+        /// <summary>
+        /// The main tilset. Every used tile should be in here.
+        /// </summary>
+        /// <typeparam name="GameObject"></typeparam>
         [HideInInspector] public List<GameObject> tiles = new List<GameObject>();
 
         [HideInInspector] public GameObject entrance;
 
         [HideInInspector] public List<GameObject> borderTiles = new List<GameObject>();
         [HideInInspector] public List<GameObject> pathTiles = new List<GameObject>();
+
+        [HideInInspector] public List<bool> tileUse = new List<bool>();
         [HideInInspector] public List<bool> pathUse = new List<bool>();
         [HideInInspector] public List<bool> borderUse = new List<bool>();
     }
@@ -88,11 +94,18 @@ namespace MyWFC
         void TileEditor(TileSet t)
         {
             GUILayout.Label("Tileset", EditorStyles.largeLabel);
+            GUILayout.Space(30f);
             if (t.tiles.Count != 0 && t.tiles != null)
                 for (int i = 0; i < t.tiles.Count; i++)
                 {
-
                     GUILayout.BeginHorizontal();
+                    GUILayout.Space(40f);
+                    if (t.tiles[i] != null)
+                    {
+                        var preview = AssetPreview.GetAssetPreview(t.tiles[i]);
+                        if (!AssetPreview.IsLoadingAssetPreview(t.tiles[i].GetInstanceID()) && preview != null)
+                            EditorGUI.DrawPreviewTexture(new Rect(0, 61f * (i + 0) + 75f, 60f, 60f), preview);
+                    }
                     t.tiles[i] = (GameObject)EditorGUILayout.ObjectField(t.tiles[i], typeof(GameObject), false, GUILayout.MaxWidth(200f));
                     if (t.tiles[i] != null)
                     {
@@ -124,6 +137,7 @@ namespace MyWFC
                         t.tiles.Remove(t.tiles[i]);
                     }
                     GUILayout.EndHorizontal();
+                    GUILayout.Space(40f);
                 }
 
             if (GUILayout.Button("Add Tile"))

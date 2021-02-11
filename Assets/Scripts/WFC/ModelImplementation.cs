@@ -27,6 +27,12 @@ namespace MyWFC
         protected GridTopology topology;
         protected TilePropagator propagator;
 
+
+        /// <summary>
+        /// Starting generation of WFC
+        /// </summary>
+        /// <param name="multithread"></param>
+        /// <returns></returns>
         public virtual Coroutine Generate(bool multithread = true)
         {
             if (multithread)
@@ -57,6 +63,9 @@ namespace MyWFC
             Draw();
         }
 
+        /// <summary>
+        /// Creates the output gameObject under which the output is going to be parented.
+        /// </summary>
         protected virtual void CreateOutputObject()
         {
             if (output != null)
@@ -86,8 +95,19 @@ namespace MyWFC
             }
         }
 
+        /// <summary>
+        /// Prepares the WFC Model of choice.
+        /// </summary>
         protected abstract void PrepareModel();
+
+        /// <summary>
+        /// Sets up the Propagator.
+        /// </summary>
         protected abstract void PreparePropagator();
+
+        /// <summary>
+        /// Checks for any constraint components that were added to the gameObject and applies them to the propagator.
+        /// </summary>
         protected virtual void AddConstraints()
         {
             CustomConstraint[] constraints = GetComponents<CustomConstraint>();
@@ -119,6 +139,10 @@ namespace MyWFC
             }
         }
 
+        /// <summary>
+        /// Runs the model. Retries generation if it fails.
+        /// </summary>
+        /// <returns></returns>
         protected virtual IEnumerator RunModel()
         {
             if (maxRoutines > 10)
@@ -153,6 +177,9 @@ namespace MyWFC
             }
         }
 
+        /// <summary>
+        /// Instantiates Tiles from the tileset according to the modeloutput.
+        /// </summary>
         public abstract void Draw();
 
         void OnDrawGizmos()

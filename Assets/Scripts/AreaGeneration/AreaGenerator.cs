@@ -7,6 +7,7 @@ namespace LevelGeneration.AreaGeneration
     public class AreaGenerator : MonoBehaviour
     {
         [SerializeField] GameObject generatorPrefab;
+        public MyWFC.TileSet startAreaTileset;
         public MyWFC.TileSet tileSet;
         public MyWFC.ConnectionGroups connections;
         public List<Area> areaList = new List<Area>();
@@ -80,17 +81,23 @@ namespace LevelGeneration.AreaGeneration
             Area a = new Area(new GameObject("Area " + tile.index), tile);
             areaList.Add(a);
 
+            MyWFC.TileSet t;
+            if (tile.index == 0)
+                t = startAreaTileset;
+            else
+                t = tileSet;
+
             GameObject newGeneratorObj = Instantiate(generatorPrefab, Vector3.zero, Quaternion.Euler(0, 0, 0));
 
             MyWFC.AdjacentWFC generator = newGeneratorObj.GetComponent<MyWFC.AdjacentWFC>();
             newGeneratorObj.transform.parent = a.parent.transform;
-            newGeneratorObj.transform.localPosition = new Vector3(-tile.width / 2 * tileSet.GridSize + tileSet.GridSize, 0, -tile.height / 2 * tileSet.GridSize + tileSet.GridSize);
+            newGeneratorObj.transform.localPosition = new Vector3(-tile.width / 2 * t.GridSize + t.GridSize, 0, -tile.height / 2 * t.GridSize + t.GridSize);
             // newGeneratorObj.transform.position = tile.position;
             // newGeneratorObj.transform.parent = a.parent.transform;
 
-            generator.tileSet = tileSet;
+            generator.tileSet = t;
             generator.ConnectionGroups = connections;
-            generator.gridSize = tileSet.GridSize;
+            generator.gridSize = t.GridSize;
             generator.size = new Vector3Int(tile.width, 1, tile.height);
 
             AddConstraints(a, generator);

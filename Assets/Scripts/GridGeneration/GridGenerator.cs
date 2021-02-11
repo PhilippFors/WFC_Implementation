@@ -220,7 +220,7 @@ namespace LevelGeneration.GridGeneration
             int tileHeight = Random.Range(dic["minTileHeight"], dic["maxTileHeight"] + 1);
 
             //Creating new tile with real world position
-            GridTile t = new GridTile(tileGrid[oldX, oldY].position + new Vector3(((tileWidth / 2 + dic["tileDistance"] * dic["gridSize"]) + (tileGrid[oldX, oldY].width / 2)) * (x - oldX), 0, ((tileHeight / 2 + dic["tileDistance"] * dic["gridSize"]) + (tileGrid[oldX, oldY].height / 2)) * (y - oldY)),
+            GridTile t = new GridTile(tileGrid[oldX, oldY].position + new Vector3(((tileWidth / 2 + dic["tileDistance"] * dic["gridSize"]) + (tileGrid[oldX, oldY].width / 2 * dic["gridSize"])) * (x - oldX), 0, ((tileHeight / 2 + dic["tileDistance"] * dic["gridSize"]) + (tileGrid[oldX, oldY].height / 2 * dic["gridSize"])) * (y - oldY)),
                             index, tileWidth, tileHeight);
 
             t.entrance = new DoorWay();

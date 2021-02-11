@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 95c0d33c68725bf4aaceda30ee8365a7, type: 3}
+  m_Name: StartAreaTileset
+  m_EditorClassIdentifier: 
+  GridSize: 6
+  tiles:
+  - {fileID: 7794061096370611554, guid: 30e136b219004b94dae36518f850b001, type: 3}
+  - {fileID: 3492619713229118719, guid: 14ea09e531b620b419e81d94cb820eff, type: 3}
+  - {fileID: 5963084847308110450, guid: 8927b6e9cfc19264985c9f8186d0c472, type: 3}
+  - {fileID: 7017713809320608826, guid: 7a1f02f95e7ae814b8a171af120f9106, type: 3}
+  - {fileID: 899343114716442986, guid: a537dd7486260ac47ac7950d6f5e118a, type: 3}
+  - {fileID: 5822780683145547418, guid: 9697a51a06ecf3248ac6408f9bb90b92, type: 3}
+  - {fileID: 4080035783554278702, guid: c62e4ccade5c45545b5558bc68d52b57, type: 3}
+  - {fileID: 8579977362228256875, guid: 65934a86bec9ef4459e511916a611661, type: 3}
+  entrance: {fileID: 3492619713229118719, guid: 14ea09e531b620b419e81d94cb820eff,
+    type: 3}
+  borderTiles:
+  - {fileID: 7794061096370611554, guid: 30e136b219004b94dae36518f850b001, type: 3}
+  - {fileID: 4080035783554278702, guid: c62e4ccade5c45545b5558bc68d52b57, type: 3}
+  - {fileID: 5822780683145547418, guid: 9697a51a06ecf3248ac6408f9bb90b92, type: 3}
+  pathTiles:
+  - {fileID: 5963084847308110450, guid: 8927b6e9cfc19264985c9f8186d0c472, type: 3}
+  pathUse: 01
+  borderUse: 010001

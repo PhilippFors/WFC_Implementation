@@ -23,7 +23,6 @@ namespace LevelGeneration
             areaGenerator.FindPrefabs();
             areaGenerator.StartAreaGenerator(gridGenerator.grid.linearLevel);
         }
-
         public void Stop()
         {
             StopAllCoroutines();
@@ -42,10 +41,10 @@ namespace LevelGeneration
             {
                 t.Generate();
             }
-            if (GUILayout.Button("Stop All"))
-            {
-                t.Stop();
-            }
+            // if (GUILayout.Button("Stop All"))
+            // {
+            //     t.Stop();
+            // }
             DrawDefaultInspector();
         }
     }
