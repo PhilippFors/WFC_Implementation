@@ -29,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 8118598269145604195}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 30.5, y: 0, z: 0}
-  m_LocalScale: {x: 2, y: 1, z: 2}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -110,46 +110,55 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ID: 2
+  bID: 0
+  runtimeIDs: 
+  use: 1
   weight: 1
   rotationDeg: 0
   hasRotation: 1
   coords: {x: 0, y: 0}
-  size: {x: 2, y: 2, z: 2}
-  sides:
-  - side: 180
-    connection: 1
-    subSides:
-    - side: -5
+  size: {x: 1, y: 1, z: 1}
+  cells:
+  - center: {x: 0, y: 0, z: 0}
+    side1:
+      side: 0
       connection: 0
-    - side: 4
+      subSides:
+      - side: 1
+        connection: 0
+      - side: 2
+        connection: 0
+      - side: 0
+        connection: 0
+    side2:
+      side: 180
       connection: 0
-    - side: 5
+      subSides:
+      - side: 1
+        connection: 1
+      - side: 2
+        connection: 1
+      - side: 0
+        connection: 1
+    side3:
+      side: 270
       connection: 0
-  - side: 0
-    connection: 0
-    subSides:
-    - side: -5
+      subSides:
+      - side: 1
+        connection: 1
+      - side: 2
+        connection: 1
+      - side: 0
+        connection: 1
+    side4:
+      side: 90
       connection: 0
-    - side: 4
-      connection: 0
-    - side: 5
-      connection: 0
-  - side: 270
-    connection: 1
-    subSides:
-    - side: -5
-      connection: 0
-    - side: 4
-      connection: 0
-    - side: 5
-      connection: 0
-  - side: 90
-    connection: 0
-    subSides:
-    - side: -5
-      connection: 0
-    - side: 4
-      connection: 0
-    - side: 5
-      connection: 0
+      subSides:
+      - side: 1
+        connection: 0
+      - side: 2
+        connection: 0
+      - side: 0
+        connection: 0
   showGizmo: 1
+  gizmoSize: 0.15

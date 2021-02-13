@@ -12,10 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 95c0d33c68725bf4aaceda30ee8365a7, type: 3}
   m_Name: tile set
   m_EditorClassIdentifier: 
+  GridSize: 1
   tiles:
   - {fileID: 393905537202719951, guid: eb5ac346ef759a741980a705581b07b8, type: 3}
   - {fileID: 8118598269145604195, guid: 54da342c218fdd54cb641dbea464aada, type: 3}
   - {fileID: 8366940878664365848, guid: 5bfeda70a06c4b840ba32b8eaf10a888, type: 3}
   - {fileID: 4643339206062708592, guid: 7778a090042cfa64285433cfc68236d2, type: 3}
   - {fileID: 8072703121519352324, guid: ded2dba9b8057a14ca0bccbcb74f3e19, type: 3}
+  - {fileID: 3212224891349015764, guid: 49c10d9e59adee446a942b0186b0582a, type: 3}
   entrance: {fileID: 0}
+  borderTiles: []
+  pathTiles: []
+  tileUse: 
+  pathUse: 
+  borderUse: 

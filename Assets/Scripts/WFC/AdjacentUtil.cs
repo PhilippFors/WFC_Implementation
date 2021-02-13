@@ -13,11 +13,11 @@ namespace MyWFC
         /// <param name="tileset"></param>
         /// <param name="model"></param>
         /// <param name="connectionGroups"></param>
-        public static void CheckAdjacencies(List<RuntimeTile> tileset, AdjacentModel model, ConnectionGroups connectionGroups)
+        public static void StartAdjacencyCheck(List<RuntimeTile> tileset, AdjacentModel model, ConnectionGroups connectionGroups)
         {
             for (int i = 0; i < tileset.Count; i++)
             {
-                for (int j = i; j < tileset.Count; j++)
+                for (int j =i; j < tileset.Count; j++)
                 {
                     var rotA = tileset[i].rotation;
                     var rotB = tileset[j].rotation;
@@ -29,28 +29,29 @@ namespace MyWFC
                     {
                         foreach (TileSide sideB in tileB)
                         {
+                            // if (CompareSides(sideA, rotA, sideA.side, sideB, rotB, connectionGroups, new[] { tileset[i].bID, tileset[j].bID }))
                             switch (sideA.side)
                             {
                                 case Sides.Left:
-                                    if (sideB.side.Equals(Sides.Right) && CompareSides(sideA, rotA, Sides.Left, sideB, rotB, connectionGroups))
+                                    if (sideB.side.Equals(Sides.Right) && CompareSides(sideA, rotA, sideA.side, sideB, rotB, connectionGroups, new[] { tileset[i].bID, tileset[j].bID }))
                                     {
                                         model.AddAdjacency(new Tile(i), new Tile(j), -1, 0, 0);
                                     }
                                     break;
                                 case Sides.Right:
-                                    if (sideB.side.Equals(Sides.Left) && CompareSides(sideA, rotA, Sides.Right, sideB, rotB, connectionGroups))
+                                    if (sideB.side.Equals(Sides.Left) && CompareSides(sideA, rotA, sideA.side, sideB, rotB, connectionGroups, new[] { tileset[i].bID, tileset[j].bID }))
                                     {
                                         model.AddAdjacency(new Tile(i), new Tile(j), 1, 0, 0);
                                     }
                                     break;
                                 case Sides.Front:
-                                    if (sideB.side.Equals(Sides.Back) && CompareSides(sideA, rotA, Sides.Front, sideB, rotB, connectionGroups))
+                                    if (sideB.side.Equals(Sides.Back) && CompareSides(sideA, rotA, sideA.side, sideB, rotB, connectionGroups, new[] { tileset[i].bID, tileset[j].bID }))
                                     {
                                         model.AddAdjacency(new Tile(i), new Tile(j), 0, 1, 0);
                                     }
                                     break;
                                 case Sides.Back:
-                                    if (sideB.side.Equals(Sides.Front) && CompareSides(sideA, rotA, Sides.Back, sideB, rotB, connectionGroups))
+                                    if (sideB.side.Equals(Sides.Front) && CompareSides(sideA, rotA, sideA.side, sideB, rotB, connectionGroups, new[] { tileset[i].bID, tileset[j].bID }))
                                     {
                                         model.AddAdjacency(new Tile(i), new Tile(j), 0, -1, 0);
                                     }
@@ -72,17 +73,27 @@ namespace MyWFC
         /// <param name="rotB"></param>
         /// <param name="connectionGroups"></param>
         /// <returns></returns>
-        static bool CompareSides(TileSide sideA, int rotA, Sides side, TileSide sideB, int rotB, ConnectionGroups connectionGroups)
+        static bool CompareSides(TileSide sideA, int rotA, Sides side, TileSide sideB, int rotB, ConnectionGroups connectionGroups, int[] bIDS)
         {
             SubSide[] arrayA = ShuffleArray(sideA, rotA, side);
             SubSide[] arrayB = ShuffleArray(sideB, rotB, side);
 
-            for (int i = 0; i < arrayA.Length; i++)
+            if (sideA.connection.Equals(Connections.BID) && sideB.connection.Equals(Connections.BID))
             {
-                if (!CheckConnections(arrayA[i], arrayB[i], connectionGroups))
-                    return false;
+                for (int i = 0; i < arrayA.Length; i++)
+                {
+                    if (!CheckConnections(arrayA[i], arrayB[i], connectionGroups) || bIDS[0] != bIDS[1])
+                        return false;
+                }
             }
-
+            else
+            {
+                for (int i = 0; i < arrayA.Length; i++)
+                {
+                    if (!CheckConnections(arrayA[i], arrayB[i], connectionGroups))
+                        return false;
+                }
+            }
             return true;
         }
 

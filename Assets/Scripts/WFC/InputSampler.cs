@@ -93,7 +93,7 @@ namespace MyWFC
                 if (!RotationTileIndexer.ContainsKey(tile.name + R.ToString()))
                 {
                     RotationTileIndexer.Add(tile.name + R.ToString(), index);
-                    runtimeTiles[index] = new RuntimeTile(TileIndexer[tile.name], R, MyTile.weight);
+                    runtimeTiles[index] = new RuntimeTile(TileIndexer[tile.name], R, MyTile.weight, MyTile.gameObject);
                     sample[X, Z] = new Tile(RotationTileIndexer[tile.name + R.ToString()]);
                     index++;
                 }

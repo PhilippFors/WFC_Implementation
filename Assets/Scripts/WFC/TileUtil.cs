@@ -37,6 +37,23 @@ public static class WFCUtil
     }
 
     /// <summary>
+    /// Finds a specific tile in the runtime tileset.
+    /// </summary>
+    /// <param name="tileSet"></param>
+    /// <param name="ID"></param>
+    /// <param name="rot"></param>
+    /// <returns></returns>
+    public static RuntimeTile FindRuntimeTile(RuntimeTile[] tileSet, int ID, int rot = 0)
+    {
+        for (int j = 0; j < tileSet.Length; j++)
+        {
+            if (j == ID)
+                return tileSet[j];
+        }
+        return null;
+    }
+
+    /// <summary>
     /// Finds Tiles of all rotations with the given ID
     /// </summary>
     /// <param name="tileSet"></param>

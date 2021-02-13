@@ -19,7 +19,7 @@ namespace MyWFC
         public ConnectionGroups ConnectionGroups;
         public bool useSample;
         AdjacentModel model;
-
+        int bIDCounter = 0;
         protected override IEnumerator StartGenerate()
         {
             maxRoutines = 0;
@@ -39,6 +39,7 @@ namespace MyWFC
 
         protected override void PrepareModel()
         {
+            bIDCounter = 0;
             runtimeTiles = new List<RuntimeTile>();
 
             model = new AdjacentModel();
@@ -50,13 +51,13 @@ namespace MyWFC
 
             this.CreateMask();
             // CheckAdjacencies();
-            AdjacentUtil.CheckAdjacencies(runtimeTiles, model, ConnectionGroups);
+            AdjacentUtil.StartAdjacencyCheck(runtimeTiles, model, ConnectionGroups);
             SetFrequencies();
         }
 
-    /// <summary>
-    /// Creates a unique verison of a tile in the tileset for each rotational axis.
-    /// </summary>
+        /// <summary>
+        /// Creates a unique verison of a tile in the tileset for each rotational axis.
+        /// </summary>
         void CreateTileRotations()
         {
             if (!useSample)
@@ -65,38 +66,8 @@ namespace MyWFC
                     for (int i = 0; i < tileSet.tiles.Count; i++)
                     {
                         MyTile t = tileSet.tiles[i].GetComponent<MyTile>();
-
                         if (t.use)
-                            if (t.hasRotation)
-                                for (int j = 0; j < rotations; j++)
-                                {
-                                    int rot = j * 90;
-                                    if (rot == 0)
-                                    {
-                                        runtimeTiles.Add(new RuntimeTile(t.ID, rot, t.weight, false, tileSet.tiles[i], t.sides));
-                                    }
-                                    else
-                                    {
-                                        List<TileSide> l = AdjacentUtil.TileSideCopy(t.sides);
-
-                                        //Hacky way for sides to keep their global orientation so adjacencies much easier to compare.
-                                        for (int sideIndex = 0; sideIndex < t.sides.Count; sideIndex++)
-                                        {
-                                            int s = (int)l[sideIndex].side + rot;
-                                            if (s >= 360)
-                                                s -= 360;
-
-                                            l[sideIndex].side = (Sides)s;
-                                        }
-                                        
-                                        runtimeTiles.Add(new RuntimeTile(t.ID, rot, t.weight, false, tileSet.tiles[i], l));
-                                    }
-                                }
-                            else
-                            {
-                                runtimeTiles.Add(new RuntimeTile(t.ID, 0, t.weight, false, tileSet.tiles[i], t.sides));
-                            }
-
+                            NormalTileCategorize(t);
                     }
                 else
                 {
@@ -113,7 +84,103 @@ namespace MyWFC
                 model.AddSample(sample);
             }
         }
+        void NormalTileCategorize(MyTile t)
+        {
+            if (t.hasRotation)
+                for (int j = 0; j < rotations; j++)
+                {
+                    for (int i = 0; i < t.cells.Count; i++)
+                    {
+                        int rot = j * 90;
+                        if (rot == 0)
+                        {
+                            if (t.cells.Count > 1)
+                                t.runtimeIDs.Add(runtimeTiles.Count);
 
+                            runtimeTiles.Add(new RuntimeTile(t.ID, t.cells.Count > 1 ? bIDCounter : -1, rot, t.weight, false, t.gameObject, t.cells[i].sides));
+                        }
+                        else
+                        {
+                            List<TileSide> l = AdjacentUtil.TileSideCopy(t.cells[i].sides);
+
+                            //Hacky way for sides to keep their global orientation so adjacencies much easier to compare.
+                            for (int sideIndex = 0; sideIndex < t.cells[i].sides.Count; sideIndex++)
+                            {
+                                int s = (int)l[sideIndex].side + rot;
+                                if (s >= 360)
+                                    s -= 360;
+
+                                l[sideIndex].side = (Sides)s;
+                            }
+
+                            if (t.cells.Count > 1)
+                                t.runtimeIDs.Add(runtimeTiles.Count);
+
+                            runtimeTiles.Add(new RuntimeTile(t.ID, t.cells.Count > 1 ? bIDCounter : -1, rot, t.weight, false, t.gameObject, l));
+                        }
+                    }
+                    if (t.cells.Count > 1)
+                        bIDCounter++;
+                }
+            else
+            {
+                for (int i = 0; i < t.cells.Count; i++)
+                {
+                    if (t.cells.Count > 1)
+                        t.runtimeIDs.Add(runtimeTiles.Count);
+
+                    runtimeTiles.Add(new RuntimeTile(t.ID, (int)t.gameObject.transform.eulerAngles.y, t.weight, false, t.gameObject, t.cells[i].sides));
+                }
+            }
+        }
+
+        void BigTileCategorize(MyTile t)
+        {
+            if (t.hasRotation)
+            {
+                for (int j = 0; j < rotations; j++)
+                {
+                    for (int i = 0; i < t.cells.Count; i++)
+                    {
+                        int rot = j * 90;
+                        if (rot == 0)
+                        {
+                            t.runtimeIDs.Add(runtimeTiles.Count);
+                            runtimeTiles.Add(new RuntimeTile(t.ID, bIDCounter, rot, t.weight, false, t.gameObject, t.cells[i].sides));
+                        }
+                        else
+                        {
+                            List<TileSide> l = AdjacentUtil.TileSideCopy(t.cells[i].sides);
+
+                            //Hacky way for sides to keep their global orientation so adjacencies much easier to compare.
+                            for (int sideIndex = 0; sideIndex < t.cells[i].sides.Count; sideIndex++)
+                            {
+                                int s = (int)l[sideIndex].side + rot;
+                                if (s >= 360)
+                                    s -= 360;
+
+                                l[sideIndex].side = (Sides)s;
+                            }
+
+                            t.runtimeIDs.Add(runtimeTiles.Count);
+                            runtimeTiles.Add(new RuntimeTile(t.ID, bIDCounter, rot, t.weight, false, t.gameObject, l));
+                        }
+                    }
+
+                }
+            }
+            else
+            {
+                for (int i = 0; i < t.cells.Count; i++)
+                {
+                    t.runtimeIDs.Add(runtimeTiles.Count);
+                    runtimeTiles.Add(new RuntimeTile(t.ID, bIDCounter, 0, t.weight, false, t.gameObject, t.cells[i].sides));
+                }
+
+            }
+            bIDCounter++;
+
+        }
         void SetFrequencies()
         {
             for (int i = 0; i < runtimeTiles.Count; i++)
@@ -216,7 +283,10 @@ namespace MyWFC
                     }
                     else
                     {
-                        DrawTile(x, z);
+                        if (IsBigTile(x, z))
+                            DrawBigTile(x, z);
+                        else
+                            DrawTile(x, z);
                     }
                 }
             }
@@ -247,6 +317,67 @@ namespace MyWFC
 
                 newTile.transform.localScale = fscale;
             }
+        }
+
+        void DrawBigTile(int x, int y)
+        {
+            var tileID = modelOutput[x, y];
+            var firstTile = WFCUtil.FindRuntimeTile(runtimeTiles.ToArray(), modelOutput[x, y]);
+            int bID = firstTile.bID;
+            int ID = firstTile.ID;
+            var myTile = firstTile.obj.GetComponent<MyTile>();
+
+            List<int> bigTileParts = new List<int>();
+            // float smallestX = int.MaxValue;
+            // float smallestY = int.MaxValue;
+
+            float biggestX = int.MinValue;
+            float biggestY = int.MinValue;
+
+            for (int i = x - 1; i < x + 1; i++)
+                for (int j = y - 1; j < y + 1; j++)
+                {
+                    if (IsInMap(i, j))
+                        if (myTile.runtimeIDs.Contains(modelOutput[i, j]))
+                        {
+                            if (i > biggestX)
+                                biggestX = i;
+                            if (j > biggestY)
+                                biggestY = j;
+                            // if (i < smallestX)
+                            //     smallestX = i;
+                            // if (j < smallestY)
+                            //     smallestY = j;
+                            bigTileParts.Add(modelOutput[i, j]);
+                        }
+                }
+
+            // if (myTile.runtimeIDs.Count == bigTileParts.Count)
+            // {
+            Vector3 pos = new Vector3(biggestX - 0.5f * gridSize, 0, biggestY - 0.5f * gridSize);
+            // GameObject fab = GetTilePrefab(tile) as GameObject;
+
+            GameObject newTile = Instantiate(firstTile.obj, new Vector3(), Quaternion.identity) as GameObject;
+            Vector3 fscale = newTile.transform.localScale;
+            newTile.transform.parent = output.transform;
+            newTile.transform.localPosition = pos;
+
+            if (useSample && inputSampler != null)
+                newTile.transform.localEulerAngles = new Vector3(0, inputSampler.runtimeTiles[(int)tileID].rotation, 0);
+            else
+                newTile.transform.localEulerAngles = new Vector3(0, runtimeTiles[(int)tileID].rotation, 0);
+
+            newTile.transform.localScale = fscale;
+            // }
+
+        }
+        bool IsInMap(int x, int y)
+        {
+            return !(x < 0 || x >= modelOutput.GetLength(0) || y < 0 || y >= modelOutput.GetLength(1));
+        }
+        bool IsBigTile(int x, int y)
+        {
+            return WFCUtil.FindRuntimeTile(runtimeTiles.ToArray(), modelOutput[x, y]).bID != -1;
         }
 
         protected GameObject GetTilePrefab(Tile tile)

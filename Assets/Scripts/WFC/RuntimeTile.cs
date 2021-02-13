@@ -16,9 +16,21 @@ namespace MyWFC
             weight = w;
             this.sides = sides;
         }
+
+        public RuntimeTile(int id, int bID, int r, int w = 1, bool sym = false, GameObject o = null, List<TileSide> sides = null)
+        {
+            ID = id;
+            this.bID = bID;
+            rotation = r;
+            obj = o;
+            weight = w;
+            this.sides = sides;
+        }
+
         public GameObject obj;
         public List<TileSide> sides;
         public int ID;
+        public int bID = -1;
         public int rotation;
         public int weight;
         public bool symmetry;
