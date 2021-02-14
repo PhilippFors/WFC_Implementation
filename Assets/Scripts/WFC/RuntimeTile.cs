@@ -8,7 +8,7 @@ namespace MyWFC
     [System.Serializable]
     public class RuntimeTile
     {
-        public RuntimeTile(int id, int r, int w = 1, bool sym = false, GameObject o = null, List<TileSide> sides = null)
+        public RuntimeTile(int id, int r, double w = 1, bool sym = false, GameObject o = null, List<TileSide> sides = null)
         {
             ID = id;
             rotation = r;
@@ -17,7 +17,7 @@ namespace MyWFC
             this.sides = sides;
         }
 
-        public RuntimeTile(int id, int bID, int r, int w = 1, bool sym = false, GameObject o = null, List<TileSide> sides = null)
+        public RuntimeTile(int id, int bID, int r, double w = 1, bool sym = false, GameObject o = null, List<TileSide> sides = null)
         {
             ID = id;
             this.bID = bID;
@@ -32,7 +32,7 @@ namespace MyWFC
         public int ID;
         public int bID = -1;
         public int rotation;
-        public int weight;
+        public double weight;
         public bool symmetry;
     }
 }

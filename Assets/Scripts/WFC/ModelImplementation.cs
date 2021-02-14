@@ -50,7 +50,7 @@ namespace MyWFC
             PrepareModel();
             PreparePropagator();
             RunModelSingle();
-            Draw();
+            DrawOutput();
         }
 
         protected virtual IEnumerator StartGenerate()
@@ -60,7 +60,7 @@ namespace MyWFC
             PrepareModel();
             PreparePropagator();
             yield return StartCoroutine(RunModel());
-            Draw();
+            DrawOutput();
         }
 
         /// <summary>
@@ -180,7 +180,7 @@ namespace MyWFC
         /// <summary>
         /// Instantiates Tiles from the tileset according to the modeloutput.
         /// </summary>
-        public abstract void Draw();
+        public abstract void DrawOutput();
 
         void OnDrawGizmos()
         {

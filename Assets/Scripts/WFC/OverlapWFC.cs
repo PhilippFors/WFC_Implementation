@@ -32,7 +32,7 @@ namespace MyWFC
 
             yield return StartCoroutine(RunModel());
             // Debug.Log("Finished, " + maxRoutines);
-            Draw();
+            DrawOutput();
         }
 
         protected override void PrepareModel()
@@ -71,7 +71,7 @@ namespace MyWFC
             ApplyMask();
         }
         
-        public override void Draw()
+        public override void DrawOutput()
         {
             for (int x = 0; x < modelOutput.GetLength(0); x++)
             {

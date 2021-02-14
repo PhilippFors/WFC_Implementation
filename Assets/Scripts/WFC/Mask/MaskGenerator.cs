@@ -60,7 +60,7 @@ namespace MyWFC
             AddConstraints();
             ApplyMask();
         }
-        public override void Draw()
+        public override void DrawOutput()
         {
             allAreas = new List<MaskArea>();
             areaEdges = new List<Point>();

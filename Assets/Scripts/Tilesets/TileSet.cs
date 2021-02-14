@@ -19,6 +19,7 @@ namespace MyWFC
         [HideInInspector] public List<GameObject> borderTiles = new List<GameObject>();
         [HideInInspector] public List<GameObject> pathTiles = new List<GameObject>();
 
+        [HideInInspector] public List<double> frequenzies = new List<double>();
         [HideInInspector] public List<bool> tileUse = new List<bool>();
         [HideInInspector] public List<bool> pathUse = new List<bool>();
         [HideInInspector] public List<bool> borderUse = new List<bool>();
@@ -38,30 +39,36 @@ namespace MyWFC
 
             DrawDefaultInspector();
             //General tile editor
-            if (t.pathUse.Count <= 0)
-            {
-                if (t.pathTiles.Count > 0)
-                {
-                    t.pathUse = new List<bool>();
-                    for (int i = 0; i < t.pathTiles.Count; i++)
-                        t.pathUse.Add(true);
-                }
-                else
-                    t.pathUse = new List<bool>();
+            // if (t.pathTiles.Count >= 0)
+            // {
+            //     if(t.pathUse.Count <)
+            //     t.pathUse = new List<bool>();
+            //     for (int i = 0; i < t.pathTiles.Count; i++)
+            //         t.pathUse.Add(true);
+            // }
+            // if (t.borderUse.Count <= 0)
+            // {
+            //     t.borderUse = new List<bool>();
+            //     for (int i = 0; i < t.borderTiles.Count; i++)
+            //         t.borderUse.Add(true);
 
-            }
-            if (t.borderUse.Count <= 0)
-            {
-                if (t.borderTiles.Count > 0)
-                {
-                    t.borderUse = new List<bool>();
-                    for (int i = 0; i < t.borderTiles.Count; i++)
-                        t.borderUse.Add(true);
-                }
-                else
-                    t.borderUse = new List<bool>();
+            // }
+            // if (t.tileUse.Count <= 0)
+            // {
 
-            }
+            //     t.tileUse = new List<bool>();
+            //     for (int i = 0; i < t.tileUse.Count; i++)
+            //         t.tileUse.Add(true);
+            // }
+            // if (t.frequenzies.Count <= 0)
+            // {
+
+            //     t.frequenzies = new List<double>();
+            //     for (int i = 0; i < t.frequenzies.Count; i++)
+            //         t.frequenzies.Add(1);
+
+            // }
+
             TileEditor(t);
             GUILayout.Space(20f);
             BorderTileEditor(t);
@@ -78,6 +85,11 @@ namespace MyWFC
             if (GUI.changed)
             {
                 EditorUtility.SetDirty(t);
+            }
+            if (GUILayout.Button("Save all prefabs"))
+            {
+                foreach (GameObject obj in t.tiles)
+                    PrefabUtility.SavePrefabAsset(obj);
             }
         }
 
@@ -98,6 +110,7 @@ namespace MyWFC
             if (t.tiles.Count != 0 && t.tiles != null)
                 for (int i = 0; i < t.tiles.Count; i++)
                 {
+
                     GUILayout.BeginHorizontal();
                     GUILayout.Space(40f);
                     if (t.tiles[i] != null)
@@ -109,24 +122,30 @@ namespace MyWFC
                     t.tiles[i] = (GameObject)EditorGUILayout.ObjectField(t.tiles[i], typeof(GameObject), false, GUILayout.MaxWidth(200f));
                     if (t.tiles[i] != null)
                     {
+
                         var MyTile = t.tiles[i].GetComponent<MyWFC.MyTile>();
+                        // if (MyTile.ID == -1)
+                        //     MyTile.ID = i;
 
                         var tempweight = MyTile.weight;
                         var tempID = MyTile.ID;
                         var tempUse = MyTile.use;
 
                         GUILayout.Label("Weight: ", GUILayout.MaxWidth(50f));
-                        MyTile.weight = EditorGUILayout.IntField(MyTile.weight, GUILayout.MaxWidth(30f));
+                        t.frequenzies[i] = EditorGUILayout.DoubleField(t.frequenzies[i], GUILayout.MaxWidth(30f));
 
                         GUILayout.Space(5f);
 
-                        GUILayout.Label("ID: ", GUILayout.MaxWidth(25f));
-                        MyTile.ID = EditorGUILayout.IntField(MyTile.ID, GUILayout.MaxWidth(30f));
+                        // GUILayout.Label("ID: ", GUILayout.MaxWidth(25f));
+                        // MyTile.ID = EditorGUILayout.IntField(MyTile.ID, GUILayout.MaxWidth(30f));
 
-                        GUILayout.Space(5f);
+                        // GUILayout.Space(5f);
+
+                        // GUILayout.Label("Use: ", GUILayout.MaxWidth(25f));
+                        // MyTile.use = EditorGUILayout.Toggle(MyTile.use, GUILayout.MaxWidth(20f));
 
                         GUILayout.Label("Use: ", GUILayout.MaxWidth(25f));
-                        MyTile.use = EditorGUILayout.Toggle(MyTile.use, GUILayout.MaxWidth(20f));
+                        t.tileUse[i] = EditorGUILayout.Toggle(t.tileUse[i], GUILayout.MaxWidth(20f));
 
                         if (tempweight != MyTile.weight || tempID != MyTile.ID || tempUse != MyTile.use)
                             PrefabUtility.SavePrefabAsset(t.tiles[i]);
@@ -135,6 +154,8 @@ namespace MyWFC
                     if (GUILayout.Button("Remove"))
                     {
                         t.tiles.Remove(t.tiles[i]);
+                        t.tileUse.RemoveAt(i);
+                        t.frequenzies.RemoveAt(i);
                     }
                     GUILayout.EndHorizontal();
                     GUILayout.Space(40f);
@@ -143,6 +164,8 @@ namespace MyWFC
             if (GUILayout.Button("Add Tile"))
             {
                 t.tiles.Add(null);
+                t.tileUse.Add(true);
+                t.frequenzies.Add(1);
             }
         }
         void BorderTileEditor(TileSet t)
@@ -163,13 +186,13 @@ namespace MyWFC
                         var tempID = MyTile.ID;
                         var tempUse = MyTile.use;
 
-                        GUILayout.Label("Weight: ", GUILayout.MaxWidth(50f));
-                        MyTile.weight = EditorGUILayout.IntField(MyTile.weight, GUILayout.MaxWidth(30f));
+                        // GUILayout.Label("Weight: ", GUILayout.MaxWidth(50f));
+                        // MyTile.weight = EditorGUILayout.IntField(MyTile.weight, GUILayout.MaxWidth(30f));
 
-                        GUILayout.Space(5f);
+                        // GUILayout.Space(5f);
 
-                        GUILayout.Label("ID: ", GUILayout.MaxWidth(25f));
-                        MyTile.ID = EditorGUILayout.IntField(MyTile.ID, GUILayout.MaxWidth(30f));
+                        // GUILayout.Label("ID: ", GUILayout.MaxWidth(25f));
+                        // MyTile.ID = EditorGUILayout.IntField(MyTile.ID, GUILayout.MaxWidth(30f));
 
                         GUILayout.Space(5f);
 
@@ -216,8 +239,8 @@ namespace MyWFC
 
                         GUILayout.Space(5f);
 
-                        GUILayout.Label("ID: ", GUILayout.MaxWidth(25f));
-                        MyTile.ID = EditorGUILayout.IntField(MyTile.ID, GUILayout.MaxWidth(30f));
+                        // GUILayout.Label("ID: ", GUILayout.MaxWidth(25f));
+                        // MyTile.ID = EditorGUILayout.IntField(MyTile.ID, GUILayout.MaxWidth(30f));
 
                         GUILayout.Space(5f);
 

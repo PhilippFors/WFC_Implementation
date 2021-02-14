@@ -10,25 +10,26 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 95c0d33c68725bf4aaceda30ee8365a7, type: 3}
-  m_Name: StartAreaTileset
+  m_Name: StartareaTileset
   m_EditorClassIdentifier: 
   GridSize: 6
   tiles:
-  - {fileID: 7794061096370611554, guid: 30e136b219004b94dae36518f850b001, type: 3}
-  - {fileID: 3492619713229118719, guid: 14ea09e531b620b419e81d94cb820eff, type: 3}
-  - {fileID: 5963084847308110450, guid: 8927b6e9cfc19264985c9f8186d0c472, type: 3}
-  - {fileID: 7017713809320608826, guid: 7a1f02f95e7ae814b8a171af120f9106, type: 3}
-  - {fileID: 899343114716442986, guid: a537dd7486260ac47ac7950d6f5e118a, type: 3}
-  - {fileID: 5822780683145547418, guid: 9697a51a06ecf3248ac6408f9bb90b92, type: 3}
-  - {fileID: 4080035783554278702, guid: c62e4ccade5c45545b5558bc68d52b57, type: 3}
-  - {fileID: 8579977362228256875, guid: 65934a86bec9ef4459e511916a611661, type: 3}
-  entrance: {fileID: 3492619713229118719, guid: 14ea09e531b620b419e81d94cb820eff,
+  - {fileID: 5712118799407400280, guid: 158f3d6fbed590547826152bcfe6e6c2, type: 3}
+  - {fileID: 7025768350363283284, guid: a4b4ebe62d6893c4b896d80c5dcbfa49, type: 3}
+  - {fileID: 2598886455773890063, guid: eb195c3933258484fbcb077de450c0bc, type: 3}
+  - {fileID: 5696345470735553178, guid: 238733279dec8e84fb0f3115e7280d01, type: 3}
+  entrance: {fileID: 5696345470735553178, guid: 238733279dec8e84fb0f3115e7280d01,
     type: 3}
   borderTiles:
-  - {fileID: 7794061096370611554, guid: 30e136b219004b94dae36518f850b001, type: 3}
-  - {fileID: 4080035783554278702, guid: c62e4ccade5c45545b5558bc68d52b57, type: 3}
-  - {fileID: 5822780683145547418, guid: 9697a51a06ecf3248ac6408f9bb90b92, type: 3}
-  pathTiles:
-  - {fileID: 5963084847308110450, guid: 8927b6e9cfc19264985c9f8186d0c472, type: 3}
-  pathUse: 01
-  borderUse: 010001
+  - {fileID: 5712118799407400280, guid: 158f3d6fbed590547826152bcfe6e6c2, type: 3}
+  - {fileID: 7025768350363283284, guid: a4b4ebe62d6893c4b896d80c5dcbfa49, type: 3}
+  - {fileID: 5696345470735553178, guid: 238733279dec8e84fb0f3115e7280d01, type: 3}
+  pathTiles: []
+  frequenzies:
+  - 1
+  - 1
+  - 1
+  - 1
+  tileUse: 01010101
+  pathUse: 
+  borderUse: 010100

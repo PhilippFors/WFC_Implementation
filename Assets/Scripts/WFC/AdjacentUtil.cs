@@ -17,7 +17,7 @@ namespace MyWFC
         {
             for (int i = 0; i < tileset.Count; i++)
             {
-                for (int j =i; j < tileset.Count; j++)
+                for (int j = i; j < tileset.Count; j++)
                 {
                     var rotA = tileset[i].rotation;
                     var rotB = tileset[j].rotation;
@@ -29,34 +29,34 @@ namespace MyWFC
                     {
                         foreach (TileSide sideB in tileB)
                         {
-                            // if (CompareSides(sideA, rotA, sideA.side, sideB, rotB, connectionGroups, new[] { tileset[i].bID, tileset[j].bID }))
-                            switch (sideA.side)
-                            {
-                                case Sides.Left:
-                                    if (sideB.side.Equals(Sides.Right) && CompareSides(sideA, rotA, sideA.side, sideB, rotB, connectionGroups, new[] { tileset[i].bID, tileset[j].bID }))
-                                    {
-                                        model.AddAdjacency(new Tile(i), new Tile(j), -1, 0, 0);
-                                    }
-                                    break;
-                                case Sides.Right:
-                                    if (sideB.side.Equals(Sides.Left) && CompareSides(sideA, rotA, sideA.side, sideB, rotB, connectionGroups, new[] { tileset[i].bID, tileset[j].bID }))
-                                    {
-                                        model.AddAdjacency(new Tile(i), new Tile(j), 1, 0, 0);
-                                    }
-                                    break;
-                                case Sides.Front:
-                                    if (sideB.side.Equals(Sides.Back) && CompareSides(sideA, rotA, sideA.side, sideB, rotB, connectionGroups, new[] { tileset[i].bID, tileset[j].bID }))
-                                    {
-                                        model.AddAdjacency(new Tile(i), new Tile(j), 0, 1, 0);
-                                    }
-                                    break;
-                                case Sides.Back:
-                                    if (sideB.side.Equals(Sides.Front) && CompareSides(sideA, rotA, sideA.side, sideB, rotB, connectionGroups, new[] { tileset[i].bID, tileset[j].bID }))
-                                    {
-                                        model.AddAdjacency(new Tile(i), new Tile(j), 0, -1, 0);
-                                    }
-                                    break;
-                            }
+                            if (CompareSides(sideA, sideB, connectionGroups, new[] { tileset[i].bID, tileset[j].bID }))
+                                switch (sideA.side)
+                                {
+                                    case Sides.Left:
+                                        if (sideB.side.Equals(Sides.Right))
+                                        {
+                                            model.AddAdjacency(new Tile(i), new Tile(j), -1, 0, 0);
+                                        }
+                                        break;
+                                    case Sides.Right:
+                                        if (sideB.side.Equals(Sides.Left))
+                                        {
+                                            model.AddAdjacency(new Tile(i), new Tile(j), 1, 0, 0);
+                                        }
+                                        break;
+                                    case Sides.Front:
+                                        if (sideB.side.Equals(Sides.Back))
+                                        {
+                                            model.AddAdjacency(new Tile(i), new Tile(j), 0, 1, 0);
+                                        }
+                                        break;
+                                    case Sides.Back:
+                                        if (sideB.side.Equals(Sides.Front))
+                                        {
+                                            model.AddAdjacency(new Tile(i), new Tile(j), 0, -1, 0);
+                                        }
+                                        break;
+                                }
                         }
                     }
                 }
@@ -73,12 +73,12 @@ namespace MyWFC
         /// <param name="rotB"></param>
         /// <param name="connectionGroups"></param>
         /// <returns></returns>
-        static bool CompareSides(TileSide sideA, int rotA, Sides side, TileSide sideB, int rotB, ConnectionGroups connectionGroups, int[] bIDS)
+        static bool CompareSides(TileSide sideA, TileSide sideB, ConnectionGroups connectionGroups, int[] bIDS)
         {
-            SubSide[] arrayA = ShuffleArray(sideA, rotA, side);
-            SubSide[] arrayB = ShuffleArray(sideB, rotB, side);
+            Connections[] arrayA = sideA.all.ToArray();
+            Connections[] arrayB = sideB.all.ToArray();
 
-            if (sideA.connection.Equals(Connections.BID) && sideB.connection.Equals(Connections.BID))
+            if (sideA.Equals(Connections.BID) && sideB.Equals(Connections.BID))
             {
                 for (int i = 0; i < arrayA.Length; i++)
                 {
@@ -88,15 +88,16 @@ namespace MyWFC
             }
             else
             {
-                for (int i = 0; i < arrayA.Length; i++)
+                for (int i = 0, j = arrayA.Length - 1; i < arrayA.Length; i++, j--)
                 {
-                    if (!CheckConnections(arrayA[i], arrayB[i], connectionGroups))
+                    if (!CheckConnections(arrayA[i], arrayB[j], connectionGroups))
                         return false;
                 }
             }
             return true;
         }
 
+        #region unimportant
         /// <summary>
         /// Due to rotation garbage, the subsides need to be swapped up for proper comparison. Does not impact the original data.
         /// Idk if there is a better way.
@@ -105,44 +106,45 @@ namespace MyWFC
         /// <param name="rot"></param>
         /// <param name="side"></param>
         /// <returns></returns>
-        static SubSide[] ShuffleArray(TileSide tileSide, int rot, Sides side)
-        {
-            SubSide[] arr = new SubSide[3];
-            if ((rot == 90 || rot == 180) && (side == Sides.Left || side == Sides.Right))
-            {
-                arr[0] = tileSide.subSides[2];
-                arr[1] = tileSide.subSides[1];
-                arr[2] = tileSide.subSides[0];
-            }
-            else if ((rot == 180 || rot == 270) && (side == Sides.Front || side == Sides.Back))
-            {
-                arr[0] = tileSide.subSides[2];
-                arr[1] = tileSide.subSides[1];
-                arr[2] = tileSide.subSides[0];
-            }
-            else
-            {
-                arr = tileSide.subSides.ToArray();
-            }
-            return arr;
-        }
+        // static Connections[] ShuffleArray(TileSide tileSide, int rot, Sides side)
+        // {
+        //     Connections[] arr = new Connections[3];
+        // if ((rot == 90 || rot == 180) && (side == Sides.Left || side == Sides.Right))
+        // {
+        // arr[0] = tileSide.all[2];
+        // arr[1] = tileSide.all[1];
+        // arr[2] = tileSide.all[0];
+        // }
+        // else if ((rot == 180 || rot == 270) && (side == Sides.Front || side == Sides.Back))
+        // {
+        //     arr[0] = tileSide.all[2];
+        //     arr[1] = tileSide.all[1];
+        //     arr[2] = tileSide.all[0];
+        // }
+        // else
+        // {
+        //     arr = tileSide.all.ToArray();
+        // }
+        //     return arr;
+        // }
+        #endregion
 
         /// <summary>
-        /// Iterates through the connectiongroup and checks if two subsides are equal.
+        /// Iterates through the connectiongroup and checks if two connections can connect.
         /// </summary>
-        /// <param name="subSideA"></param>
-        /// <param name="subSideB"></param>
+        /// <param name="connA"></param>
+        /// <param name="connB"></param>
         /// <param name="connectionGroups"></param>
         /// <returns></returns>
-        static bool CheckConnections(SubSide subSideA, SubSide subSideB, ConnectionGroups connectionGroups)
+        static bool CheckConnections(Connections connA, Connections connB, ConnectionGroups connectionGroups)
         {
             for (int x = 0; x < connectionGroups.groups.Length; x++)
             {
-                if ((int)subSideA.connection == x)
+                if ((int)connA == x)
                 {
                     for (int y = 0; y < connectionGroups.groups.Length; y++)
                     {
-                        if ((int)subSideB.connection == y && connectionGroups.groups[x].v[y])
+                        if ((int)connB == y && connectionGroups.groups[x].v[y])
                             return true;
                     }
                     break;
@@ -150,7 +152,6 @@ namespace MyWFC
             }
             return false;
         }
-
 
         /// <summary>
         /// I have no idea
@@ -168,17 +169,12 @@ namespace MyWFC
                 int c = (int)sides[i].connection;
                 newSide.connection = (Connections)c;
 
-                List<SubSide> subList = new List<SubSide>();
-                for (int j = 0; j < sides[i].subSides.Count; j++)
+                List<Connections> subList = new List<Connections>();
+                for (int j = 0; j < sides[i].all.Count; j++)
                 {
-                    SubSide newSubside = new SubSide();
-                    s = (int)sides[i].subSides[j].side;
-                    newSubside.side = (UnderSides)s;
-                    c = (int)sides[i].subSides[j].connection;
-                    newSubside.connection = (Connections)c;
-                    subList.Add(newSubside);
+                    subList.Add(sides[i].all[j]);
                 }
-                newSide.subSides = subList;
+                newSide.all = subList;
                 list.Add(newSide);
             }
             return list;
