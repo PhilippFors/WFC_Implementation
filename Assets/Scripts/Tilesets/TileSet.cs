@@ -30,53 +30,18 @@ namespace MyWFC
     [CanEditMultipleObjects]
     public class TileSetEditor : Editor
     {
-        TilesetCompare c = new TilesetCompare();
-
         public override void OnInspectorGUI()
         {
             TileSet t = (TileSet)target;
 
 
             DrawDefaultInspector();
-            //General tile editor
-            // if (t.pathTiles.Count >= 0)
-            // {
-            //     if(t.pathUse.Count <)
-            //     t.pathUse = new List<bool>();
-            //     for (int i = 0; i < t.pathTiles.Count; i++)
-            //         t.pathUse.Add(true);
-            // }
-            // if (t.borderUse.Count <= 0)
-            // {
-            //     t.borderUse = new List<bool>();
-            //     for (int i = 0; i < t.borderTiles.Count; i++)
-            //         t.borderUse.Add(true);
-
-            // }
-            // if (t.tileUse.Count <= 0)
-            // {
-
-            //     t.tileUse = new List<bool>();
-            //     for (int i = 0; i < t.tileUse.Count; i++)
-            //         t.tileUse.Add(true);
-            // }
-            // if (t.frequenzies.Count <= 0)
-            // {
-
-            //     t.frequenzies = new List<double>();
-            //     for (int i = 0; i < t.frequenzies.Count; i++)
-            //         t.frequenzies.Add(1);
-
-            // }
 
             TileEditor(t);
             GUILayout.Space(20f);
             BorderTileEditor(t);
             GUILayout.Space(20f);
             PathTilesEditor(t);
-
-            if (GUILayout.Button("Sort by ID"))
-                sortarray(t);
 
             //Entrance Tile
             GUILayout.Label("Entrance Tile");
@@ -91,16 +56,6 @@ namespace MyWFC
                 foreach (GameObject obj in t.tiles)
                     PrefabUtility.SavePrefabAsset(obj);
             }
-        }
-
-        void sortarray(TileSet t)
-        {
-            if (t.tiles.Count > 0)
-                t.tiles.Sort(c);
-            if (t.borderTiles.Count > 0)
-                t.borderTiles.Sort(c);
-            if (t.pathTiles.Count > 0)
-                t.pathTiles.Sort(c);
         }
 
         void TileEditor(TileSet t)
@@ -124,11 +79,8 @@ namespace MyWFC
                     {
 
                         var MyTile = t.tiles[i].GetComponent<MyWFC.MyTile>();
-                        // if (MyTile.ID == -1)
-                        //     MyTile.ID = i;
 
                         var tempweight = MyTile.weight;
-                        var tempID = MyTile.ID;
                         var tempUse = MyTile.use;
 
                         GUILayout.Label("Weight: ", GUILayout.MaxWidth(50f));
@@ -136,10 +88,6 @@ namespace MyWFC
 
                         GUILayout.Space(5f);
 
-                        // GUILayout.Label("ID: ", GUILayout.MaxWidth(25f));
-                        // MyTile.ID = EditorGUILayout.IntField(MyTile.ID, GUILayout.MaxWidth(30f));
-
-                        // GUILayout.Space(5f);
 
                         // GUILayout.Label("Use: ", GUILayout.MaxWidth(25f));
                         // MyTile.use = EditorGUILayout.Toggle(MyTile.use, GUILayout.MaxWidth(20f));
@@ -147,7 +95,7 @@ namespace MyWFC
                         GUILayout.Label("Use: ", GUILayout.MaxWidth(25f));
                         t.tileUse[i] = EditorGUILayout.Toggle(t.tileUse[i], GUILayout.MaxWidth(20f));
 
-                        if (tempweight != MyTile.weight || tempID != MyTile.ID || tempUse != MyTile.use)
+                        if (tempweight != MyTile.weight || tempUse != MyTile.use)
                             PrefabUtility.SavePrefabAsset(t.tiles[i]);
                     }
 
@@ -183,7 +131,6 @@ namespace MyWFC
                         var MyTile = t.borderTiles[i].GetComponent<MyWFC.MyTile>();
 
                         var tempweight = MyTile.weight;
-                        var tempID = MyTile.ID;
                         var tempUse = MyTile.use;
 
                         // GUILayout.Label("Weight: ", GUILayout.MaxWidth(50f));
@@ -199,7 +146,7 @@ namespace MyWFC
                         GUILayout.Label("Use: ", GUILayout.MaxWidth(25f));
                         t.borderUse[i] = EditorGUILayout.Toggle(t.borderUse[i], GUILayout.MaxWidth(20f));
 
-                        if (tempweight != MyTile.weight || tempID != MyTile.ID || tempUse != MyTile.use)
+                        if (tempweight != MyTile.weight || tempUse != MyTile.use)
                             PrefabUtility.SavePrefabAsset(t.borderTiles[i]);
                     }
 
@@ -231,7 +178,6 @@ namespace MyWFC
                         var MyTile = t.pathTiles[i].GetComponent<MyWFC.MyTile>();
 
                         var tempweight = MyTile.weight;
-                        var tempID = MyTile.ID;
                         var tempUse = MyTile.use;
 
                         GUILayout.Label("Weight: ", GUILayout.MaxWidth(50f));
@@ -247,7 +193,7 @@ namespace MyWFC
                         GUILayout.Label("Use: ", GUILayout.MaxWidth(25f));
                         t.pathUse[i] = EditorGUILayout.Toggle(t.pathUse[i], GUILayout.MaxWidth(20f));
 
-                        if (tempweight != MyTile.weight || tempID != MyTile.ID || tempUse != MyTile.use)
+                        if (tempweight != MyTile.weight || tempUse != MyTile.use)
                             PrefabUtility.SavePrefabAsset(t.pathTiles[i]);
                     }
 
@@ -264,14 +210,6 @@ namespace MyWFC
                 t.pathTiles.Add(null);
                 t.pathUse.Add(true);
             }
-        }
-    }
-
-    public class TilesetCompare : IComparer<GameObject>
-    {
-        public int Compare(GameObject x, GameObject y)
-        {
-            return x.GetComponent<MyWFC.MyTile>().ID.CompareTo(y.GetComponent<MyWFC.MyTile>().ID);
         }
     }
 #endif

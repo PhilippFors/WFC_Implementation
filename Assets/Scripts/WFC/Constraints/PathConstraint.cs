@@ -18,12 +18,12 @@ namespace MyWFC
             HashSet<Tile> endpointTiles = new HashSet<Tile>();
             for (int i = 0; i < points.Length; i++)
             {
-                if (endPoints[i].tile != null)
-                {
-                    var allTiles = WFCUtil.FindTilesArr(tileSet, endPoints[i].tile.ID);
-                    foreach (Tile t in allTiles)
-                        endpointTiles.Add(t);
-                }
+                // if (endPoints[i].tile != null)
+                // {
+                //     var allTiles = WFCUtil.FindTilesArr(tileSet, endPoints[i].tile.ID);
+                //     foreach (Tile t in allTiles)
+                //         endpointTiles.Add(t);
+                // }
 
                 points[i] = new DeBroglie.Point(endPoints[i].point.x, endPoints[i].point.y, endPoints[i].point.z);
             }
@@ -31,7 +31,7 @@ namespace MyWFC
             HashSet<Tile> paths = new HashSet<Tile>();
             foreach (MyTile tile in pathTiles)
             {
-                var allTiles = WFCUtil.FindTilesArr(tileSet, tile.ID);
+                var allTiles = WFCUtil.FindTilesArr(tileSet, tile.gameObject.GetHashCode());
                 foreach (Tile t in allTiles)
                     paths.Add(t);
             }

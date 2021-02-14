@@ -44,7 +44,7 @@ namespace MyWFC
                 Vector3 tilepos = tile.transform.localPosition;
                 UnityEngine.Object fab = tile;
 
-                if (tile.GetComponent<MyWFC.MyTile>().ID == empty.GetComponent<MyWFC.MyTile>().ID)
+                if (tile.GetHashCode() == empty.GetHashCode())
                 {
                     empties.Add(tile);
                     continue;
@@ -62,7 +62,7 @@ namespace MyWFC
                 }
                 tile.name = fab.name;
 #endif
-                int id = tile.GetComponent<MyTile>().ID;
+                int id = tile.GetHashCode();
                 if (!TileIndexer.ContainsValue(id))
                 {
                     TileIndexer.Add(tile.name, id);
@@ -142,7 +142,7 @@ namespace MyWFC
         void RecordEmpty()
         {
             var tile = empty.GetComponent<MyTile>();
-            runtimeTiles[RotationTileIndexer.Count] = new RuntimeTile(tile.ID, 0, tile.weight, false, empty.gameObject);
+            runtimeTiles[RotationTileIndexer.Count] = new RuntimeTile(tile.GetHashCode(), 0, tile.weight, false, empty.gameObject);
             for (int x = 0; x < sample.GetLength(0); x++)
             {
                 for (int z = 0; z < sample.GetLength(1); z++)
@@ -153,18 +153,18 @@ namespace MyWFC
 
                         GameObject o = Instantiate(empty) as GameObject;
 
-                        if (!RotationTileIndexer.ContainsValue(tile.ID))
+                        if (!RotationTileIndexer.ContainsValue(tile.GetHashCode()))
                         {
-                            RotationTileIndexer.Add(empty.name, tile.ID);
+                            RotationTileIndexer.Add(empty.name, tile.GetHashCode());
 
-                            if (!TileIndexer.ContainsValue(tile.ID))
+                            if (!TileIndexer.ContainsValue(tile.GetHashCode()))
                             {
-                                TileIndexer.Add(empty.name, tile.ID);
+                                TileIndexer.Add(empty.name, tile.GetHashCode());
                                 availableTiles.Add(o);
                             }
                         }
 
-                        sample[x, z] = WFCUtil.FindTile(runtimeTiles, tile.ID);
+                        sample[x, z] = WFCUtil.FindTile(runtimeTiles, tile.GetHashCode());
                         o.transform.parent = this.transform;
                         o.transform.localPosition = new Vector3(x * gridSize, 0, z * gridSize);
                     }

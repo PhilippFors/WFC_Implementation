@@ -15,7 +15,7 @@ namespace MyWFC
 
             List<int> l = new List<int>();
             foreach (MyTile t in borderTiles)
-                l.Add(t.ID);
+                l.Add(t.gameObject.GetHashCode());
 
             var Tiles = WFCUtil.FindTilesArr(tileSet, l.ToArray());
             // var constraint = new DeBroglie.Constraints.BorderConstraint()

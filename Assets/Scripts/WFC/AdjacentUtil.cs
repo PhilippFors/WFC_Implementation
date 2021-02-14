@@ -29,7 +29,7 @@ namespace MyWFC
                     {
                         foreach (TileSide sideB in tileB)
                         {
-                            if (CompareSides(sideA, sideB, connectionGroups, new[] { tileset[i].bID, tileset[j].bID }))
+                            if (sideA.Equals(sideB, connectionGroups, new[] { tileset[i].bID, tileset[j].bID }))
                                 switch (sideA.side)
                                 {
                                     case Sides.Left:
@@ -61,40 +61,6 @@ namespace MyWFC
                     }
                 }
             }
-        }
-
-        /// <summary>
-        /// Comparing the sides for two tiles in more detail. Interrupts the check if a subside doesn't match.
-        /// </summary>
-        /// <param name="sideA"></param>
-        /// <param name="rotA"></param>
-        /// <param name="side"></param>
-        /// <param name="sideB"></param>
-        /// <param name="rotB"></param>
-        /// <param name="connectionGroups"></param>
-        /// <returns></returns>
-        static bool CompareSides(TileSide sideA, TileSide sideB, ConnectionGroups connectionGroups, int[] bIDS)
-        {
-            Connections[] arrayA = sideA.all.ToArray();
-            Connections[] arrayB = sideB.all.ToArray();
-
-            if (sideA.Equals(Connections.BID) && sideB.Equals(Connections.BID))
-            {
-                for (int i = 0; i < arrayA.Length; i++)
-                {
-                    if (!CheckConnections(arrayA[i], arrayB[i], connectionGroups) || bIDS[0] != bIDS[1])
-                        return false;
-                }
-            }
-            else
-            {
-                for (int i = 0, j = arrayA.Length - 1; i < arrayA.Length; i++, j--)
-                {
-                    if (!CheckConnections(arrayA[i], arrayB[j], connectionGroups))
-                        return false;
-                }
-            }
-            return true;
         }
 
         #region unimportant
@@ -136,7 +102,7 @@ namespace MyWFC
         /// <param name="connB"></param>
         /// <param name="connectionGroups"></param>
         /// <returns></returns>
-        static bool CheckConnections(Connections connA, Connections connB, ConnectionGroups connectionGroups)
+        public static bool CheckConnections(Connections connA, Connections connB, ConnectionGroups connectionGroups)
         {
             for (int x = 0; x < connectionGroups.groups.Length; x++)
             {

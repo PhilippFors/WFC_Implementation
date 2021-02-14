@@ -23,7 +23,7 @@ namespace MyWFC
             if (useConstraint)
                 foreach (MyTilePoint p in pointList)
                 {
-                    var tile = WFCUtil.FindTileList(tileSet, p.tile.ID);
+                    var tile = WFCUtil.FindTileList(tileSet, p.tile.gameObject.GetHashCode());
                     if (p.useRandomPoint)
                     {
                         p.point = WFCUtil.RandomPoint(propagator);

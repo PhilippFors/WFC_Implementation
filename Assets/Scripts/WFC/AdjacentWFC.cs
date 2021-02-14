@@ -77,7 +77,7 @@ namespace MyWFC
                                         if (t.cells.Count > 1)
                                             t.runtimeIDs.Add(runtimeTiles.Count);
 
-                                        runtimeTiles.Add(new RuntimeTile(t.ID, t.cells.Count > 1 ? bIDCounter : -1, rot, tileSet.frequenzies[i], false, t.gameObject, t.cells[z].sides));
+                                        runtimeTiles.Add(new RuntimeTile(t.gameObject.GetHashCode(), t.cells.Count > 1 ? bIDCounter : -1, rot, tileSet.frequenzies[i], false, t.gameObject, t.cells[z].sides));
                                     }
                                     else
                                     {
@@ -96,7 +96,7 @@ namespace MyWFC
                                         if (t.cells.Count > 1)
                                             t.runtimeIDs.Add(runtimeTiles.Count);
 
-                                        runtimeTiles.Add(new RuntimeTile(t.ID, t.cells.Count > 1 ? bIDCounter : -1, rot, tileSet.frequenzies[i], false, t.gameObject, l));
+                                        runtimeTiles.Add(new RuntimeTile(t.gameObject.GetHashCode(), t.cells.Count > 1 ? bIDCounter : -1, rot, tileSet.frequenzies[i], false, t.gameObject, l));
                                     }
                                 }
                                 if (t.cells.Count > 1)
@@ -109,7 +109,7 @@ namespace MyWFC
                                 if (t.cells.Count > 1)
                                     t.runtimeIDs.Add(runtimeTiles.Count);
 
-                                runtimeTiles.Add(new RuntimeTile(t.ID, (int)t.gameObject.transform.eulerAngles.y, tileSet.frequenzies[j], false, t.gameObject, t.cells[j].sides));
+                                runtimeTiles.Add(new RuntimeTile(t.gameObject.GetHashCode(), (int)t.gameObject.transform.eulerAngles.y, tileSet.frequenzies[j], false, t.gameObject, t.cells[j].sides));
                             }
                         }
                 }
@@ -189,7 +189,7 @@ namespace MyWFC
 
             propagator = new TilePropagator(model, topology, options);
 
-            this.ApplyMask();
+            // this.ApplyMask();
 
             this.AddConstraints();
         }

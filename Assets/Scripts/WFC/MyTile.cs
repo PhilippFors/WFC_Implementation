@@ -9,7 +9,6 @@ namespace MyWFC
         /// <summary>
         /// Unique ID for the tile
         /// </summary>
-        public int ID = -1;
 
         //used for big tiles
         [HideInInspector] public int bID;
@@ -34,8 +33,7 @@ namespace MyWFC
         [SerializeField] float gizmoSize = 0.5f;
         private void OnDrawGizmos()
         {
-
-            if (ID == 0)
+            if (!GetComponent<MeshRenderer>())
             {
                 Gizmos.color = Color.blue;
                 Gizmos.DrawWireCube(transform.position, new Vector3(size.x - 1f, size.y - 1f, size.z - 1f));
@@ -55,7 +53,7 @@ namespace MyWFC
                                 for (int i = 0; i < s.all.Count; i++)
                                 {
                                     ConnectionColor(s.all[i]);
-                                    Gizmos.DrawCube(new Vector3((float)(-size.x) / 2, 0, (1 - i) * (float)size.x / 3) + c.center, new Vector3(gizmoSize, gizmoSize, gizmoSize));
+                                    Gizmos.DrawCube(new Vector3((float)(-size.x) / 2 + 0.05f, 0, (1 - i) * (float)size.x / 3) + c.center, new Vector3(gizmoSize, gizmoSize, gizmoSize));
                                 }
                                 // ConnectionColor(s.connection);
                                 // Gizmos.DrawCube(new Vector3(-size.x / 2, 0, 0), Vector3.one / 4f);
@@ -65,7 +63,7 @@ namespace MyWFC
                                 for (int i = 0; i < s.all.Count; i++)
                                 {
                                     ConnectionColor(s.all[i]);
-                                    Gizmos.DrawCube(new Vector3((float)size.x / 2, 0, (-1 + i) * (float)size.x / 3) + c.center, new Vector3(gizmoSize, gizmoSize, gizmoSize));
+                                    Gizmos.DrawCube(new Vector3((float)size.x / 2 - 0.05f, 0, (-1 + i) * (float)size.x / 3) + c.center, new Vector3(gizmoSize, gizmoSize, gizmoSize));
                                 }
                                 // ConnectionColor(s.connection);
                                 // Gizmos.DrawCube(new Vector3(size.x / 2, 0, 0), Vector3.one / 4f);
@@ -74,7 +72,7 @@ namespace MyWFC
                                 for (int i = 0; i < s.all.Count; i++)
                                 {
                                     ConnectionColor(s.all[i]);
-                                    Gizmos.DrawCube(new Vector3((-1 + i) * (float)size.z / 3, 0, (float)(-size.z) / 2) + c.center, new Vector3(gizmoSize, gizmoSize, gizmoSize));
+                                    Gizmos.DrawCube(new Vector3((-1 + i) * (float)size.z / 3, 0, (float)(-size.z) / 2 + 0.05f) + c.center, new Vector3(gizmoSize, gizmoSize, gizmoSize));
                                 }
                                 // ConnectionColor(s.connection);
                                 // Gizmos.DrawCube(new Vector3(0, 0, -size.z / 2), Vector3.one / 4f);
@@ -83,7 +81,7 @@ namespace MyWFC
                                 for (int i = 0; i < s.all.Count; i++)
                                 {
                                     ConnectionColor(s.all[i]);
-                                    Gizmos.DrawCube(new Vector3((1 - i) * (float)size.z / 3, 0, (float)size.z / 2) + c.center, new Vector3(gizmoSize, gizmoSize, gizmoSize));
+                                    Gizmos.DrawCube(new Vector3((1 - i) * (float)size.z / 3, 0, (float)size.z / 2 - 0.05f) + c.center, new Vector3(gizmoSize, gizmoSize, gizmoSize));
                                 }
                                 // ConnectionColor(s.connection);
                                 // Gizmos.DrawCube(new Vector3(0, 0, size.z / 2), Vector3.one / 4f);
@@ -188,28 +186,36 @@ namespace MyWFC
                 right = value[2];
             }
         }
-        // public List<SubSide> subSides = new List<SubSide>(){new SubSide(){side = UnderSides.Lower, connection = Connections.A},
-        //                                                     new SubSide(){side = UnderSides.Middle, connection = Connections.A},
-        //                                                     new SubSide(){side = UnderSides.Upper, connection = Connections.A}};
-
-        public override bool Equals(object obj)
-        {
-            TileSide otherS = (TileSide)obj;
-            return otherS.left == left && otherS.right == right && otherS.middle == middle;
-        }
 
         public bool Equals(Connections c)
         {
             return left == c && right == c && middle == c;
         }
-    }
-    // [System.Serializable]
-    // public class SubSide
-    // {
-    //     public UnderSides side;
-    //     public Connections connection;
-    // }
 
+        public bool Equals(TileSide sideB, ConnectionGroups connectionGroups, int[] bIDS = null)
+        {
+            Connections[] arrayA = this.all.ToArray();
+            Connections[] arrayB = sideB.all.ToArray();
+
+            if (bIDS[0] != -1 && bIDS[1] != -1)
+            {
+                for (int i = 0, j = arrayA.Length - 1; i < arrayA.Length; i++, j--)
+                {
+                    if (!AdjacentUtil.CheckConnections(arrayA[i], arrayB[j], connectionGroups) || bIDS[0] != bIDS[1])
+                        return false;
+                }
+            }
+            else
+            {
+                for (int i = 0, j = arrayA.Length - 1; i < arrayA.Length; i++, j--)
+                {
+                    if (!AdjacentUtil.CheckConnections(arrayA[i], arrayB[j], connectionGroups))
+                        return false;
+                }
+            }
+            return true;
+        }
+    }
 
     public enum Sides
     {

@@ -144,7 +144,7 @@ public static class WFCUtil
         {
             for (int j = 0; j < list.Count; j++)
             {
-                if (tileSet[i].ID == list[j].ID)
+                if (tileSet[i].ID == list[j].gameObject.GetHashCode())
                     l.Add(new Tile(i));
             }
 

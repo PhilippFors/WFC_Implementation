@@ -20,7 +20,7 @@ namespace MyWFC
                 return StartCoroutine(StartGenerate());
             else
                 StartGenerateSingle();
-            
+
             return null;
         }
 
@@ -70,7 +70,7 @@ namespace MyWFC
             AddConstraints();
             ApplyMask();
         }
-        
+
         public override void DrawOutput()
         {
             for (int x = 0; x < modelOutput.GetLength(0); x++)
@@ -100,7 +100,7 @@ namespace MyWFC
             if ((int)tile < inputSampler.runtimeTiles.Length)
             {
                 Vector3 pos = new Vector3(x * gridSize, 0, z * gridSize);
-                GameObject fab = GetTilePrefab(tile) as GameObject;
+                GameObject fab = inputSampler.runtimeTiles[(int)tile].obj;
                 if (fab != null)
                 {
                     MyTile newTile = Instantiate(fab, new Vector3(), Quaternion.identity).GetComponent<MyTile>();
@@ -112,32 +112,6 @@ namespace MyWFC
                     newTile.transform.localScale = fscale;
                 }
             }
-        }
-        protected GameObject GetTilePrefab(Tile tile)
-        {
-            var runtimeTile = inputSampler.runtimeTiles[(int)tile.Value];
-            foreach (GameObject obj in inputSampler.availableTiles)
-            {
-                var wfc = obj.GetComponent<MyTile>();
-                if (wfc.ID == runtimeTile.ID)
-                {
-                    return obj;
-                }
-            }
-            return null;
-        }
-        protected GameObject GetTilePrefab(int tile)
-        {
-            var runtimeTile = inputSampler.runtimeTiles[tile];
-            foreach (GameObject obj in inputSampler.availableTiles)
-            {
-                var wfc = obj.GetComponent<MyTile>();
-                if (wfc.ID == runtimeTile.ID)
-                {
-                    return obj;
-                }
-            }
-            return null;
         }
     }
 
