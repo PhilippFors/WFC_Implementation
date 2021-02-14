@@ -37,7 +37,7 @@ namespace LevelGeneration.AreaGeneration
         public void StartAreaGenerator(GridGeneration.GridTile[] tile)
         {
             generators.Clear();
-            
+
             if (areaList.Count > 0)
                 foreach (Area a in areaList)
                     if (Application.isPlaying) Destroy(a.parent); else DestroyImmediate(a.parent);
@@ -101,7 +101,7 @@ namespace LevelGeneration.AreaGeneration
             generator.gridSize = t.GridSize;
             generator.size = new Vector3Int(tile.width, 1, tile.height);
 
-            AddConstraints(a, generator);
+            AddConstraints(a, generator, t);
 
             generators.Add(generator);
         }
@@ -111,13 +111,13 @@ namespace LevelGeneration.AreaGeneration
         /// </summary>
         /// <param name="area"></param>
         /// <param name="generator"></param>
-        void AddConstraints(Area area, MyWFC.AdjacentWFC generator)
+        void AddConstraints(Area area, MyWFC.AdjacentWFC generator, MyWFC.TileSet t)
         {
             var borderC = new MyWFC.BorderConstraint();
             var fixedC = new MyWFC.FixedTileCostraint();
             var pathC = new MyWFC.PathConstraint();
 
-            if (tileSet.entrance != null)
+            if (t.entrance != null)
             {
                 fixedC = generator.gameObject.AddComponent<MyWFC.FixedTileCostraint>();
 
@@ -125,38 +125,38 @@ namespace LevelGeneration.AreaGeneration
                 var exit = area.tileInfo.exit;
 
                 if (entrance != null)
-                    fixedC.pointList.Add(new MyWFC.MyTilePoint() { point = entrance.position, tile = tileSet.entrance.GetComponent<MyWFC.MyTile>() });
+                    fixedC.pointList.Add(new MyWFC.MyTilePoint() { point = entrance.position, tile = t.entrance.GetComponent<MyWFC.MyTile>() });
                 if (exit != null)
-                    fixedC.pointList.Add(new MyWFC.MyTilePoint() { point = exit.position, tile = tileSet.entrance.GetComponent<MyWFC.MyTile>() });
+                    fixedC.pointList.Add(new MyWFC.MyTilePoint() { point = exit.position, tile = t.entrance.GetComponent<MyWFC.MyTile>() });
             }
 
-            if (tileSet.borderTiles.Count > 0)
+            if (t.borderTiles.Count > 0)
             {
                 borderC = generator.gameObject.AddComponent<MyWFC.BorderConstraint>();
-                for (int i = 0; i < tileSet.borderTiles.Count; i++)
+                for (int i = 0; i < t.borderTiles.Count; i++)
                 {
-                    if (!tileSet.borderUse[i] || !tileSet.borderTiles[i].GetComponent<MyWFC.MyTile>().use)
+                    if (!t.tileUse[i] || !t.borderUse[i])
                         continue;
                     else
-                        borderC.borderTiles.Add(tileSet.borderTiles[i].GetComponent<MyWFC.MyTile>());
+                        borderC.borderTiles.Add(t.borderTiles[i].GetComponent<MyWFC.MyTile>());
                 }
             }
 
-            if (tileSet.pathTiles.Count > 0)
+            if (t.pathTiles.Count > 0)
             {
                 pathC = generator.gameObject.AddComponent<MyWFC.PathConstraint>();
                 if (fixedC != null && fixedC.useConstraint)
                     foreach (MyWFC.MyTilePoint p in fixedC.pointList)
                         pathC.endPoints.Add(p);
 
-                for (int i = 0; i < tileSet.pathTiles.Count; i++)
+                for (int i = 0; i < t.pathTiles.Count; i++)
                 {
-                    if (!tileSet.pathUse[i] || !tileSet.pathTiles[i].GetComponent<MyWFC.MyTile>().use)
+                    if (!t.tileUse[i] || !t.pathUse[i])
                         continue;
                     else
-                        pathC.pathTiles.Add(tileSet.pathTiles[i].GetComponent<MyWFC.MyTile>());
+                        pathC.pathTiles.Add(t.pathTiles[i].GetComponent<MyWFC.MyTile>());
                 }
-                pathC.pathTiles.Add(tileSet.entrance.GetComponent<MyWFC.MyTile>());
+                pathC.pathTiles.Add(t.entrance.GetComponent<MyWFC.MyTile>());
             }
         }
 

@@ -77,30 +77,47 @@ namespace MyWFC
                     t.tiles[i] = (GameObject)EditorGUILayout.ObjectField(t.tiles[i], typeof(GameObject), false, GUILayout.MaxWidth(200f));
                     if (t.tiles[i] != null)
                     {
-
-                        var MyTile = t.tiles[i].GetComponent<MyWFC.MyTile>();
-
-                        var tempweight = MyTile.weight;
-                        var tempUse = MyTile.use;
-
                         GUILayout.Label("Weight: ", GUILayout.MaxWidth(50f));
                         t.frequenzies[i] = EditorGUILayout.DoubleField(t.frequenzies[i], GUILayout.MaxWidth(30f));
 
                         GUILayout.Space(5f);
 
-
-                        // GUILayout.Label("Use: ", GUILayout.MaxWidth(25f));
-                        // MyTile.use = EditorGUILayout.Toggle(MyTile.use, GUILayout.MaxWidth(20f));
-
                         GUILayout.Label("Use: ", GUILayout.MaxWidth(25f));
                         t.tileUse[i] = EditorGUILayout.Toggle(t.tileUse[i], GUILayout.MaxWidth(20f));
-
-                        if (tempweight != MyTile.weight || tempUse != MyTile.use)
-                            PrefabUtility.SavePrefabAsset(t.tiles[i]);
                     }
 
+
+                    if (GUILayout.Button("B"))
+                    {
+                        if (!t.borderTiles.Contains(t.tiles[i]))
+                        {
+                            t.borderTiles.Add(t.tiles[i]);
+                            t.borderUse.Add(true);
+                        }
+                    }
+                    if (GUILayout.Button("P"))
+                    {
+                        if (!t.pathTiles.Contains(t.tiles[i]))
+                        {
+                            t.pathTiles.Add(t.tiles[i]);
+                            t.pathUse.Add(true);
+                        }
+                    }
                     if (GUILayout.Button("Remove"))
                     {
+                        if (t.pathTiles.Contains(t.tiles[i]))
+                        {
+                            int index = t.pathTiles.FindIndex(0, x => t.tiles[i]);
+                            t.pathUse.RemoveAt(index);
+                            t.pathTiles.RemoveAt(index);
+                        }
+                        if (t.borderTiles.Contains(t.tiles[i]))
+                        {
+                            int index = t.borderTiles.FindIndex(0, x => t.tiles[i]);
+                            t.borderUse.RemoveAt(index);
+                            t.borderTiles.RemoveAt(index);
+                        }
+
                         t.tiles.Remove(t.tiles[i]);
                         t.tileUse.RemoveAt(i);
                         t.frequenzies.RemoveAt(i);
@@ -123,31 +140,14 @@ namespace MyWFC
             if (t.borderTiles.Count > 0 && t.borderTiles != null)
                 for (int i = 0; i < t.borderTiles.Count; i++)
                 {
-
                     GUILayout.BeginHorizontal();
                     t.borderTiles[i] = (GameObject)EditorGUILayout.ObjectField(t.borderTiles[i], typeof(GameObject), false, GUILayout.MaxWidth(200f));
                     if (t.borderTiles[i] != null)
                     {
-                        var MyTile = t.borderTiles[i].GetComponent<MyWFC.MyTile>();
-
-                        var tempweight = MyTile.weight;
-                        var tempUse = MyTile.use;
-
-                        // GUILayout.Label("Weight: ", GUILayout.MaxWidth(50f));
-                        // MyTile.weight = EditorGUILayout.IntField(MyTile.weight, GUILayout.MaxWidth(30f));
-
-                        // GUILayout.Space(5f);
-
-                        // GUILayout.Label("ID: ", GUILayout.MaxWidth(25f));
-                        // MyTile.ID = EditorGUILayout.IntField(MyTile.ID, GUILayout.MaxWidth(30f));
-
                         GUILayout.Space(5f);
 
                         GUILayout.Label("Use: ", GUILayout.MaxWidth(25f));
                         t.borderUse[i] = EditorGUILayout.Toggle(t.borderUse[i], GUILayout.MaxWidth(20f));
-
-                        if (tempweight != MyTile.weight || tempUse != MyTile.use)
-                            PrefabUtility.SavePrefabAsset(t.borderTiles[i]);
                     }
 
                     if (GUILayout.Button("Remove"))
@@ -170,31 +170,14 @@ namespace MyWFC
             if (t.pathTiles.Count != 0 && t.pathTiles != null)
                 for (int i = 0; i < t.pathTiles.Count; i++)
                 {
-
                     GUILayout.BeginHorizontal();
                     t.pathTiles[i] = (GameObject)EditorGUILayout.ObjectField(t.pathTiles[i], typeof(GameObject), false, GUILayout.MaxWidth(200f));
                     if (t.pathTiles[i] != null)
                     {
-                        var MyTile = t.pathTiles[i].GetComponent<MyWFC.MyTile>();
-
-                        var tempweight = MyTile.weight;
-                        var tempUse = MyTile.use;
-
-                        GUILayout.Label("Weight: ", GUILayout.MaxWidth(50f));
-                        MyTile.weight = EditorGUILayout.IntField(MyTile.weight, GUILayout.MaxWidth(30f));
-
-                        GUILayout.Space(5f);
-
-                        // GUILayout.Label("ID: ", GUILayout.MaxWidth(25f));
-                        // MyTile.ID = EditorGUILayout.IntField(MyTile.ID, GUILayout.MaxWidth(30f));
-
                         GUILayout.Space(5f);
 
                         GUILayout.Label("Use: ", GUILayout.MaxWidth(25f));
                         t.pathUse[i] = EditorGUILayout.Toggle(t.pathUse[i], GUILayout.MaxWidth(20f));
-
-                        if (tempweight != MyTile.weight || tempUse != MyTile.use)
-                            PrefabUtility.SavePrefabAsset(t.pathTiles[i]);
                     }
 
                     if (GUILayout.Button("Remove"))
