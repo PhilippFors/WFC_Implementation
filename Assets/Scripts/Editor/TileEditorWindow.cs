@@ -7,7 +7,7 @@ public class TileEditorWindow : EditorWindow
 {
     MyWFC.MyTile tile;
     float height = 20f;
-    float width = 30f;
+    float width = 50f;
 
     List<float> ys;
     List<float> xs;
@@ -52,7 +52,7 @@ public class TileEditorWindow : EditorWindow
                 if (tile.cells[i].center.z < 0)
                     y = y * 4;
 
-                DrawEditorRect(tile.cells[i], x, y, false, tile.gameObject.name);
+                DrawEditorRect(tile.cells[i], x, y, true, tile.gameObject.name);
             }
     }
 
@@ -65,37 +65,23 @@ public class TileEditorWindow : EditorWindow
                 var templeft = cell.sides[j].left;
                 var tempright = cell.sides[j].right;
                 var tempmiddl = cell.sides[j].middle;
-                Rect r = new Rect((x - width - width / 2), (y - height), 30f, 20f);
+
+                Rect r = new Rect((x - width - width / 2), (y - height), width, 20f);
                 cell.sides[j].left = (MyWFC.Connections)EditorGUI.EnumPopup(r, cell.sides[j].left);
 
-                r = new Rect((x - width - width / 2), (y), 30f, 20f);
+                r = new Rect((x - width - width / 2), (y), width, 20f);
                 cell.sides[j].middle = (MyWFC.Connections)EditorGUI.EnumPopup(r, cell.sides[j].middle);
 
-                r = new Rect((x - width - width / 2), (y + height), 30f, 20f);
+                r = new Rect((x - width - width / 2), (y + height), width, 20f);
                 cell.sides[j].right = (MyWFC.Connections)EditorGUI.EnumPopup(r, cell.sides[j].right);
 
                 if (showAdds)
                 {
-                    r = new Rect((x - width * 3), (y), 30f, 20f);
+                    r = new Rect((x - width * 3), (y), width, 20f);
                     if (!tile.cells.Exists(f => f.center.Equals(new Vector3(cell.center.x - (float)tile.size.x, cell.center.y, cell.center.z))))
                         if (GUI.Button(r, "+"))
                         {
-                            cell.sides[j].left = MyWFC.Connections.BIDYES;
-                            cell.sides[j].middle = MyWFC.Connections.BID;
-                            cell.sides[j].right = MyWFC.Connections.BID;
-
-                            MyWFC.Cell cell1 = new MyWFC.Cell();
-                            cell1.center = new Vector3(cell.center.x - (float)tile.size.x, cell.center.y, cell.center.z);
-                            foreach (MyWFC.TileSide side in cell1.sides)
-                            {
-                                if (side.side == MyWFC.Sides.Right)
-                                {
-                                    side.left = MyWFC.Connections.BID;
-                                    side.middle = MyWFC.Connections.BID;
-                                    side.right = MyWFC.Connections.BIDYES;
-                                }
-                            }
-                            tile.cells.Add(cell1);
+                            AddNewCell(cell.sides[j].side, cell, cell.sides[j]);
                         }
                     r = new Rect(x, y, 20f, 20f);
                     if (GUI.Button(r, "-"))
@@ -115,13 +101,13 @@ public class TileEditorWindow : EditorWindow
                 var templeft = cell.sides[j].left;
                 var tempright = cell.sides[j].right;
                 var tempmiddl = cell.sides[j].middle;
-                Rect r = new Rect((x + width + width / 2), (y - height), 30f, 20f);
+                Rect r = new Rect((x + width + width / 2), (y - height), width, 20f);
                 cell.sides[j].right = (MyWFC.Connections)EditorGUI.EnumPopup(r, cell.sides[j].right);
 
-                r = new Rect((x + width + width / 2), (y), 30f, 20f);
+                r = new Rect((x + width + width / 2), (y), width, 20f);
                 cell.sides[j].middle = (MyWFC.Connections)EditorGUI.EnumPopup(r, cell.sides[j].middle);
 
-                r = new Rect((x + width + width / 2), (y + height), 30f, 20f);
+                r = new Rect((x + width + width / 2), (y + height), width, 20f);
                 cell.sides[j].left = (MyWFC.Connections)EditorGUI.EnumPopup(r, cell.sides[j].left);
 
                 r = new Rect((x + width * 3), (y), 30f, 20f);
@@ -131,9 +117,7 @@ public class TileEditorWindow : EditorWindow
                     if (!tile.cells.Exists(f => f.center.Equals(new Vector3(cell.center.x + (float)tile.size.x, cell.center.y, cell.center.z))))
                         if (GUI.Button(r, "+"))
                         {
-                            MyWFC.Cell cell1 = new MyWFC.Cell();
-                            cell1.center = new Vector3(cell.center.x + (float)tile.size.x, cell.center.y, cell.center.z);
-                            tile.cells.Add(cell1);
+                            AddNewCell(cell.sides[j].side, cell, cell.sides[j]);
                         }
                     r = new Rect(x, y, 20f, 20f);
                     if (GUI.Button(r, "-"))
@@ -153,13 +137,13 @@ public class TileEditorWindow : EditorWindow
                 var templeft = cell.sides[j].left;
                 var tempright = cell.sides[j].right;
                 var tempmiddl = cell.sides[j].middle;
-                Rect r = new Rect((x - width - width / 2) + 10f, (y - height * 2), 30f, 20f);
+                Rect r = new Rect((x - width - width / 2) + 10f, (y - height * 2), width, 20f);
                 cell.sides[j].right = (MyWFC.Connections)EditorGUI.EnumPopup(r, cell.sides[j].right);
 
-                r = new Rect(x, (y - height * 2), 30f, 20f);
+                r = new Rect(x, (y - height * 2), width, 20f);
                 cell.sides[j].middle = (MyWFC.Connections)EditorGUI.EnumPopup(r, cell.sides[j].middle);
 
-                r = new Rect((x + width + width / 2) - 10f, (y - height * 2), 30f, 20f);
+                r = new Rect((x + width + width / 2) - 10f, (y - height * 2), width, 20f);
                 cell.sides[j].left = (MyWFC.Connections)EditorGUI.EnumPopup(r, cell.sides[j].left);
 
                 r = new Rect(x, (y - height * 2) - 20f, 30f, 20f);
@@ -168,9 +152,7 @@ public class TileEditorWindow : EditorWindow
                     if (!tile.cells.Exists(f => f.center.Equals(new Vector3(cell.center.x, cell.center.y, cell.center.z + (float)tile.size.z))))
                         if (GUI.Button(r, "+"))
                         {
-                            MyWFC.Cell cell1 = new MyWFC.Cell();
-                            cell1.center = new Vector3(cell.center.x, cell.center.y, cell.center.z + (float)tile.size.z);
-                            tile.cells.Add(cell1);
+                            AddNewCell(cell.sides[j].side, cell, cell.sides[j]);
                         }
                     r = new Rect(x, y, 20f, 20f);
                     if (GUI.Button(r, "-"))
@@ -191,13 +173,13 @@ public class TileEditorWindow : EditorWindow
                 var templeft = cell.sides[j].left;
                 var tempright = cell.sides[j].right;
                 var tempmiddl = cell.sides[j].middle;
-                Rect r = new Rect((x - width - width / 2) + 10f, (y + height * 2), 30f, 20f);
+                Rect r = new Rect((x - width - width / 2) + 10f, (y + height * 2), width, 20f);
                 cell.sides[j].left = (MyWFC.Connections)EditorGUI.EnumPopup(r, cell.sides[j].left);
 
-                r = new Rect(x, (y + height * 2), 30f, 20f);
+                r = new Rect(x, (y + height * 2), width, 20f);
                 cell.sides[j].middle = (MyWFC.Connections)EditorGUI.EnumPopup(r, cell.sides[j].middle);
 
-                r = new Rect((x + width + width / 2) - 10f, (y + height * 2), 30f, 20f);
+                r = new Rect((x + width + width / 2) - 10f, (y + height * 2), width, 20f);
                 cell.sides[j].right = (MyWFC.Connections)EditorGUI.EnumPopup(r, cell.sides[j].right);
 
 
@@ -207,9 +189,7 @@ public class TileEditorWindow : EditorWindow
                     if (!tile.cells.Exists(f => f.center.Equals(new Vector3(cell.center.x, cell.center.y, cell.center.z - (float)tile.size.z))))
                         if (GUI.Button(r, "+"))
                         {
-                            MyWFC.Cell cell1 = new MyWFC.Cell();
-                            cell1.center = new Vector3(cell.center.x, cell.center.y, cell.center.z - (float)tile.size.z);
-                            tile.cells.Add(cell1);
+                            AddNewCell(cell.sides[j].side, cell, cell.sides[j]);
                         }
                     r = new Rect(x, y, 20f, 20f);
                     if (GUI.Button(r, "-"))
@@ -230,6 +210,170 @@ public class TileEditorWindow : EditorWindow
         {
             Rect c = new Rect(x - 50f, (y + height * 4), 100f, 20f);
             GUI.Label(c, name);
+        }
+    }
+
+    void AddNewCell(MyWFC.Sides sides, MyWFC.Cell oldCell, MyWFC.TileSide tileSide)
+    {
+        MyWFC.Cell cell1 = new MyWFC.Cell();
+        switch (sides)
+        {
+            case MyWFC.Sides.Left:
+                cell1.center = new Vector3(oldCell.center.x - (float)tile.size.x, oldCell.center.y, oldCell.center.z);
+                if (cell1.center.z > 0)
+                {
+                    tileSide.left = MyWFC.Connections.BIDYES;
+                    tileSide.middle = MyWFC.Connections.BID;
+                    tileSide.right = MyWFC.Connections.BID;
+
+                    foreach (MyWFC.TileSide s in cell1.sides)
+                    {
+                        if (s.side == MyWFC.Sides.Right)
+                        {
+                            s.left = MyWFC.Connections.BID;
+                            s.middle = MyWFC.Connections.BID;
+                            s.right = MyWFC.Connections.BIDYES;
+                        }
+                    }
+
+                    tile.cells.Add(cell1);
+                }
+                else
+                {
+                    tileSide.left = MyWFC.Connections.BID;
+                    tileSide.middle = MyWFC.Connections.BID;
+                    tileSide.right = MyWFC.Connections.BIDYES;
+
+                    foreach (MyWFC.TileSide s in cell1.sides)
+                    {
+                        if (s.side == MyWFC.Sides.Right)
+                        {
+                            s.left = MyWFC.Connections.BIDYES;
+                            s.middle = MyWFC.Connections.BID;
+                            s.right = MyWFC.Connections.BID;
+                        }
+                    }
+                    tile.cells.Add(cell1);
+                }
+                break;
+            case MyWFC.Sides.Right:
+                cell1.center = new Vector3(oldCell.center.x + (float)tile.size.x, oldCell.center.y, oldCell.center.z);
+                if (cell1.center.z > 0)
+                {
+                    tileSide.left = MyWFC.Connections.BID;
+                    tileSide.middle = MyWFC.Connections.BID;
+                    tileSide.right = MyWFC.Connections.BIDYES;
+
+
+                    foreach (MyWFC.TileSide s in cell1.sides)
+                    {
+                        if (s.side == MyWFC.Sides.Left)
+                        {
+                            s.left = MyWFC.Connections.BIDYES;
+                            s.middle = MyWFC.Connections.BID;
+                            s.right = MyWFC.Connections.BID;
+                        }
+                    }
+                    tile.cells.Add(cell1);
+                }
+                else
+                {
+                    tileSide.left = MyWFC.Connections.BIDYES;
+                    tileSide.middle = MyWFC.Connections.BID;
+                    tileSide.right = MyWFC.Connections.BID;
+
+
+                    foreach (MyWFC.TileSide s in cell1.sides)
+                    {
+                        if (s.side == MyWFC.Sides.Left)
+                        {
+                            s.left = MyWFC.Connections.BID;
+                            s.middle = MyWFC.Connections.BID;
+                            s.right = MyWFC.Connections.BIDYES;
+                        }
+                    }
+                    tile.cells.Add(cell1);
+                }
+                break;
+
+            case MyWFC.Sides.Front:
+                cell1.center = new Vector3(oldCell.center.x, oldCell.center.y, oldCell.center.z + (float)tile.size.z);
+                if (cell1.center.x > 0)
+                {
+                    tileSide.left = MyWFC.Connections.BIDYES;
+                    tileSide.middle = MyWFC.Connections.BID;
+                    tileSide.right = MyWFC.Connections.BID;
+
+
+                    foreach (MyWFC.TileSide s in cell1.sides)
+                    {
+                        if (s.side == MyWFC.Sides.Back)
+                        {
+                            s.left = MyWFC.Connections.BID;
+                            s.middle = MyWFC.Connections.BID;
+                            s.right = MyWFC.Connections.BIDYES;
+                        }
+                    }
+                    tile.cells.Add(cell1);
+                }
+                else
+                {
+                    tileSide.left = MyWFC.Connections.BID;
+                    tileSide.middle = MyWFC.Connections.BID;
+                    tileSide.right = MyWFC.Connections.BIDYES;
+
+
+                    foreach (MyWFC.TileSide s in cell1.sides)
+                    {
+                        if (s.side == MyWFC.Sides.Back)
+                        {
+                            s.left = MyWFC.Connections.BIDYES;
+                            s.middle = MyWFC.Connections.BID;
+                            s.right = MyWFC.Connections.BID;
+                        }
+                    }
+                    tile.cells.Add(cell1);
+                }
+                break;
+            case MyWFC.Sides.Back:
+                cell1.center = new Vector3(oldCell.center.x, oldCell.center.y, oldCell.center.z - (float)tile.size.z);
+                if (cell1.center.x > 0)
+                {
+                    tileSide.left = MyWFC.Connections.BID;
+                    tileSide.middle = MyWFC.Connections.BID;
+                    tileSide.right = MyWFC.Connections.BIDYES;
+
+
+                    foreach (MyWFC.TileSide s in cell1.sides)
+                    {
+                        if (s.side == MyWFC.Sides.Front)
+                        {
+                            s.left = MyWFC.Connections.BIDYES;
+                            s.middle = MyWFC.Connections.BID;
+                            s.right = MyWFC.Connections.BID;
+                        }
+                    }
+                    tile.cells.Add(cell1);
+                }
+                else
+                {
+                    tileSide.left = MyWFC.Connections.BIDYES;
+                    tileSide.middle = MyWFC.Connections.BID;
+                    tileSide.right = MyWFC.Connections.BIDYES;
+
+
+                    foreach (MyWFC.TileSide s in cell1.sides)
+                    {
+                        if (s.side == MyWFC.Sides.Front)
+                        {
+                            s.left = MyWFC.Connections.BID;
+                            s.middle = MyWFC.Connections.BID;
+                            s.right = MyWFC.Connections.BIDYES;
+                        }
+                    }
+                    tile.cells.Add(cell1);
+                }
+                break;
         }
     }
 }

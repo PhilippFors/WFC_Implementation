@@ -37,7 +37,8 @@ namespace LevelGeneration.AreaGeneration
         public void StartAreaGenerator(GridGeneration.GridTile[] tile)
         {
             generators.Clear();
-            if (areaList.Count != 0)
+            
+            if (areaList.Count > 0)
                 foreach (Area a in areaList)
                     if (Application.isPlaying) Destroy(a.parent); else DestroyImmediate(a.parent);
 
