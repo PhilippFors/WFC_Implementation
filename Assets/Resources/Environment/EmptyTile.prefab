@@ -44,50 +44,40 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ID: 0
+  bID: 0
+  runtimeIDs: 
   use: 1
   weight: 1
   rotationDeg: 0
   hasRotation: 0
   coords: {x: 0, y: 0}
   size: {x: 6, y: 6, z: 6}
-  side1:
-    side: 180
-    connection: 0
-    subSides:
-    - side: 1
-      connection: 9
-    - side: 2
-      connection: 9
-    - side: 0
-      connection: 9
-  side2:
-    side: 0
-    connection: 0
-    subSides:
-    - side: 1
-      connection: 9
-    - side: 2
-      connection: 9
-    - side: 0
-      connection: 9
-  side3:
-    side: 270
-    connection: 0
-    subSides:
-    - side: 1
-      connection: 9
-    - side: 2
-      connection: 9
-    - side: 0
-      connection: 9
-  side4:
-    side: 90
-    connection: 0
-    subSides:
-    - side: 1
-      connection: 9
-    - side: 2
-      connection: 9
-    - side: 0
-      connection: 9
+  center: {x: 0, y: 0, z: 0}
+  cells:
+  - center: {x: 0, y: 0, z: 0}
+    side1:
+      side: 0
+      connection: 0
+      left: 9
+      middle: 9
+      right: 9
+    side2:
+      side: 180
+      connection: 0
+      left: 9
+      middle: 9
+      right: 9
+    side3:
+      side: 270
+      connection: 0
+      left: 9
+      middle: 9
+      right: 9
+    side4:
+      side: 90
+      connection: 0
+      left: 9
+      middle: 9
+      right: 9
   showGizmo: 1
+  gizmoSize: 0.5
