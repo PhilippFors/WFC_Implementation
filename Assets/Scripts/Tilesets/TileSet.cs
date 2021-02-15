@@ -15,7 +15,7 @@ namespace MyWFC
         [HideInInspector] public List<GameObject> tiles = new List<GameObject>();
 
         [HideInInspector] public GameObject entrance;
-
+        [HideInInspector] public GameObject empty;
         [HideInInspector] public List<GameObject> borderTiles = new List<GameObject>();
         [HideInInspector] public List<GameObject> pathTiles = new List<GameObject>();
 
@@ -34,18 +34,18 @@ namespace MyWFC
         {
             TileSet t = (TileSet)target;
 
-
             DrawDefaultInspector();
-
             TileEditor(t);
             GUILayout.Space(20f);
             BorderTileEditor(t);
             GUILayout.Space(20f);
             PathTilesEditor(t);
-
+            
             //Entrance Tile
             GUILayout.Label("Entrance Tile");
             t.entrance = (GameObject)EditorGUILayout.ObjectField(t.entrance, typeof(GameObject), false);
+            GUILayout.Label("Empty Tile");
+            t.empty = (GameObject)EditorGUILayout.ObjectField(t.empty, typeof(GameObject), false);
 
             if (GUI.changed)
             {

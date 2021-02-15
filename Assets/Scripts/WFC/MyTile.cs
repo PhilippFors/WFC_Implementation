@@ -33,10 +33,10 @@ namespace MyWFC
         [SerializeField] float gizmoSize = 0.5f;
         private void OnDrawGizmos()
         {
-            if (!GetComponent<MeshRenderer>())
+            if (!GetComponent<MeshRenderer>() && GetComponentsInChildren<MeshRenderer>() == null)
             {
                 Gizmos.color = Color.blue;
-                Gizmos.DrawWireCube(transform.position, new Vector3(size.x - 1f, size.y - 1f, size.z - 1f));
+                Gizmos.DrawWireCube(transform.position, new Vector3(size.x - 0.2f, size.y - 0.2f, size.z - 0.2f));
             }
         }
 #if UNITY_EDITOR

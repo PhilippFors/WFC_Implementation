@@ -151,4 +151,17 @@ public static class WFCUtil
         }
         return l;
     }
+
+    public static double FindTileFrequenzy(RuntimeTile[] modelTiles, TileSet tileSet, int id)
+    {
+        var tile = modelTiles[id].obj;
+        var index = tileSet.tiles.FindIndex(x => x.Equals(tile));
+        return tileSet.frequenzies[index];
+    }
+
+    public static bool FindTileUse(TileSet tileSet, GameObject tile)
+    {
+        var index = tileSet.tiles.FindIndex(x => x.Equals(tile));
+        return tileSet.tileUse[index];
+    }
 }

@@ -93,7 +93,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8b07230a99b851448983f34e68545f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ID: 11
   bID: 0
   runtimeIDs: 
   use: 1
@@ -109,13 +108,13 @@ MonoBehaviour:
       side: 0
       connection: 0
       left: 0
-      middle: 2
+      middle: 5
       right: 0
     side2:
       side: 180
       connection: 0
       left: 0
-      middle: 2
+      middle: 5
       right: 0
     side3:
       side: 270

@@ -174,7 +174,7 @@ namespace MyWFC
         void SetFrequencies()
         {
             for (int i = 0; i < runtimeTiles.Count; i++)
-                model.SetFrequency(new Tile(i), runtimeTiles[i].weight);
+                model.SetFrequency(new Tile(i), WFCUtil.FindTileFrequenzy(runtimeTiles.ToArray(), tileSet, i));
         }
 
         protected override void PreparePropagator()
@@ -189,9 +189,9 @@ namespace MyWFC
 
             propagator = new TilePropagator(model, topology, options);
 
-            // this.ApplyMask();
-
             this.AddConstraints();
+
+            this.ApplyMask();
         }
 
         DeBroglie.Constraints.PathConstraint GetPathConstraint()
@@ -232,30 +232,17 @@ namespace MyWFC
         {
             if (maskGenerator != null && useMask)
             {
-                foreach (Point p in maskGenerator.areaEdges)
-                {
-                    if (useSample)
-                    {
-                        propagator.Select(p.x, p.y, p.z, WFCUtil.FindTilesList(inputSampler.runtimeTiles, maskGenerator.borderTiles));
-                    }
-                    else
-                    {
-                        propagator.Select(p.x, p.y, p.z, WFCUtil.FindTilesList(runtimeTiles.ToArray(), maskGenerator.borderTiles));
-                    }
-                }
                 for (int i = 0; i < size.x; i++)
                     for (int j = 0; j < size.z; j++)
                         if (!maskGenerator.mask[i, j])
-                            propagator.Select(i, j, 0, WFCUtil.FindTile(runtimeTiles.ToArray(), 0));
-                // foreach (Point p in maskGenerator.passageEdges)
-                // {
-                //     if (useSample)
-                //         propagator.Ban(p.x, p.y, p.z, WFCUtil.FindTile(inputSampler.runtimeTiles, 1));
-                //     else
-                //     {
-                //         propagator.Ban(p.x, p.y, p.z, WFCUtil.FindTile(runtimeTiles.ToArray(), 1));
-                //     }
-                // }
+                            propagator.Select(i, j, 0, WFCUtil.FindTileList(runtimeTiles.ToArray(), tileSet.empty.GetHashCode()));
+
+                // foreach (MaskArea area in maskGenerator.allAreas)
+                foreach (Point p in maskGenerator.)
+                {
+                    // if (!propagator.IsSelected(p.x, p.y, 0, WFCUtil.FindTile(runtimeTiles.ToArray(), tileSet.empty.GetHashCode())))
+                        propagator.Select(p.x, p.y, 0, WFCUtil.FindTileList(runtimeTiles.ToArray(), tileSet.empty.GetHashCode()));
+                }
             }
         }
 
@@ -265,23 +252,14 @@ namespace MyWFC
             {
                 for (int z = 0; z < modelOutput.GetLength(1); z++)
                 {
-                    if (useMask)
-                    {
-                        if (maskGenerator != null)
-                        {
-                            DrawSingleTile(x, z);
-                        }
-                    }
+                    if (IsBigTile(x, z))
+                        DrawBigTile(x, z);
                     else
-                    {
-                        if (IsBigTile(x, z))
-                            DrawBigTile(x, z);
-                        else
-                            DrawSingleTile(x, z);
-                    }
+                        DrawSingleTile(x, z);
                 }
             }
         }
+
 
         /// <summary>
         /// Instantiates a single tile at position x, y

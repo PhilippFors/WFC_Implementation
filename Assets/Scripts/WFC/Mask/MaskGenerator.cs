@@ -20,13 +20,13 @@ namespace MyWFC
         [HideInInspector] public List<Point> passageEdges;
         public bool[,] mask;
         bool[,] checker;
-        GameObject full;
-        GameObject empty;
+        public GameObject full;
+        public GameObject empty;
 
         private void Start()
         {
             full = (GameObject)Resources.Load("Full");
-            empty = (GameObject)Resources.Load("EmptyTile");
+            empty = (GameObject)Resources.Load("Empty");
         }
         public override Coroutine Generate(bool multithread = false)
         {
@@ -98,7 +98,37 @@ namespace MyWFC
 
             UpdateEdges();
             UpdateModelOutput();
-            // base.Draw();
+            Draw();
+        }
+
+        void Draw()
+        {
+            for (int x = 0; x < modelOutput.GetLength(0); x++)
+            {
+                // for (int y = 0; y < modelOutput.GetLength(1) - 1; y++)
+                for (int z = 0; z < modelOutput.GetLength(1); z++)
+                {
+                    var tile = modelOutput[x, z];
+
+                    Vector3 pos = new Vector3(x * gridSize, 0, z * gridSize);
+                    GameObject fab = null;
+                    if (modelOutput[x, z] == 0)
+                        fab = empty;
+                    else
+                        fab = full;
+
+                    if (fab != null)
+                    {
+                        MyTile newTile = Instantiate(fab, new Vector3(), Quaternion.identity).GetComponent<MyTile>();
+                        newTile.coords = new Vector2Int(x, z);
+                        Vector3 fscale = newTile.transform.localScale;
+                        newTile.transform.parent = output.transform;
+                        newTile.transform.localPosition = pos;
+                        newTile.transform.localEulerAngles = new Vector3(0, 0, 0);
+                        newTile.transform.localScale = fscale;
+                    }
+                }
+            }
         }
 
         public void Smooth()

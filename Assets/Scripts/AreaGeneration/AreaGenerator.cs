@@ -13,6 +13,7 @@ namespace LevelGeneration.AreaGeneration
         public List<Area> areaList = new List<Area>();
         public List<MyWFC.AdjacentWFC> generators = new List<MyWFC.AdjacentWFC>();
         public bool loaded = false;
+        
         private void Start()
         {
             FindPrefabs();
@@ -135,7 +136,7 @@ namespace LevelGeneration.AreaGeneration
                 borderC = generator.gameObject.AddComponent<MyWFC.BorderConstraint>();
                 for (int i = 0; i < t.borderTiles.Count; i++)
                 {
-                    if (!t.tileUse[i] || !t.borderUse[i])
+                    if (!WFCUtil.FindTileUse(t, t.borderTiles[i]) || !t.borderUse[i])
                         continue;
                     else
                         borderC.borderTiles.Add(t.borderTiles[i].GetComponent<MyWFC.MyTile>());
@@ -151,7 +152,7 @@ namespace LevelGeneration.AreaGeneration
 
                 for (int i = 0; i < t.pathTiles.Count; i++)
                 {
-                    if (!t.tileUse[i] || !t.pathUse[i])
+                    if (!WFCUtil.FindTileUse(t, t.pathTiles[i]) || !t.pathUse[i])
                         continue;
                     else
                         pathC.pathTiles.Add(t.pathTiles[i].GetComponent<MyWFC.MyTile>());

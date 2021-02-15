@@ -23,6 +23,7 @@ MonoBehaviour:
   - {fileID: 5998969155350964963, guid: 44cd2463fd4afa14581fa853f965f7af, type: 3}
   - {fileID: 1626949533568700563, guid: 7dbddd1a9f9656849a8f7eb86ab75f20, type: 3}
   entrance: {fileID: 0}
+  empty: {fileID: 2119246436170072979, guid: 292689021d95b3e4e85043cff11c7412, type: 3}
   borderTiles: []
   pathTiles: []
   frequenzies:
