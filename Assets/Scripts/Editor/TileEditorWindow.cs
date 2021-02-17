@@ -5,9 +5,9 @@ using UnityEditor;
 
 public class TileEditorWindow : EditorWindow
 {
-    MyWFC.MyTile tile;
+    public MyWFC.MyTile tile;
     float height = 20f;
-    float width = 50f;
+    float width = 40f;
 
     List<float> ys;
     List<float> xs;
@@ -23,7 +23,7 @@ public class TileEditorWindow : EditorWindow
     }
     private void OnGUI()
     {
-        float x = 85f;
+        float x = 100f;
         float y = 80f;
         rs = new List<Rect>();
         ys = new List<float>();
@@ -45,7 +45,7 @@ public class TileEditorWindow : EditorWindow
         else if (tile != null)
             for (int i = 0; i < tile.cells.Count; i++)
             {
-                x = 85f;
+                x = 100f;
                 y = 80f;
                 if (tile.cells[i].center.x > 0)
                     x = x * 4;
