@@ -152,7 +152,7 @@ namespace MyWFC
 
                     if (GUILayout.Button("Remove"))
                     {
-                        t.borderTiles.Remove(t.borderTiles[i]);
+                        t.borderTiles.RemoveAt(i);
                         t.borderUse.RemoveAt(i);
                     }
                     GUILayout.EndHorizontal();
@@ -182,7 +182,7 @@ namespace MyWFC
 
                     if (GUILayout.Button("Remove"))
                     {
-                        t.pathTiles.Remove(t.pathTiles[i]);
+                        t.pathTiles.RemoveAt(i);
                         t.pathUse.RemoveAt(i);
                     }
                     GUILayout.EndHorizontal();
