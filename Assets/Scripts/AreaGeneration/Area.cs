@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace LevelGeneration.AreaGeneration
+namespace LevelGeneration
 {
     [System.Serializable]
     public class Area
@@ -15,6 +15,7 @@ namespace LevelGeneration.AreaGeneration
             parent = g;
             tileInfo = tile;
             parent.transform.position = tile.position;
+            parent.tag = "Area";
         }
     }
 }

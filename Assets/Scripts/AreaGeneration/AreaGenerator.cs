@@ -10,10 +10,14 @@ namespace LevelGeneration.AreaGeneration
         public MyWFC.TileSet startAreaTileset;
         public MyWFC.TileSet tileSet;
         public MyWFC.ConnectionGroups connections;
+        public MyWFC.PathConstraint.PathConstraintType pathConstraintType;
+        public DeBroglie.Wfc.ModelConstraintAlgorithm modelConstraintAlgorithm;
+        public bool backTrack = true;
+        public int backTrackDepth = 5;
+
         public List<Area> areaList = new List<Area>();
         public List<MyWFC.AdjacentWFC> generators = new List<MyWFC.AdjacentWFC>();
-        public bool loaded = false;
-        
+
         private void Start()
         {
             FindPrefabs();
@@ -42,6 +46,13 @@ namespace LevelGeneration.AreaGeneration
             if (areaList.Count > 0)
                 foreach (Area a in areaList)
                     if (Application.isPlaying) Destroy(a.parent); else DestroyImmediate(a.parent);
+                    
+            GameObject[] areaArr = GameObject.FindGameObjectsWithTag("Area");
+            if (areaArr.Length > 0)
+            {
+                foreach (GameObject a in areaArr)
+                    if (Application.isPlaying) Destroy(a); else DestroyImmediate(a);
+            }
 
             areaList.Clear();
 
@@ -101,7 +112,9 @@ namespace LevelGeneration.AreaGeneration
             generator.ConnectionGroups = connections;
             generator.gridSize = t.GridSize;
             generator.size = new Vector3Int(tile.width, 1, tile.height);
-
+            generator.modelConstraintAlgorithm = modelConstraintAlgorithm;
+            generator.backTrackDepth = backTrackDepth;
+            generator.backTrack = backTrack;
             AddConstraints(a, generator, t);
 
             generators.Add(generator);
@@ -146,6 +159,7 @@ namespace LevelGeneration.AreaGeneration
             if (t.pathTiles.Count > 0)
             {
                 pathC = generator.gameObject.AddComponent<MyWFC.PathConstraint>();
+                pathC.pathConstraintType = pathConstraintType;
                 if (fixedC != null && fixedC.useConstraint)
                     foreach (MyWFC.MyTilePoint p in fixedC.pointList)
                         pathC.endPoints.Add(p);

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace LevelGeneration.GridGeneration
 {
-    public class GridGenerator : MonoBehaviour
+    public class GridGenerator
     {
         public int gridWidth;
         public int gridHeight;
@@ -16,6 +16,8 @@ namespace LevelGeneration.GridGeneration
         public StringDictionary dic = new StringDictionary();
         public Directions[] directions;
         [SerializeField] GridTile[] arr;
+
+        Vector3 currentPos;
 
         [Header("Gizmo settings")]
         public bool drawGizmo;
@@ -30,6 +32,17 @@ namespace LevelGeneration.GridGeneration
             }
         }
 
+        public GridGenerator(int gridWidth, int gridHeight, int levelLength, int seed, bool randomSeed, bool randomLength, StringDictionary dictionary, Directions[] dirs, Vector3 pos)
+        {
+            this.gridWidth = gridWidth;
+            this.gridHeight = gridHeight;
+            this.seed = randomSeed ? GetSeed() : seed;
+            this.levelLength = randomLength ? Random.Range(4, 8) : levelLength;
+            this.dic = dictionary;
+            this.directions = dirs;
+            currentPos = pos;
+        }
+
         public Grid grid;
 
         /// <summary>
@@ -37,19 +50,16 @@ namespace LevelGeneration.GridGeneration
         /// </summary>
         public void GenerateGrid()
         {
-            GetSeed();
+            // GetSeed();
 
-            if (randomLength)
-                levelLength = Random.Range(4, 8);
-
-            grid = new Grid(gridWidth, gridHeight, levelLength, seed, totalWeight, directions, dic, isLinear, this.gameObject);
+            grid = new Grid(gridWidth, gridHeight, levelLength, seed, totalWeight, directions, dic, isLinear, currentPos);
             arr = grid.linearLevel;
         }
 
         /// <summary>
         /// Sets a seed chosen by the user or uses a random seed
         /// </summary>
-        void GetSeed()
+        int GetSeed()
         {
             if (randomSeed)
             {
@@ -61,6 +71,7 @@ namespace LevelGeneration.GridGeneration
                 seed = int.Parse(s);
             }
             Random.InitState(seed);
+            return seed;
         }
 
         private void OnDrawGizmos()
@@ -96,7 +107,6 @@ namespace LevelGeneration.GridGeneration
             float z = quant.z * Mathf.Floor(v.z / quant.z);
             return new Vector3(x, y, z);
         }
-
     }
 
     /// <summary>
@@ -106,7 +116,7 @@ namespace LevelGeneration.GridGeneration
     {
         public GridTile[] linearLevel;
         LinearGenerator linearGenerator;
-        public Grid(int height, int width, int length, int seed, int _weight, Directions[] _directions, StringDictionary _dic, bool isLinear, GameObject gameOBJ)
+        public Grid(int height, int width, int length, int seed, int _weight, Directions[] _directions, StringDictionary _dic, bool isLinear, Vector3 gameOBJ)
         {
             linearLevel = new GridTile[length + 1];
 
@@ -133,8 +143,8 @@ namespace LevelGeneration.GridGeneration
         protected int totalWeight;
         protected Directions[] directions;
         protected StringDictionary dic;
-        GameObject obj;
-        public MyGridGenerator(int _height, int _width, int _length, int _weight, Directions[] _directions, StringDictionary _dic, GameObject gameOBJ)
+        Vector3 obj;
+        public MyGridGenerator(int _height, int _width, int _length, int _weight, Directions[] _directions, StringDictionary _dic, Vector3 gameOBJ)
         {
             totalWeight = _weight;
             height = _height;
@@ -158,7 +168,7 @@ namespace LevelGeneration.GridGeneration
             int r = Random.Range(0, 4);
 
             //Setting the first tile from which everything starts. Has no entrance.
-            tileGrid[oldX, oldY] = new GridTile(obj.transform.position, 0, dic["baseTileSize"], dic["baseTileSize"]);
+            tileGrid[oldX, oldY] = new GridTile(obj, 0, dic["baseTileSize"], dic["baseTileSize"]);
 
             for (int i = 1; i < length + 1; i++)
             {
@@ -404,7 +414,7 @@ namespace LevelGeneration.GridGeneration
     public class LinearGenerator : MyGridGenerator
     {
 
-        public LinearGenerator(int _height, int _width, int _length, int _weight, Directions[] _directions, StringDictionary _dic, GameObject gameOBJ) : base(_height, _width, _length, _weight, _directions, _dic, gameOBJ)
+        public LinearGenerator(int _height, int _width, int _length, int _weight, Directions[] _directions, StringDictionary _dic, Vector3 gameOBJ) : base(_height, _width, _length, _weight, _directions, _dic, gameOBJ)
         {
 
         }
