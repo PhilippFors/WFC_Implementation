@@ -11,6 +11,8 @@ namespace MyWFC
     {
         public int n = 2;
         protected DeBroglie.Models.OverlappingModel model;
+        public InputSampler inputSampler;
+        protected ITopoArray<Tile> sample;
 
         public override Coroutine Generate(bool multithread)
         {
@@ -19,12 +21,12 @@ namespace MyWFC
             if (multithread)
                 return StartCoroutine(StartGenerate());
             else
-                StartGenerateSingle();
+                StartCoroutine(StartGenerate());
 
             return null;
         }
 
-        protected override IEnumerator StartGenerate()
+        protected IEnumerator StartGenerate()
         {
             CreateOutputObject();
             PrepareModel();
@@ -35,7 +37,7 @@ namespace MyWFC
             DrawOutput();
         }
 
-        protected override void PrepareModel()
+        protected virtual void PrepareModel()
         {
             sample = TopoArray.Create<Tile>(inputSampler.sample, periodicIN);
 
@@ -48,12 +50,12 @@ namespace MyWFC
             {
                 maskGenerator.size = size;
                 maskGenerator.Generate(false);
-                topology = topology.WithMask(TopoArray.Create<bool>(maskGenerator.mask, topology));
+                topology = topology.WithMask(TopoArray.Create<bool>(maskGenerator.maskOutput, topology));
             }
         }
 
 
-        protected override void PreparePropagator()
+        protected virtual void PreparePropagator()
         {
             TilePropagatorOptions options = new TilePropagatorOptions();
             options.BackTrackDepth = backTrackDepth;
@@ -67,11 +69,11 @@ namespace MyWFC
                     propagator.Select(p.x, p.y, p.z, WFCUtil.FindTile(inputSampler.runtimeTiles, 1));
                 }
             }
-            AddConstraints();
-            ApplyMask();
+            // AddConstraints();
+            // ApplyMask();
         }
 
-        public override void DrawOutput()
+        public virtual void DrawOutput()
         {
             for (int x = 0; x < modelOutput.GetLength(0); x++)
             {
@@ -80,7 +82,7 @@ namespace MyWFC
                 {
                     if (useMask)
                     {
-                        if (maskGenerator != null && maskGenerator.mask[x, z])
+                        if (maskGenerator != null && maskGenerator.maskOutput[x, z])
                         {
                             DrawTile(x, z);
                         }

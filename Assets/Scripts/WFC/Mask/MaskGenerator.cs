@@ -7,18 +7,17 @@ namespace MyWFC
 {
     public class MaskGenerator : OverlapWFC
     {
-        public List<MyTile> borderTiles = new List<MyTile>();
-        public List<MaskSample> maskSamples;
+        public List<MaskSample> maskInputSamples;
         public int minAreaSize = 5;
         public int passageRadius = 1;
         public int minNeighbours = 3;
         public int smoothIterations = 1;
         ITopoArray<int> maskInput;
         public List<MaskArea> allAreas;
-        public List<Point> areaEdges;
+        [HideInInspector] public List<Point> areaEdges;
         [HideInInspector] public List<Point> passages;
         [HideInInspector] public List<Point> passageEdges;
-        public bool[,] mask;
+        public bool[,] maskOutput;
         bool[,] checker;
         public GameObject full;
         public GameObject empty;
@@ -34,14 +33,14 @@ namespace MyWFC
             if (multithread)
                 return StartCoroutine(StartGenerate());
             else
-                StartGenerateSingle();
+                StartCoroutine(StartGenerate());
 
             return null;
         }
 
         protected override void PrepareModel()
         {
-            MaskSample r = maskSamples[Random.Range(0, maskSamples.Count)];
+            MaskSample r = maskInputSamples[Random.Range(0, maskInputSamples.Count)];
             maskInput = TopoArray.Create<int>(r.sample, periodicIN);
 
             model = new DeBroglie.Models.OverlappingModel(n);
@@ -58,7 +57,17 @@ namespace MyWFC
             propagator = new TilePropagator(model, topology, options);
 
             AddConstraints();
-            ApplyMask();
+        }
+
+        protected void AddConstraints()
+        {
+            CustomConstraint[] constraints = GetComponents<CustomConstraint>();
+            if (constraints != null)
+                foreach (CustomConstraint c in constraints)
+                {
+                    if (c.useConstraint)
+                        c.SetConstraint(propagator, inputSampler.runtimeTiles);
+                }
         }
         public override void DrawOutput()
         {
@@ -67,10 +76,10 @@ namespace MyWFC
             passages = new List<Point>();
             passageEdges = new List<Point>();
             checker = new bool[size.x, size.z];
-            mask = new bool[size.x, size.z];
+            maskOutput = new bool[size.x, size.z];
             for (int i = 0; i < size.x; i++)
                 for (int j = 0; j < size.z; j++)
-                    mask[i, j] = false;
+                    maskOutput[i, j] = false;
 
             while (!AllTilesChecked())
             {
@@ -92,8 +101,9 @@ namespace MyWFC
                     }
             }
             UpdateModelOutput();
-            for (int s = 0; s < smoothIterations; s++)
-                Smooth();
+
+            Smooth();
+
             ProcessAreas();
 
             UpdateEdges();
@@ -133,15 +143,16 @@ namespace MyWFC
 
         public void Smooth()
         {
-            for (int x = 0; x < size.x; x++)
-            {
-                for (int y = 0; y < size.z; y++)
+            for (int s = 0; s < smoothIterations; s++)
+                for (int x = 0; x < size.x; x++)
                 {
-                    int neighbours = GetNeighbours(x, y);
-                    if (neighbours >= minNeighbours)
-                        IsNearArea(x, y);
+                    for (int y = 0; y < size.z; y++)
+                    {
+                        int neighbours = GetNeighbours(x, y);
+                        if (neighbours >= minNeighbours)
+                            IsNearArea(x, y);
+                    }
                 }
-            }
         }
 
         public void IsNearArea(int x, int y)
@@ -253,14 +264,14 @@ namespace MyWFC
                 foreach (Point p in a.pointlist)
                 {
                     modelOutput[p.x, p.y] = 1;
-                    mask[p.x, p.y] = true;
+                    maskOutput[p.x, p.y] = true;
                 }
 
             if (passages.Count > 0)
                 foreach (Point p in passages)
                 {
                     modelOutput[p.x, p.y] = 1;
-                    mask[p.x, p.y] = true;
+                    maskOutput[p.x, p.y] = true;
                 }
         }
 
@@ -562,7 +573,6 @@ namespace MyWFC
                 }
             }
         }
-
 
         public void FindEdges()
         {

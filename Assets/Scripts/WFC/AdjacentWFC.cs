@@ -11,23 +11,28 @@ namespace MyWFC
     public class AdjacentWFC : ModelImplementation
     {
         public TileSet tileSet;
+        public ConnectionGroups ConnectionGroups;
 
         [Tooltip("Keep rotations to 1 if you have a complete tileset with all rotations")]
-        public int rotations = 4;
-        public List<RuntimeTile> runtimeTiles;
-
-        public ConnectionGroups ConnectionGroups;
-        public bool useSample;
+        [HideInInspector] public int rotations = 4;
+        [HideInInspector] public List<RuntimeTile> runtimeTiles;
+        public DeBroglie.Wfc.ModelConstraintAlgorithm modelConstraintAlgorithm;
         AdjacentModel model;
         int bIDCounter = 0;
-        protected override IEnumerator StartGenerate()
+
+        public override Coroutine Generate(bool multithread = true)
+        {
+            if (multithread)
+                return StartCoroutine(StartGenerate());
+            else
+                StartCoroutine(StartGenerate());
+
+            return null;
+        }
+
+        protected IEnumerator StartGenerate()
         {
             maxRoutines = 0;
-            if (useSample && inputSampler == null)
-            {
-                Debug.LogError("No sample to analyze.");
-                yield break;
-            }
             CreateOutputObject();
             PrepareModel();
             PreparePropagator();
@@ -37,7 +42,7 @@ namespace MyWFC
             DrawOutput();
         }
 
-        protected override void PrepareModel()
+        protected void PrepareModel()
         {
             bIDCounter = 0;
             runtimeTiles = new List<RuntimeTile>();
@@ -45,14 +50,9 @@ namespace MyWFC
             model = new AdjacentModel();
             model.SetDirections(DirectionSet.Cartesian2d);
 
-            CreateTileRotations();
-
             topology = new GridTopology(size.x, size.z, periodicOUT);
 
-            this.CreateMask();
-            // CheckAdjacencies();
-            AdjacentUtil.StartAdjacencyCheck(runtimeTiles, model, ConnectionGroups);
-            SetFrequencies();
+            CreateTileRotations();
         }
 
         /// <summary>
@@ -60,65 +60,60 @@ namespace MyWFC
         /// </summary>
         void CreateTileRotations()
         {
-            if (!useSample)
+            for (int i = 0; i < tileSet.tiles.Count; i++)
             {
-                for (int i = 0; i < tileSet.tiles.Count; i++)
-                {
-                    MyTile t = tileSet.tiles[i].GetComponent<MyTile>();
-                    if (tileSet.tileUse[i])
-                        if (t.hasRotation)
-                            for (int j = 0; j < rotations; j++)
-                            {
-                                for (int z = 0; z < t.cells.Count; z++)
-                                {
-                                    int rot = j * 90;
-                                    if (rot == 0)
-                                    {
-                                        if (t.cells.Count > 1)
-                                            t.runtimeIDs.Add(runtimeTiles.Count);
-
-                                        runtimeTiles.Add(new RuntimeTile(t.gameObject.GetHashCode(), t.cells.Count > 1 ? bIDCounter : -1, rot, tileSet.frequenzies[i], false, t.gameObject, t.cells[z].sides));
-                                    }
-                                    else
-                                    {
-                                        List<TileSide> l = AdjacentUtil.TileSideCopy(t.cells[z].sides);
-
-                                        //Hacky way for sides to keep their global orientation so adjacencies are much easier to compare later. See AdjacencyUtil class.
-                                        for (int sideIndex = 0; sideIndex < t.cells[z].sides.Count; sideIndex++)
-                                        {
-                                            int s = (int)l[sideIndex].side + rot;
-                                            if (s >= 360)
-                                                s -= 360;
-
-                                            l[sideIndex].side = (Sides)s;
-                                        }
-
-                                        if (t.cells.Count > 1)
-                                            t.runtimeIDs.Add(runtimeTiles.Count);
-
-                                        runtimeTiles.Add(new RuntimeTile(t.gameObject.GetHashCode(), t.cells.Count > 1 ? bIDCounter : -1, rot, tileSet.frequenzies[i], false, t.gameObject, l));
-                                    }
-                                }
-                                if (t.cells.Count > 1)
-                                    bIDCounter++;
-                            }
-                        else
+                MyTile t = tileSet.tiles[i].GetComponent<MyTile>();
+                if (tileSet.tileUse[i])
+                    if (t.hasRotation)
+                        for (int j = 0; j < rotations; j++)
                         {
-                            for (int j = 0; j < t.cells.Count; j++)
+                            for (int z = 0; z < t.cells.Count; z++)
                             {
-                                if (t.cells.Count > 1)
-                                    t.runtimeIDs.Add(runtimeTiles.Count);
+                                int rot = j * 90;
+                                if (rot == 0)
+                                {
+                                    if (t.cells.Count > 1)
+                                        t.runtimeIDs.Add(runtimeTiles.Count);
 
-                                runtimeTiles.Add(new RuntimeTile(t.gameObject.GetHashCode(), (int)t.gameObject.transform.eulerAngles.y, tileSet.frequenzies[j], false, t.gameObject, t.cells[j].sides));
+                                    runtimeTiles.Add(new RuntimeTile(t.gameObject.GetHashCode(), t.cells.Count > 1 ? bIDCounter : -1, rot, tileSet.frequenzies[i], false, t.gameObject, t.cells[z].sides));
+                                }
+                                else
+                                {
+                                    List<TileSide> l = AdjacentUtil.TileSideCopy(t.cells[z].sides);
+
+                                    //Hacky way for sides to keep their global orientation so adjacencies are much easier to compare later. See AdjacencyUtil class.
+                                    for (int sideIndex = 0; sideIndex < t.cells[z].sides.Count; sideIndex++)
+                                    {
+                                        int s = (int)l[sideIndex].side + rot;
+                                        if (s >= 360)
+                                            s -= 360;
+
+                                        l[sideIndex].side = (Sides)s;
+                                    }
+
+                                    if (t.cells.Count > 1)
+                                        t.runtimeIDs.Add(runtimeTiles.Count);
+
+                                    runtimeTiles.Add(new RuntimeTile(t.gameObject.GetHashCode(), t.cells.Count > 1 ? bIDCounter : -1, rot, tileSet.frequenzies[i], false, t.gameObject, l));
+                                }
                             }
+                            if (t.cells.Count > 1)
+                                bIDCounter++;
                         }
-                }
+                    else
+                    {
+                        for (int j = 0; j < t.cells.Count; j++)
+                        {
+                            if (t.cells.Count > 1)
+                                t.runtimeIDs.Add(runtimeTiles.Count);
+
+                            runtimeTiles.Add(new RuntimeTile(t.gameObject.GetHashCode(), (int)t.gameObject.transform.eulerAngles.y, tileSet.frequenzies[j], false, t.gameObject, t.cells[j].sides));
+                        }
+                    }
             }
-            else
-            {
-                sample = TopoArray.Create<Tile>(inputSampler.sample, periodicIN);
-                model.AddSample(sample);
-            }
+
+            AdjacentUtil.StartAdjacencyCheck(runtimeTiles, model, ConnectionGroups);
+            SetFrequencies();
         }
 
         #region unimportant
@@ -177,76 +172,69 @@ namespace MyWFC
                 model.SetFrequency(new Tile(i), WFCUtil.FindTileFrequenzy(runtimeTiles.ToArray(), tileSet, i));
         }
 
-        protected override void PreparePropagator()
+        protected void PreparePropagator()
         {
             TilePropagatorOptions options = new TilePropagatorOptions();
-            options.BackTrackDepth = backTrackDepth;
+            options.BackTrackDepth = backTrack ? backTrackDepth : 0;
             options.PickHeuristicType = PickHeuristicType.MinEntropy;
+            options.ModelConstraintAlgorithm = modelConstraintAlgorithm;
 
+            //DeBroglie constraints should be added into the propagator via constructor
             var p = GetPathConstraint();
             if (p != null)
                 options.Constraints = new[] { p };
 
+
             propagator = new TilePropagator(model, topology, options);
 
-            this.AddConstraints();
+            //Most custom constraints only call Select or Ban on the propagator and don't need to be passed into the constructor
+            this.ApplyConstraints();
 
             this.ApplyMask();
         }
 
-        DeBroglie.Constraints.PathConstraint GetPathConstraint()
-        {
-            var constraints = GetComponent<MyWFC.PathConstraint>();
-            if (constraints != null && constraints.useConstraint)
-            {
-                constraints.SetConstraint(propagator, runtimeTiles.ToArray());
-                return constraints.pathConstraint;
-            }
-            return null;
-        }
-        protected override void AddConstraints()
+        protected void ApplyConstraints()
         {
             CustomConstraint[] constraints = GetComponents<CustomConstraint>();
             if (constraints != null)
                 foreach (CustomConstraint c in constraints)
                 {
                     if (c.useConstraint)
-                        if (useSample)
-                            c.SetConstraint(propagator, inputSampler.runtimeTiles);
-                        else
-                            c.SetConstraint(propagator, runtimeTiles.ToArray());
+                        c.SetConstraint(propagator, runtimeTiles.ToArray());
                 }
         }
 
-        protected void CreateMask()
+        DeBroglie.Constraints.ITileConstraint GetPathConstraint()
         {
-            if (maskGenerator != null && useMask)
+            var pathC = GetComponent<MyWFC.PathConstraint>();
+            if (pathC != null && pathC.useConstraint)
             {
-                maskGenerator.size = size;
-                maskGenerator.Generate(false);
-                // topology = topology.WithMask(TopoArray.Create<bool>(maskGenerator.mask, topology));
+                pathC.SetConstraint(propagator, runtimeTiles.ToArray());
+                return pathC.ReturnConstraint();
             }
+            else
+                return null;
         }
 
-        protected override void ApplyMask()
+        protected void ApplyMask()
         {
-            if (maskGenerator != null && useMask)
+            if (maskGenerator != null && maskGenerator.maskOutput != null && useMask)
             {
                 for (int i = 0; i < size.x; i++)
                     for (int j = 0; j < size.z; j++)
-                        if (!maskGenerator.mask[i, j])
+                        if (!maskGenerator.maskOutput[i, j])
                             propagator.Select(i, j, 0, WFCUtil.FindTileList(runtimeTiles.ToArray(), tileSet.empty.GetHashCode()));
 
                 // foreach (MaskArea area in maskGenerator.allAreas)
-                foreach (Point p in maskGenerator.)
+                foreach (Point p in maskGenerator.areaEdges)
                 {
                     // if (!propagator.IsSelected(p.x, p.y, 0, WFCUtil.FindTile(runtimeTiles.ToArray(), tileSet.empty.GetHashCode())))
-                        propagator.Select(p.x, p.y, 0, WFCUtil.FindTileList(runtimeTiles.ToArray(), tileSet.empty.GetHashCode()));
+                    propagator.Select(p.x, p.y, 0, WFCUtil.FindTileList(runtimeTiles.ToArray(), tileSet.empty.GetHashCode()));
                 }
             }
         }
 
-        public override void DrawOutput()
+        public void DrawOutput()
         {
             for (int x = 0; x < modelOutput.GetLength(0); x++)
             {
@@ -279,10 +267,7 @@ namespace MyWFC
                 newTile.transform.parent = output.transform;
                 newTile.transform.localPosition = pos;
 
-                if (useSample && inputSampler != null)
-                    newTile.transform.localEulerAngles = new Vector3(0, inputSampler.runtimeTiles[(int)tile].rotation, 0);
-                else
-                    newTile.transform.localEulerAngles = new Vector3(0, runtimeTiles[(int)tile].rotation, 0);
+                newTile.transform.localEulerAngles = new Vector3(0, runtimeTiles[(int)tile].rotation, 0);
 
                 newTile.transform.localScale = fscale;
             }

@@ -6,6 +6,7 @@ using DeBroglie.Constraints;
 
 namespace MyWFC
 {
+    
     public abstract class CustomConstraint : MonoBehaviour
     {
         public bool useConstraint = true;

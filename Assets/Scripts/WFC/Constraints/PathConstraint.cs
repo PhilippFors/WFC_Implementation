@@ -8,13 +8,27 @@ namespace MyWFC
 {
     public class PathConstraint : CustomConstraint
     {
+        public enum PathConstraintType
+        {
+            Connected,
+            Acyclic,
+            Looped,
+            None
+        }
+
+        public PathConstraintType pathConstraintType;
         public List<MyTilePoint> endPoints = new List<MyTilePoint>();
         public List<MyTile> pathTiles = new List<MyTile>();
 
-        public DeBroglie.Constraints.PathConstraint pathConstraint;
+        private DeBroglie.Constraints.ConnectedConstraint connectedConstraint = null;
+        private DeBroglie.Constraints.AcyclicConstraint acyclicConstraint = null;
+        private DeBroglie.Constraints.LoopConstraint loopConstraint = null;
+
         public override void SetConstraint(TilePropagator propagator, RuntimeTile[] tileSet)
         {
+            var spec = new DeBroglie.Constraints.PathSpec();
             DeBroglie.Point[] points = new DeBroglie.Point[endPoints.Count];
+
             HashSet<Tile> endpointTiles = new HashSet<Tile>();
             for (int i = 0; i < points.Length; i++)
             {
@@ -33,13 +47,68 @@ namespace MyWFC
             {
                 var allTiles = WFCUtil.FindTilesArr(tileSet, tile.gameObject.GetHashCode());
                 foreach (Tile t in allTiles)
+                {
                     paths.Add(t);
+                }
+
             }
 
-            pathConstraint = new DeBroglie.Constraints.PathConstraint(paths, points);
-            if (endpointTiles.Count > 0)
-                pathConstraint.EndPointTiles = endpointTiles;
+            spec.Tiles = paths;
+            spec.RelevantCells = points;
+            spec.RelevantTiles = paths;
 
+            switch (pathConstraintType)
+            {
+                case PathConstraintType.Looped:
+                    LoopedConstrainConfig(propagator, spec);
+                    break;
+                case PathConstraintType.Acyclic:
+                    AcyclicConstrainConfig(propagator, spec);
+                    break;
+                case PathConstraintType.Connected:
+                    ConnectedConstrainConfig(propagator, spec);
+                    break;
+                case PathConstraintType.None:
+
+                    break;
+            }
+
+        }
+
+        public DeBroglie.Constraints.ITileConstraint ReturnConstraint()
+        {
+            if (pathConstraintType.Equals(PathConstraintType.Connected))
+                return connectedConstraint;
+            if (pathConstraintType.Equals(PathConstraintType.Acyclic))
+                return acyclicConstraint;
+            if (pathConstraintType.Equals(PathConstraintType.Looped))
+                return loopConstraint;
+
+            return null;
+        }
+
+        void ConnectedConstrainConfig(TilePropagator p, PathSpec spec)
+        {
+            connectedConstraint = new DeBroglie.Constraints.ConnectedConstraint();
+
+            connectedConstraint.PathSpec = spec;
+            // connectedConstraint.Init(p);
+        }
+        void AcyclicConstrainConfig(TilePropagator p, PathSpec spec)
+        {
+            acyclicConstraint = new DeBroglie.Constraints.AcyclicConstraint();
+            acyclicConstraint.PathSpec = spec;
+            // acyclicConstraint.Init(p);
+
+        }
+        void LoopedConstrainConfig(TilePropagator p, PathSpec spec)
+        {
+            // spec.RelevantTiles = null;
+            // spec.RelevantCells = null;
+
+            loopConstraint = new DeBroglie.Constraints.LoopConstraint();
+            loopConstraint.PathSpec = spec;
+            // loopConstraint.Init(p);
         }
     }
 }
