@@ -47,13 +47,13 @@ namespace MyWFC
                                     case Sides.Front:
                                         if (sideB.side.Equals(Sides.Back))
                                         {
-                                            model.AddAdjacency(new Tile(i), new Tile(j), 0, 1, 0);
+                                            model.AddAdjacency(new Tile(i), new Tile(j), 0, 0, 1);
                                         }
                                         break;
                                     case Sides.Back:
                                         if (sideB.side.Equals(Sides.Front))
                                         {
-                                            model.AddAdjacency(new Tile(i), new Tile(j), 0, -1, 0);
+                                            model.AddAdjacency(new Tile(i), new Tile(j), 0, 0, -1);
                                         }
                                         break;
                                 }

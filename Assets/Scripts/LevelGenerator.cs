@@ -7,10 +7,10 @@ namespace LevelGeneration
     [ExecuteInEditMode]
     public class LevelGenerator : MonoBehaviour
     {
-        // public GridGeneration.GridGenerator gridGenerator;
-        // public AreaGeneration.AreaGenerator areaGenerator;
+        public bool generateOnStart = false;
 
         #region Area generation
+        
         [Header("Area Generation")]
         [SerializeField] GameObject generatorPrefab;
         public MyWFC.TileSet startAreaTileset;
@@ -42,23 +42,27 @@ namespace LevelGeneration
 
         private void Start()
         {
-            // Generate();
+            if (generateOnStart)
+                Generate();
         }
 
         public void Generate()
         {
+            //Creating a new gridlayout
             var gridGen = new GridGeneration.GridGenerator(gridWidth, gridHeight, levelLength, seed, randomSeed, randomLength, dic, directions, this.transform.position);
             gridGen.dic["gridSize"] = tileSet.GridSize;
             gridGen.GenerateGrid();
 
+            //Locating the generator prefab in the resources folder
             FindPrefabs();
+
             StartAreaGenerator(gridGen.grid.linearLevel);
         }
 
         #region Area Generation
 
         /// <summary>
-        /// Gets the WFC Generator prefab form the Resources folder.
+        /// Loads the WFC Generator prefab form the Resources folder.
         /// </summary>
         public void FindPrefabs()
         {
@@ -66,7 +70,6 @@ namespace LevelGeneration
             {
                 generatorPrefab = Resources.Load<GameObject>("AdjacencyWFC");
             }
-            // generatorPrefab = Resources.Load<GameObject>("AdjacencyWFC");
         }
 
         /// <summary>
@@ -118,22 +121,24 @@ namespace LevelGeneration
         /// <param name="tile"></param>
         void GenerateArea(GridGeneration.GridTile tile)
         {
+            //Creating a new Area with a new gameobject as its parent
             Area a = new Area(new GameObject("Area " + tile.index), tile);
             areaList.Add(a);
 
+            //Choosing a tileset depending on whether it is the start area or not
             MyWFC.TileSet t;
             if (tile.index == 0)
                 t = startAreaTileset;
             else
                 t = tileSet;
 
+            //Instantiate a new generator
             GameObject newGeneratorObj = Instantiate(generatorPrefab, Vector3.zero, Quaternion.Euler(0, 0, 0));
 
+            //Configuring the generator
             MyWFC.AdjacentWFC generator = newGeneratorObj.GetComponent<MyWFC.AdjacentWFC>();
             newGeneratorObj.transform.parent = a.parent.transform;
             newGeneratorObj.transform.localPosition = new Vector3(-tile.width / 2 * t.GridSize + t.GridSize, 0, -tile.height / 2 * t.GridSize + t.GridSize);
-            // newGeneratorObj.transform.position = tile.position;
-            // newGeneratorObj.transform.parent = a.parent.transform;
 
             generator.tileSet = t;
             generator.ConnectionGroups = connections;
@@ -154,10 +159,11 @@ namespace LevelGeneration
         /// <param name="generator"></param>
         void AddConstraints(Area area, MyWFC.AdjacentWFC generator, MyWFC.TileSet t)
         {
-            var borderC = new MyWFC.BorderConstraint();
-            var fixedC = new MyWFC.FixedTileCostraint();
-            var pathC = new MyWFC.PathConstraint();
+            MyWFC.BorderConstraint borderC = null;
+            MyWFC.FixedTileCostraint fixedC = null;
+            MyWFC.PathConstraint pathC = null;
 
+            //Configuring fixed tile constraint
             if (t.entrance != null)
             {
                 fixedC = generator.gameObject.AddComponent<MyWFC.FixedTileCostraint>();
@@ -171,9 +177,12 @@ namespace LevelGeneration
                     fixedC.pointList.Add(new MyWFC.MyTilePoint() { point = exit.position, tile = t.entrance.GetComponent<MyWFC.MyTile>() });
             }
 
+            //Configuring border constraint
             if (t.borderTiles.Count > 0)
             {
                 borderC = generator.gameObject.AddComponent<MyWFC.BorderConstraint>();
+                borderC.respectFixedConstraint = fixedC != null;
+                borderC.sides = MyWFC.Borders.XMax | MyWFC.Borders.XMin | MyWFC.Borders.ZMax | MyWFC.Borders.ZMin;
                 for (int i = 0; i < t.borderTiles.Count; i++)
                 {
                     if (!WFCUtil.FindTileUse(t, t.borderTiles[i]) || !t.borderUse[i])
@@ -183,6 +192,7 @@ namespace LevelGeneration
                 }
             }
 
+            //Configuring path constraint
             if (t.pathTiles.Count > 0)
             {
                 pathC = generator.gameObject.AddComponent<MyWFC.PathConstraint>();
@@ -208,6 +218,7 @@ namespace LevelGeneration
         /// <returns></returns>
         IEnumerator StartGenerator()
         {
+            //Starting the generation of each generator in the order they were created
             for (int i = 0; i < generators.Count; i++)
             {
                 yield return generators[i].Generate(true);

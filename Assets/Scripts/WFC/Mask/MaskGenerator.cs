@@ -17,8 +17,8 @@ namespace MyWFC
         [HideInInspector] public List<Point> areaEdges;
         [HideInInspector] public List<Point> passages;
         [HideInInspector] public List<Point> passageEdges;
-        public bool[,] maskOutput;
-        bool[,] checker;
+        public bool[,,] maskOutput;
+        bool[,,] checker;
         public GameObject full;
         public GameObject empty;
 
@@ -75,30 +75,32 @@ namespace MyWFC
             areaEdges = new List<Point>();
             passages = new List<Point>();
             passageEdges = new List<Point>();
-            checker = new bool[size.x, size.z];
-            maskOutput = new bool[size.x, size.z];
-            for (int i = 0; i < size.x; i++)
-                for (int j = 0; j < size.z; j++)
-                    maskOutput[i, j] = false;
+            checker = new bool[size.x, size.y, size.z];
+            maskOutput = new bool[size.x, size.y, size.z];
+            for (int x = 0; x < size.x; x++)
+                for (int y = 0; y < size.y; y++)
+                    for (int z = 0; z < size.z; z++)
+                        maskOutput[x, y, z] = false;
 
             while (!AllTilesChecked())
             {
-                for (int i = 0; i < size.x; i++)
-                    for (int j = 0; j < size.z; j++)
-                    {
-                        if (modelOutput[i, j] == 1 && !PointExists(i, j))
+                for (int x = 0; x < size.x; x++)
+                    for (int y = 0; x < size.y; y++)
+                        for (int z = 0; z < size.z; z++)
                         {
-                            List<Point> points = new List<Point>();
-                            FloodFill(points, i, j);
-                            MaskArea area = new MaskArea(points, allAreas.Count, modelOutput);
-                            allAreas.Add(area);
-                            checker[i, j] = true;
+                            if (modelOutput[x, y, z] == 1 && !PointExists(x, y, z))
+                            {
+                                List<Point> points = new List<Point>();
+                                FloodFill(points, x, y, z);
+                                MaskArea area = new MaskArea(points, allAreas.Count, modelOutput);
+                                allAreas.Add(area);
+                                checker[x, y, z] = true;
+                            }
+                            else
+                            {
+                                checker[x, y, z] = true;
+                            }
                         }
-                        else
-                        {
-                            checker[i, j] = true;
-                        }
-                    }
             }
             UpdateModelOutput();
 
@@ -114,48 +116,45 @@ namespace MyWFC
         void Draw()
         {
             for (int x = 0; x < modelOutput.GetLength(0); x++)
-            {
-                // for (int y = 0; y < modelOutput.GetLength(1) - 1; y++)
-                for (int z = 0; z < modelOutput.GetLength(1); z++)
-                {
-                    var tile = modelOutput[x, z];
-
-                    Vector3 pos = new Vector3(x * gridSize, 0, z * gridSize);
-                    GameObject fab = null;
-                    if (modelOutput[x, z] == 0)
-                        fab = empty;
-                    else
-                        fab = full;
-
-                    if (fab != null)
+                for (int y = 0; y < modelOutput.GetLength(1); y++)
+                    for (int z = 0; z < modelOutput.GetLength(2); z++)
                     {
-                        MyTile newTile = Instantiate(fab, new Vector3(), Quaternion.identity).GetComponent<MyTile>();
-                        newTile.coords = new Vector2Int(x, z);
-                        Vector3 fscale = newTile.transform.localScale;
-                        newTile.transform.parent = output.transform;
-                        newTile.transform.localPosition = pos;
-                        newTile.transform.localEulerAngles = new Vector3(0, 0, 0);
-                        newTile.transform.localScale = fscale;
+                        var tile = modelOutput[x, y, z];
+
+                        Vector3 pos = new Vector3(x * gridSize, y * gridSize, z * gridSize);
+                        GameObject fab = null;
+                        if (modelOutput[x, y, z] == 0)
+                            fab = empty;
+                        else
+                            fab = full;
+
+                        if (fab != null)
+                        {
+                            MyTile newTile = Instantiate(fab, new Vector3(), Quaternion.identity).GetComponent<MyTile>();
+                            newTile.coords = new Vector2Int(x, z);
+                            Vector3 fscale = newTile.transform.localScale;
+                            newTile.transform.parent = output.transform;
+                            newTile.transform.localPosition = pos;
+                            newTile.transform.localEulerAngles = new Vector3(0, 0, 0);
+                            newTile.transform.localScale = fscale;
+                        }
                     }
-                }
-            }
         }
 
         public void Smooth()
         {
             for (int s = 0; s < smoothIterations; s++)
                 for (int x = 0; x < size.x; x++)
-                {
-                    for (int y = 0; y < size.z; y++)
-                    {
-                        int neighbours = GetNeighbours(x, y);
-                        if (neighbours >= minNeighbours)
-                            IsNearArea(x, y);
-                    }
-                }
+                    for (int y = 0; y < size.y; y++)
+                        for (int z = 0; z < size.z; y++)
+                        {
+                            int neighbours = GetNeighbours(x, y, z);
+                            if (neighbours >= minNeighbours)
+                                IsNearArea(x, y, z);
+                        }
         }
 
-        public void IsNearArea(int x, int y)
+        public void IsNearArea(int x, int y, int z)
         {
             foreach (MaskArea a in allAreas)
             {
@@ -164,17 +163,18 @@ namespace MyWFC
                     for (int neighbourX = p.x - 1; neighbourX <= p.x + 1; neighbourX++)
                     {
                         for (int neighbourY = p.y - 1; neighbourY <= p.y + 1; neighbourY++)
-                        {
-                            if (IsInMap(neighbourX, neighbourY))
-                                if (neighbourX == x && y == neighbourY)
-                                {
-                                    if (!PointExists(neighbourX, neighbourX))
+                            for (int neighbourZ = p.z - 1; neighbourZ <= p.z + 1; neighbourZ++)
+                            {
+                                if (IsInMap(neighbourX, neighbourY, neighbourZ))
+                                    if (neighbourX == x && y == neighbourY && neighbourZ != z)
                                     {
-                                        a.AddPoint(new Point(neighbourX, neighbourY));
-                                        return;
+                                        if (!PointExists(neighbourX, neighbourX, neighbourZ))
+                                        {
+                                            a.AddPoint(new Point(neighbourX, neighbourY, neighbourZ));
+                                            return;
+                                        }
                                     }
-                                }
-                        }
+                            }
                     }
                 }
             }
@@ -184,33 +184,35 @@ namespace MyWFC
                 for (int neighbourX = p.x - 1; neighbourX <= p.x + 1; neighbourX++)
                 {
                     for (int neighbourY = p.y - 1; neighbourY <= p.y + 1; neighbourY++)
-                    {
-                        if (IsInMap(neighbourX, neighbourY))
-                            if (neighbourX == x || y == neighbourY)
-                            {
-                                if (!PointExists(neighbourX, neighbourX))
+                        for (int neighbourZ = p.z - 1; neighbourZ <= p.z + 1; neighbourZ++)
+                        {
+                            if (IsInMap(neighbourX, neighbourY, neighbourZ))
+                                if (neighbourX == x || y == neighbourY || neighbourZ == z)
                                 {
-                                    passages.Add(new Point(neighbourX, neighbourY));
-                                    return;
+                                    if (!PointExists(neighbourX, neighbourX, neighbourZ))
+                                    {
+                                        passages.Add(new Point(neighbourX, neighbourY, neighbourZ));
+                                        return;
+                                    }
                                 }
-                            }
-                    }
+                        }
                 }
             }
         }
 
-        int GetNeighbours(int x, int y)
+        int GetNeighbours(int x, int y, int z)
         {
             int count = 0;
             for (int neighbourX = x - 1; neighbourX <= x + 1; neighbourX++)
             {
                 for (int neighbourY = y - 1; neighbourY <= y + 1; neighbourY++)
-                {
-                    if (IsInMap(neighbourX, neighbourY))
-                        if (neighbourX != x || neighbourY != y)
-                            if (modelOutput[neighbourX, neighbourY] == 1)
-                                count++;
-                }
+                    for (int neighbourZ = z - 1; neighbourZ <= z + 1; neighbourZ++)
+                    {
+                        if (IsInMap(neighbourX, neighbourY, neighbourZ))
+                            if (neighbourX != x || neighbourY != y || neighbourZ != x)
+                                if (modelOutput[neighbourX, neighbourY, neighbourZ] == 1)
+                                    count++;
+                    }
             }
             return count;
         }
@@ -228,34 +230,33 @@ namespace MyWFC
 
             if (passages.Count > 0)
                 foreach (Point p in passages)
-                {
                     for (int x = p.x - 1; x <= p.x + 1; x++)
-                    {
                         for (int y = p.y - 1; y <= p.y + 1; y++)
-                        {
-
-                            var tempX = x;
-                            var tempY = y;
-
-                            if (x < 0) tempX = 0;
-                            if (x >= size.x) tempX = size.x - 1;
-
-                            if (y < 0) tempY = 0;
-                            if (y >= size.z) tempY = size.z - 1;
-
-                            if (x == 0 || x == size.x - 1 || y == 0 || y == size.z - 1)
+                            for (int z = p.z - 1; z <= p.z + 1; z++)
                             {
-                                if (modelOutput[tempX, tempY] == 1)
+
+                                var tempX = x;
+                                var tempY = y;
+                                var tempZ = z;
+
+                                if (x < 0) tempX = 0;
+                                if (x >= size.x) tempX = size.x - 1;
+
+                                if (y < 0) tempY = 0;
+                                if (y >= size.y) tempY = size.y - 1;
+
+                                if (z < 0) tempZ = 0;
+                                if (z >= size.z) tempZ = size.z - 1;
+
+                                if (x == 0 || x == size.x - 1 || y == 0 || y == size.y - 1 || z == 0 || z == size.z - 1)
+                                {
+                                    if (modelOutput[tempX, tempY, tempZ] == 1)
+                                        passageEdges.Add(p);
+                                }
+
+                                if (modelOutput[tempX, tempY, tempZ] == 0)
                                     passageEdges.Add(p);
                             }
-
-                            if (modelOutput[tempX, tempY] == 0)
-                                passageEdges.Add(p);
-                        }
-
-                    }
-                }
-
         }
 
         void UpdateModelOutput()
@@ -263,15 +264,15 @@ namespace MyWFC
             foreach (MaskArea a in allAreas)
                 foreach (Point p in a.pointlist)
                 {
-                    modelOutput[p.x, p.y] = 1;
-                    maskOutput[p.x, p.y] = true;
+                    modelOutput[p.x, p.y, p.z] = 1;
+                    maskOutput[p.x, p.y, p.z] = true;
                 }
 
             if (passages.Count > 0)
                 foreach (Point p in passages)
                 {
-                    modelOutput[p.x, p.y] = 1;
-                    maskOutput[p.x, p.y] = true;
+                    modelOutput[p.x, p.y, p.z] = 1;
+                    maskOutput[p.x, p.y, p.z] = true;
                 }
         }
 
@@ -284,7 +285,7 @@ namespace MyWFC
                 {
                     foreach (Point p in area.pointlist)
                     {
-                        modelOutput[p.x, p.y] = 0;
+                        modelOutput[p.x, p.y, p.z] = 0;
                     }
                     rAreas.Add(area);
                 }
@@ -354,7 +355,7 @@ namespace MyWFC
                         {
                             Point pointA = a.edgePoints[pIndexA];
                             Point pointB = b.edgePoints[pIndexB];
-                            int distanceBetweenRooms = (int)(Mathf.Pow(pointA.x - pointB.x, 2) + Mathf.Pow(pointA.y - pointB.y, 2));
+                            int distanceBetweenRooms = (int)(Mathf.Pow(pointA.x - pointB.x, 2) + Mathf.Pow(pointA.y - pointB.y, 2) + Mathf.Pow(pointA.z - pointB.z, 2));
 
                             if (distanceBetweenRooms < bestDist || !possibleConnection)
                             {
@@ -391,99 +392,209 @@ namespace MyWFC
             foreach (Point p in line)
                 DrawCircle(areaA, p, passageRadius);
 
-            Debug.DrawLine(transform.localPosition + new Vector3(pointA.x, 2, pointA.y), transform.localPosition + new Vector3(pointB.x, 2, pointB.y), Color.red, 10f);
+            Debug.DrawLine(transform.localPosition + new Vector3(pointA.x, pointA.y, pointA.z), transform.localPosition + new Vector3(pointB.x, pointB.y, pointB.z), Color.red, 10f);
         }
 
         void DrawCircle(MaskArea area, Point p, int r)
         {
             for (int x = -r; x <= r; x++)
-            {
                 for (int y = -r; y <= r; y++)
-                {
-                    if (x * x + y * y <= r * r)
-                    {
-                        int realX = p.x + x;
-                        int realY = p.y + y;
-                        if (IsInMap(realX, realY))
+                    for (int z = -r; z <= r; z++)
+                        if (x * x + y * y + z * z <= r * r)
                         {
-                            if (!PointExists(realX, realY))
+                            int realX = p.x + x;
+                            int realY = p.y + y;
+                            int realZ = p.z + z;
+                            if (IsInMap(realX, realY, realZ))
                             {
-                                passages.Add(new Point(realX, realY));
-                                // area.AddPoint(new Point(realX, realY));
+                                if (!PointExists(realX, realY, realZ))
+                                {
+                                    passages.Add(new Point(realX, realY, realZ));
+                                }
                             }
                         }
-                    }
-                }
-            }
         }
 
-        public bool IsInMap(int x, int y)
+        public bool IsInMap(int x, int y, int z)
         {
-            return !(x < 0) && x < size.x && !(y < 0) && y < size.x;
+            return !(x < 0) && x < size.x && !(y < 0) && y < size.y && !(z < 0) && z < size.z;
         }
         List<Point> GetLine(Point from, Point to)
         {
             List<Point> list = new List<Point>();
-            var x = from.x;
-            var y = from.y;
+            var x1 = from.x;
+            var y1 = from.y;
+            var z1 = from.z;
+
+            var x2 = to.x;
+            var y2 = to.y;
+            var z2 = to.z;
 
             var dx = to.x - from.x;
             var dy = to.y - from.y;
+            var dz = to.z - from.z;
 
-            bool inverted = false;
-            int step = System.Math.Sign(dx);
-            int gradientStep = System.Math.Sign(dy);
+            var xs = 0;
+            var ys = 0;
+            var zs = 0;
 
-            int longest = Mathf.Abs(dx);
-            int shortest = Mathf.Abs(dy);
+            if (from.x > to.x)
+                xs = 1;
+            else
+                xs = -1;
+            if (from.y > to.y)
+                ys = 1;
+            else
+                ys = -1;
+            if (from.z > to.z)
+                zs = 1;
+            else
+                zs = -1;
 
-            if (longest < shortest)
+            var p1 = 0;
+            var p2 = 0;
+
+            //Driving axis is X-Axis
+            if (dx >= dy & dx >= dz)
             {
-                inverted = true;
-                longest = Mathf.Abs(dy);
-                shortest = Mathf.Abs(dx);
-                step = System.Math.Sign(dy);
-                gradientStep = System.Math.Sign(dx);
-            }
-
-            int gradientAccumulation = longest / 2;
-
-            for (int i = 0; i < longest; i++)
-            {
-                list.Add(new Point(x, y));
-
-                if (inverted)
-                    y += step;
-                else
-                    x += step;
-
-                gradientAccumulation += shortest;
-                if (gradientAccumulation >= longest)
+                p1 = 2 * dy - dx;
+                p2 = 2 * dz - dx;
+                while (x1 != x2)
                 {
-                    if (inverted)
-                        x += gradientStep;
-                    else
-                        y += gradientStep;
-                    gradientAccumulation -= longest;
+                    x1 += xs;
+                    if (p1 >= 0)
+                    {
+                        y1 += ys;
+                        p1 -= 2 * dx;
+                    }
+                    if (p2 >= 0)
+                    {
+                        z1 += zs;
+                        p2 -= 2 * dx;
+                    }
+                    p1 += 2 * dy;
+                    p2 += 2 * dz;
+                    list.Add(new Point(x1, y1, z1));
                 }
             }
+            //Driving axis is Y-axis
+            else if (dy >= dx & dy >= dz)
+            {
+                p1 = 2 * dx - dy;
+                p2 = 2 * dz - dy;
+                while (y1 != y2)
+                {
+                    y1 += ys;
+                    if (p1 >= 0)
+                    {
+                        x1 += xs;
+                        p1 -= 2 * dy;
+                    }
+                    if (p2 >= 0)
+                    {
+                        z1 += zs;
+                        p2 -= 2 * dy;
+                    }
+                    p1 += 2 * dx;
+                    p2 += 2 * dz;
+                    list.Add(new Point(x1, y1, z1));
+                }
+            }
+            //Driving axis is Z-axis
+            else
+            {
+                p1 = 2 * dy - dz;
+                p2 = 2 * dx - dz;
+                while (z1 != z2)
+                {
+                    z1 += zs;
+                    if (p1 >= 0)
+                    {
+                        y1 += ys;
+                        p1 -= 2 * dz;
+                    }
+                    if (p2 >= 0)
+                    {
+                        x1 += xs;
+                        p2 -= 2 * dz;
+                    }
+                    p1 += 2 * dy;
+                    p2 += 2 * dx;
+                    list.Add(new Point(x1, y1, z1));
+                }
+            }
+
+            // int step = System.Math.Sign(dx);
+            // int gradientStep = System.Math.Sign(dy);
+
+            // int longest = Mathf.Abs(dx);
+            // int middle = Mathf.Abs(dy);
+            // int shortest = Mathf.Abs(dz);
+
+            // if (longest < middle)
+            // {
+            //     var temp = longest;
+            //     longest = middle;
+            //     middle = temp;
+            // }
+            // if (longest < shortest)
+            // {
+            //     var temp = longest;
+            //     longest = shortest;
+            //     shortest = temp;
+            // }
+
+            // step = longest;
+            // gradientStep = shortest;
+
+            // if (longest < shortest)
+            // {
+            //     inverted = true;
+            //     longest = Mathf.Abs(dy);
+            //     shortest = Mathf.Abs(dx);
+            //     step = System.Math.Sign(dy);
+            //     gradientStep = System.Math.Sign(dx);
+            // }
+
+            // int gradientAccumulation = longest / 2;
+
+            // for (int i = 0; i < longest; i++)
+            // {
+            //     list.Add(new Point(x, y));
+
+            //     if (inverted)
+            //         y += step;
+            //     else
+            //         x += step;
+
+            //     gradientAccumulation += shortest;
+            //     if (gradientAccumulation >= longest)
+            //     {
+            //         if (inverted)
+            //             x += gradientStep;
+            //         else
+            //             y += gradientStep;
+            //         gradientAccumulation -= longest;
+            //     }
+            // }
 
             return list;
         }
 
         bool AllTilesChecked()
         {
-            for (int i = 0; i < size.x; i++)
-                for (int j = 0; j < size.z; j++)
-                    if (checker[i, j])
-                        continue;
-                    else
-                        return checker[i, j];
+            for (int x = 0; x < size.x; x++)
+                for (int y = 0; y < size.y; y++)
+                    for (int z = 0; z < size.z; z++)
+                        if (checker[x, y, z])
+                            continue;
+                        else
+                            return checker[x, y, z];
 
             return true;
         }
 
-        bool PointExists(int x, int y, int z = 0)
+        bool PointExists(int x, int y, int z)
         {
             if (allAreas.Count > 0)
                 foreach (MaskArea area in allAreas)
@@ -500,24 +611,26 @@ namespace MyWFC
             return false;
         }
 
-        void FloodFillUtil(List<Point> pointList, int x, int y)
+        void FloodFillUtil(List<Point> pointList, int x, int y, int z)
         {
-            if (x < 0 || x >= size.x || y < 0 || y >= size.z)
+            if (x < 0 || x >= size.x || y < 0 || y >= size.y || z < 0 || z >= size.z)
                 return;
-            if (pointList.Exists(p => (p.x == x) && (p.y == y)) || PointExists(x, y) || modelOutput[x, y] == 0)
+            if (pointList.Exists(p => (p.x == x) && (p.y == y) && (p.z == z)) || PointExists(x, y, z) || modelOutput[x, y, z] == 0)
                 return;
 
             pointList.Add(new Point(x, y));
 
-            FloodFillUtil(pointList, x + 1, y);
-            FloodFillUtil(pointList, x - 1, y);
-            FloodFillUtil(pointList, x, y + 1);
-            FloodFillUtil(pointList, x, y - 1);
+            FloodFillUtil(pointList, x + 1, y, z);
+            FloodFillUtil(pointList, x - 1, y, z);
+            FloodFillUtil(pointList, x, y + 1, z);
+            FloodFillUtil(pointList, x, y - 1, z);
+            FloodFillUtil(pointList, x, y, z + 1);
+            FloodFillUtil(pointList, x, y, z - 1);
         }
 
-        void FloodFill(List<Point> l, int x, int y)
+        void FloodFill(List<Point> l, int x, int y, int z)
         {
-            FloodFillUtil(l, x, y);
+            FloodFillUtil(l, x, y, z);
         }
     }
     [System.Serializable]
@@ -539,7 +652,7 @@ namespace MyWFC
     public class MaskArea : System.IComparable<MaskArea>
     {
         public int size;
-        int[,] map;
+        int[,,] map;
         public int AreaID;
         public List<Point> pointlist;
         public List<Point> edgePoints;
@@ -550,7 +663,7 @@ namespace MyWFC
         {
 
         }
-        public MaskArea(List<Point> l, int areaID, int[,] map)
+        public MaskArea(List<Point> l, int areaID, int[,,] map)
         {
             AreaID = areaID;
             pointlist = l;
@@ -580,35 +693,37 @@ namespace MyWFC
             foreach (Point p in pointlist)
             {
                 for (int x = p.x - 1; x <= p.x + 1; x++)
-                {
                     for (int y = p.y - 1; y <= p.y + 1; y++)
-                    {
-                        // if (x != p.x || y != p.y)
-                        // {
-                        var tempX = x;
-                        var tempY = y;
+                        for (int z = p.z - 1; z <= p.z + 1; z++)
+                        {
+                            // if (x != p.x || y != p.y)
+                            // {
+                            var tempX = x;
+                            var tempY = y;
+                            var tempZ = z;
 
-                        if (x < 0) tempX = 0;
-                        if (x >= map.GetLength(0)) tempX = map.GetLength(0) - 1;
+                            if (x < 0) tempX = 0;
+                            if (x >= map.GetLength(0)) tempX = map.GetLength(0) - 1;
 
-                        if (y < 0) tempY = 0;
-                        if (y >= map.GetLength(1)) tempY = map.GetLength(1) - 1;
+                            if (y < 0) tempY = 0;
+                            if (y >= map.GetLength(1)) tempY = map.GetLength(1) - 1;
 
+                            if (z < 0) tempZ = 0;
+                            if (z >= map.GetLength(2)) tempZ = map.GetLength(2) - 1;
 
-                        // if (x == 0 || x == map.GetLength(0) - 1 || y == 0 || y == map.GetLength(1) - 1)
-                        // {
-                        //     if (map[tempX, tempY] == 1)
-                        //         if (!edgePoints.Contains(p))
-                        //             edgePoints.Add(p);
-                        // }
-                        // else
-                        // {
-                        if (map[tempX, tempY] == 0)
-                            if (!edgePoints.Contains(p))
-                                edgePoints.Add(p);
-                        // }
-                    }
-                }
+                            // if (x == 0 || x == map.GetLength(0) - 1 || y == 0 || y == map.GetLength(1) - 1)
+                            // {
+                            //     if (map[tempX, tempY] == 1)
+                            //         if (!edgePoints.Contains(p))
+                            //             edgePoints.Add(p);
+                            // }
+                            // else
+                            // {
+                            if (map[tempX, tempY, tempZ] == 0)
+                                if (!edgePoints.Contains(p))
+                                    edgePoints.Add(p);
+                            // }
+                        }
             }
         }
 
@@ -632,7 +747,7 @@ namespace MyWFC
         }
 
         public void AddPoint(Point point) => pointlist.Add(point);
-        public bool PointExists(int x, int y, int z = 0)
+        public bool PointExists(int x, int y, int z)
         {
             foreach (Point p in pointlist)
             {

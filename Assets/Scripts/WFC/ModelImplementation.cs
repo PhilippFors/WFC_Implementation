@@ -20,10 +20,11 @@ namespace MyWFC
         [Tooltip("Only useful when you have an existing input")]
         public bool periodicIN;
         public bool periodicOUT;
-        protected int[,] rendering;
+        protected int[,,] rendering;
         protected GameObject output;
-        protected int[,] modelOutput;
-        protected int maxRoutines;
+        protected int[,,] modelOutput;
+        public int maxRetries = 10;
+        protected int retries;
         protected GridTopology topology;
         protected TilePropagator propagator;
 
@@ -79,34 +80,34 @@ namespace MyWFC
         /// <returns></returns>
         protected virtual IEnumerator RunModel()
         {
-            if (maxRoutines > 10)
+            if (retries > maxRetries)
             {
                 yield break;
             }
 
             var status = propagator.Run();
-            modelOutput = propagator.ToValueArray<int>().ToArray2d();
+            modelOutput = propagator.ToValueArray<int>().ToArray3d();
 
-            if (status == DeBroglie.Resolution.Contradiction || status == DeBroglie.Resolution.Undecided)
+            if (status == DeBroglie.Resolution.Contradiction)
             {
-                maxRoutines++;
+                retries++;
                 yield return StartCoroutine(RunModel());
             }
         }
 
         protected virtual void RunModelSingle()
         {
-            if (maxRoutines > 10)
+            if (retries > maxRetries)
             {
                 return;
             }
 
             var status = propagator.Run();
-            modelOutput = propagator.ToValueArray<int>().ToArray2d();
+            modelOutput = propagator.ToValueArray<int>().ToArray3d();
 
             if (status == DeBroglie.Resolution.Contradiction || status == DeBroglie.Resolution.Undecided)
             {
-                maxRoutines++;
+                retries++;
                 RunModel();
             }
         }

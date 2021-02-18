@@ -56,7 +56,7 @@ namespace MyWFC
             spec.Tiles = paths;
             spec.RelevantCells = points;
             spec.RelevantTiles = paths;
-
+            
             switch (pathConstraintType)
             {
                 case PathConstraintType.Looped:
@@ -92,23 +92,17 @@ namespace MyWFC
             connectedConstraint = new DeBroglie.Constraints.ConnectedConstraint();
 
             connectedConstraint.PathSpec = spec;
-            // connectedConstraint.Init(p);
+            // connectedConstraint.UsePickHeuristic = true;
         }
         void AcyclicConstrainConfig(TilePropagator p, PathSpec spec)
         {
             acyclicConstraint = new DeBroglie.Constraints.AcyclicConstraint();
             acyclicConstraint.PathSpec = spec;
-            // acyclicConstraint.Init(p);
-
         }
         void LoopedConstrainConfig(TilePropagator p, PathSpec spec)
         {
-            // spec.RelevantTiles = null;
-            // spec.RelevantCells = null;
-
             loopConstraint = new DeBroglie.Constraints.LoopConstraint();
             loopConstraint.PathSpec = spec;
-            // loopConstraint.Init(p);
         }
     }
 }

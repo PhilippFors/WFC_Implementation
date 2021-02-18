@@ -16,7 +16,7 @@ namespace MyWFC
 
         public override Coroutine Generate(bool multithread)
         {
-            maxRoutines = 0;
+            retries = 0;
             inputSampler.Train();
             if (multithread)
                 return StartCoroutine(StartGenerate());
@@ -44,7 +44,7 @@ namespace MyWFC
             model = new DeBroglie.Models.OverlappingModel(n);
             model.AddSample(sample);
 
-            topology = new GridTopology(size.x, size.z, periodicOUT);
+            topology = new GridTopology(size.x, size.y, size.z, periodicOUT);
 
             if (maskGenerator != null && useMask)
             {
@@ -77,27 +77,27 @@ namespace MyWFC
         {
             for (int x = 0; x < modelOutput.GetLength(0); x++)
             {
-                // for (int y = 0; y < modelOutput.GetLength(1) - 1; y++)
-                for (int z = 0; z < modelOutput.GetLength(1); z++)
-                {
-                    if (useMask)
+                for (int y = 0; y < modelOutput.GetLength(1); y++)
+                    for (int z = 0; z < modelOutput.GetLength(2); z++)
                     {
-                        if (maskGenerator != null && maskGenerator.maskOutput[x, z])
+                        if (useMask)
                         {
-                            DrawTile(x, z);
+                            if (maskGenerator != null && maskGenerator.maskOutput[x, y, z])
+                            {
+                                DrawTile(x, y, z);
+                            }
+                        }
+                        else
+                        {
+                            DrawTile(x, y, z);
                         }
                     }
-                    else
-                    {
-                        DrawTile(x, z);
-                    }
-                }
             }
         }
 
-        void DrawTile(int x, int z)
+        void DrawTile(int x, int y, int z)
         {
-            var tile = modelOutput[x, z];
+            var tile = modelOutput[x, y, z];
 
             if ((int)tile < inputSampler.runtimeTiles.Length)
             {

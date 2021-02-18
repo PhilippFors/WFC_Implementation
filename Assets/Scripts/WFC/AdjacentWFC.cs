@@ -32,7 +32,7 @@ namespace MyWFC
 
         protected IEnumerator StartGenerate()
         {
-            maxRoutines = 0;
+            retries = 0;
             CreateOutputObject();
             PrepareModel();
             PreparePropagator();
@@ -48,10 +48,10 @@ namespace MyWFC
             runtimeTiles = new List<RuntimeTile>();
 
             model = new AdjacentModel();
-            model.SetDirections(DirectionSet.Cartesian2d);
-
-            topology = new GridTopology(size.x, size.z, periodicOUT);
-
+            model.SetDirections(DirectionSet.Cartesian3d);
+            
+            topology = new GridTopology(size.x, size.y, size.z, periodicOUT);
+        
             CreateTileRotations();
         }
 
@@ -178,12 +178,11 @@ namespace MyWFC
             options.BackTrackDepth = backTrack ? backTrackDepth : 0;
             options.PickHeuristicType = PickHeuristicType.MinEntropy;
             options.ModelConstraintAlgorithm = modelConstraintAlgorithm;
-
+            
             //DeBroglie constraints should be added into the propagator via constructor
             var p = GetPathConstraint();
             if (p != null)
                 options.Constraints = new[] { p };
-
 
             propagator = new TilePropagator(model, topology, options);
 
@@ -220,16 +219,17 @@ namespace MyWFC
         {
             if (maskGenerator != null && maskGenerator.maskOutput != null && useMask)
             {
-                for (int i = 0; i < size.x; i++)
-                    for (int j = 0; j < size.z; j++)
-                        if (!maskGenerator.maskOutput[i, j])
-                            propagator.Select(i, j, 0, WFCUtil.FindTileList(runtimeTiles.ToArray(), tileSet.empty.GetHashCode()));
+                for (int x = 0; x < size.x; x++)
+                    for (int y = 0; y < size.y; y++)
+                        for (int z = 0; z < size.z; z++)
+                            if (!maskGenerator.maskOutput[x, y, z])
+                                propagator.Select(x, y, z, WFCUtil.FindTileList(runtimeTiles.ToArray(), tileSet.empty.GetHashCode()));
 
                 // foreach (MaskArea area in maskGenerator.allAreas)
                 foreach (Point p in maskGenerator.areaEdges)
                 {
                     // if (!propagator.IsSelected(p.x, p.y, 0, WFCUtil.FindTile(runtimeTiles.ToArray(), tileSet.empty.GetHashCode())))
-                    propagator.Select(p.x, p.y, 0, WFCUtil.FindTileList(runtimeTiles.ToArray(), tileSet.empty.GetHashCode()));
+                    propagator.Select(p.x, p.y, p.z, WFCUtil.FindTileList(runtimeTiles.ToArray(), tileSet.empty.GetHashCode()));
                 }
             }
         }
@@ -237,15 +237,14 @@ namespace MyWFC
         public void DrawOutput()
         {
             for (int x = 0; x < modelOutput.GetLength(0); x++)
-            {
-                for (int z = 0; z < modelOutput.GetLength(1); z++)
-                {
-                    if (IsBigTile(x, z))
-                        DrawBigTile(x, z);
-                    else
-                        DrawSingleTile(x, z);
-                }
-            }
+                for (int y = 0; y < modelOutput.GetLength(1); y++)
+                    for (int z = 0; z < modelOutput.GetLength(2); z++)
+                    {
+                        if (IsBigTile(x, y, z))
+                            DrawBigTile(x, y, z);
+                        else
+                            DrawSingleTile(x, y, z);
+                    }
         }
 
 
@@ -254,11 +253,11 @@ namespace MyWFC
         /// </summary>
         /// <param name="x"></param>
         /// <param name="z"></param>
-        void DrawSingleTile(int x, int z)
+        void DrawSingleTile(int x, int y, int z)
         {
-            var tile = modelOutput[x, z];
+            var tile = modelOutput[x, y, z];
 
-            Vector3 pos = new Vector3(x * gridSize, 0, z * gridSize);
+            Vector3 pos = new Vector3(x * gridSize, y * gridSize, z * gridSize);
             GameObject fab = runtimeTiles[(int)tile].obj;
             if (fab != null)
             {
@@ -273,9 +272,9 @@ namespace MyWFC
             }
         }
 
-        void DrawBigTile(int x, int y)
+        void DrawBigTile(int x, int y, int z)
         {
-            Debug.Log("BigTile at: " + x + ", " + y + ", Tile: " + modelOutput[x, y]);
+            Debug.Log("BigTile at: " + x + ", " + y + ", Tile: " + modelOutput[x, y, z]);
             // var tileID = modelOutput[x, y];
             // var firstTile = WFCUtil.FindRuntimeTile(runtimeTiles.ToArray(), modelOutput[x, y]);
             // int bID = firstTile.bID;
@@ -327,13 +326,13 @@ namespace MyWFC
 
         }
 
-        bool IsInMap(int x, int y)
+        bool IsInMap(int x, int y, int z)
         {
-            return !(x < 0 || x >= modelOutput.GetLength(0) || y < 0 || y >= modelOutput.GetLength(1));
+            return !(x < 0 || x >= modelOutput.GetLength(0) || y < 0 || y >= modelOutput.GetLength(1) || z < 0 || z >= modelOutput.GetLength(2));
         }
-        bool IsBigTile(int x, int y)
+        bool IsBigTile(int x, int y, int z)
         {
-            return WFCUtil.FindRuntimeTile(runtimeTiles.ToArray(), modelOutput[x, y]).bID != -1;
+            return WFCUtil.FindRuntimeTile(runtimeTiles.ToArray(), modelOutput[x, y, z]).bID != -1;
         }
     }
 }
