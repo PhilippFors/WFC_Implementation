@@ -15,7 +15,7 @@ namespace MyWFC
 
         [Tooltip("Keep rotations to 1 if you have a complete tileset with all rotations")]
         [HideInInspector] public int rotations = 4;
-        [HideInInspector] public List<RuntimeTile> runtimeTiles;
+        public List<RuntimeTile> runtimeTiles;
         public DeBroglie.Wfc.ModelConstraintAlgorithm modelConstraintAlgorithm;
         AdjacentModel model;
         int bIDCounter = 0;
@@ -49,9 +49,9 @@ namespace MyWFC
 
             model = new AdjacentModel();
             model.SetDirections(DirectionSet.Cartesian3d);
-            
+
             topology = new GridTopology(size.x, size.y, size.z, periodicOUT);
-        
+
             CreateTileRotations();
         }
 
@@ -178,7 +178,7 @@ namespace MyWFC
             options.BackTrackDepth = backTrack ? backTrackDepth : 0;
             options.PickHeuristicType = PickHeuristicType.MinEntropy;
             options.ModelConstraintAlgorithm = modelConstraintAlgorithm;
-            
+
             //DeBroglie constraints should be added into the propagator via constructor
             var p = GetPathConstraint();
             if (p != null)

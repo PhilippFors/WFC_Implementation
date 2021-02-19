@@ -26,7 +26,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4666448061770872661}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 69.32311, y: 7.6061335, z: -172.51021}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -104,29 +104,77 @@ MonoBehaviour:
   center: {x: 0, y: 0, z: 0}
   cells:
   - center: {x: 0, y: 0, z: 0}
-    side1:
+    right:
       side: 0
       connection: 0
       left: 5
       middle: 0
       right: 0
-    side2:
+      topLeft: 5
+      topMiddle: 0
+      topRight: 0
+      bottomLeft: 5
+      bottomMiddle: 0
+      bottomRight: 0
+    left:
       side: 180
       connection: 0
       left: 0
       middle: 0
       right: 5
-    side3:
+      topLeft: 0
+      topMiddle: 0
+      topRight: 5
+      bottomLeft: 0
+      bottomMiddle: 0
+      bottomRight: 5
+    front:
       side: 270
       connection: 0
       left: 0
       middle: 0
       right: 0
-    side4:
+      topLeft: 0
+      topMiddle: 0
+      topRight: 0
+      bottomLeft: 0
+      bottomMiddle: 0
+      bottomRight: 0
+    back:
       side: 90
       connection: 0
       left: 0
       middle: 0
       right: 0
-  showGizmo: 1
+      topLeft: 0
+      topMiddle: 0
+      topRight: 0
+      bottomLeft: 0
+      bottomMiddle: 0
+      bottomRight: 0
+    top:
+      side: 91
+      connection: 0
+      left: -3
+      middle: -3
+      right: -3
+      topLeft: -3
+      topMiddle: -3
+      topRight: -3
+      bottomLeft: -3
+      bottomMiddle: -3
+      bottomRight: -3
+    bottom:
+      side: 92
+      connection: 0
+      left: -3
+      middle: -3
+      right: -3
+      topLeft: -3
+      topMiddle: -3
+      topRight: -3
+      bottomLeft: -3
+      bottomMiddle: -3
+      bottomRight: -3
+  showGizmo: 0
   gizmoSize: 1

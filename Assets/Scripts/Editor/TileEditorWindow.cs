@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
-
+using MyWFC;
 public class TileEditorWindow : EditorWindow
 {
     public MyWFC.MyTile tile;
@@ -14,6 +14,7 @@ public class TileEditorWindow : EditorWindow
 
     public bool[,] arr;
 
+    MyWFC.Connections paintable;
     public List<Rect> rs;
 
     [MenuItem("Editors/Tile Editor")]
@@ -23,11 +24,9 @@ public class TileEditorWindow : EditorWindow
     }
     private void OnGUI()
     {
-        float x = 100f;
-        float y = 80f;
-        rs = new List<Rect>();
-        ys = new List<float>();
-        xs = new List<float>();
+        float x = width + 20f;
+        float y = 70f;
+
         arr = new bool[3, 3];
         var selection = Selection.activeGameObject;
 
@@ -35,183 +34,272 @@ public class TileEditorWindow : EditorWindow
         if (selection != null)
             tile = selection.GetComponent<MyWFC.MyTile>();
 
-        if (ts != null && ts.Length == 2)
+        // if (ts != null && ts.Length == 2)
+        // {
+        //     var tile1 = ts[0].GetComponent<MyWFC.MyTile>();
+        //     var tile2 = ts[1].GetComponent<MyWFC.MyTile>();
+        //     DrawEditorRect(tile1.cells[0], x, y, false, tile1.gameObject.name);
+        //     DrawEditorRect(tile2.cells[0], x * 4, y, false, tile2.gameObject.name);
+        // }
+        // else 
+        Rect r = new Rect(10f, 10f, 50f, 20f);
+        paintable = (MyWFC.Connections)EditorGUI.EnumPopup(r, paintable);
+        r = new Rect(80f, 10f, 50f, 20f);
+        if (GUI.Button(r, "Save"))
         {
-            var tile1 = ts[0].GetComponent<MyWFC.MyTile>();
-            var tile2 = ts[1].GetComponent<MyWFC.MyTile>();
-            DrawEditorRect(tile1.cells[0], x, y, false, tile1.gameObject.name);
-            DrawEditorRect(tile2.cells[0], x * 4, y, false, tile2.gameObject.name);
+            if (PrefabUtility.IsPartOfPrefabInstance(tile.gameObject))
+                PrefabUtility.ApplyPrefabInstance(tile.gameObject, InteractionMode.UserAction);
+            else
+                PrefabUtility.SavePrefabAsset(tile.gameObject);
         }
-        else if (tile != null)
+
+        if (tile != null)
             for (int i = 0; i < tile.cells.Count; i++)
             {
-                x = 100f;
-                y = 80f;
+                x = width + 20f;
+                y = 70f;
                 if (tile.cells[i].center.x > 0)
                     x = x * 4;
                 if (tile.cells[i].center.z < 0)
                     y = y * 4;
+                for (int j = 0, z = 0; j < tile.cells[i].sides.Count; j++)
+                {
+                    if (j >= (float)tile.cells[i].sides.Count / 2)
+                        z = 2;
 
-                DrawEditorRect(tile.cells[i], x, y, true, tile.gameObject.name);
+                    DrawEditorRect(x * (z == 2 ? (j - (float)tile.cells[i].sides.Count / 2) : j) * 4 + width + 10f, (y) * (z + 1), i, j);
+                }
             }
     }
 
-    void DrawEditorRect(MyWFC.Cell cell, float x, float y, bool showAdds = false, string name = "")
+    private void OnDestroy()
     {
-        for (int j = 0; j < cell.sides.Count; j++)
+        tile.showGizmo = false;
+    }
+    void DrawEditorRect(float x, float y, int index, int jindex)
+    {
+
+        Rect r = new Rect((x - width) - 5f, (y - height) - 5f, width, height);
+        // tile.cells[index].sides[jindex].topLeft = (MyWFC.Connections)EditorGUI.EnumPopup(r, tile.cells[index].sides[jindex].topLeft);
+        DrawButton(r, ref tile.cells[index].sides[jindex].topLeft);
+
+        r = new Rect((x), (y - height) - 5f, width, height);
+        DrawButton(r, ref tile.cells[index].sides[jindex].topMiddle);
+
+        r = new Rect((x + width) + 5f, (y - height) - 5f, width, height);
+        DrawButton(r, ref tile.cells[index].sides[jindex].topRight);
+
+        r = new Rect((x - width) - 5f, (y), width, height);
+        DrawButton(r, ref tile.cells[index].sides[jindex].left);
+
+        r = new Rect((x), (y), width, height);
+        DrawButton(r, ref tile.cells[index].sides[jindex].middle);
+
+        r = new Rect((x + width) + 5f, (y), width, height);
+        DrawButton(r, ref tile.cells[index].sides[jindex].right);
+
+        r = new Rect((x - width) - 5f, (y + height) + 5f, width, height);
+        DrawButton(r, ref tile.cells[index].sides[jindex].bottomLeft);
+
+        r = new Rect((x), (y + height) + 5f, width, height);
+        DrawButton(r, ref tile.cells[index].sides[jindex].bottomMiddle);
+
+        r = new Rect((x + width) + 5f, (y + height) + 5f, width, height);
+        DrawButton(r, ref tile.cells[index].sides[jindex].bottomRight);
+
+        r = new Rect((x), (y + height * 2.5f) + 2f, width, height);
+        if (GUI.Button(r, "all"))
+            PaintAll(index, jindex);
+
+        Rect c = new Rect(x, (y + height * 4) + 5f, 50f, 20f);
+        GUI.Label(c, tile.cells[index].sides[jindex].side.ToString());
+    }
+
+    void DrawButton(Rect rect, ref MyWFC.Connections c)
+    {
+        if (GUI.Button(rect, c.ToString()))
         {
-            if (cell.sides[j].side == MyWFC.Sides.Left)
-            {
-                var templeft = cell.sides[j].left;
-                var tempright = cell.sides[j].right;
-                var tempmiddl = cell.sides[j].middle;
-
-                Rect r = new Rect((x - width - width / 2), (y - height), width, 20f);
-                cell.sides[j].left = (MyWFC.Connections)EditorGUI.EnumPopup(r, cell.sides[j].left);
-
-                r = new Rect((x - width - width / 2), (y), width, 20f);
-                cell.sides[j].middle = (MyWFC.Connections)EditorGUI.EnumPopup(r, cell.sides[j].middle);
-
-                r = new Rect((x - width - width / 2), (y + height), width, 20f);
-                cell.sides[j].right = (MyWFC.Connections)EditorGUI.EnumPopup(r, cell.sides[j].right);
-
-                if (showAdds)
-                {
-                    r = new Rect((x - width * 3), (y), width, 20f);
-                    if (!tile.cells.Exists(f => f.center.Equals(new Vector3(cell.center.x - (float)tile.size.x, cell.center.y, cell.center.z))))
-                        if (GUI.Button(r, "+"))
-                        {
-                            AddNewCell(cell.sides[j].side, cell, cell.sides[j]);
-                        }
-                    r = new Rect(x, y, 20f, 20f);
-                    if (GUI.Button(r, "-"))
-                    {
-                        tile.cells.Remove(cell);
-                        break;
-                    }
-                }
-                if (templeft != cell.sides[j].left || tempright != cell.sides[j].right || tempmiddl != cell.sides[j].middle)
-                    if (PrefabUtility.IsPartOfPrefabInstance(tile.gameObject))
-                        PrefabUtility.ApplyPrefabInstance(tile.gameObject, InteractionMode.UserAction);
-                    else
-                        PrefabUtility.SavePrefabAsset(tile.gameObject);
-            }
-            else if (cell.sides[j].side == MyWFC.Sides.Right)
-            {
-                var templeft = cell.sides[j].left;
-                var tempright = cell.sides[j].right;
-                var tempmiddl = cell.sides[j].middle;
-                Rect r = new Rect((x + width + width / 2), (y - height), width, 20f);
-                cell.sides[j].right = (MyWFC.Connections)EditorGUI.EnumPopup(r, cell.sides[j].right);
-
-                r = new Rect((x + width + width / 2), (y), width, 20f);
-                cell.sides[j].middle = (MyWFC.Connections)EditorGUI.EnumPopup(r, cell.sides[j].middle);
-
-                r = new Rect((x + width + width / 2), (y + height), width, 20f);
-                cell.sides[j].left = (MyWFC.Connections)EditorGUI.EnumPopup(r, cell.sides[j].left);
-
-                r = new Rect((x + width * 3), (y), 30f, 20f);
-
-                if (showAdds)
-                {
-                    if (!tile.cells.Exists(f => f.center.Equals(new Vector3(cell.center.x + (float)tile.size.x, cell.center.y, cell.center.z))))
-                        if (GUI.Button(r, "+"))
-                        {
-                            AddNewCell(cell.sides[j].side, cell, cell.sides[j]);
-                        }
-                    r = new Rect(x, y, 20f, 20f);
-                    if (GUI.Button(r, "-"))
-                    {
-                        tile.cells.Remove(cell);
-                        break;
-                    }
-                }
-                if (templeft != cell.sides[j].left || tempright != cell.sides[j].right || tempmiddl != cell.sides[j].middle)
-                    if (PrefabUtility.IsPartOfPrefabInstance(tile.gameObject))
-                        PrefabUtility.ApplyPrefabInstance(tile.gameObject, InteractionMode.UserAction);
-                    else
-                        PrefabUtility.SavePrefabAsset(tile.gameObject);
-            }
-            else if (cell.sides[j].side == MyWFC.Sides.Front)
-            {
-                var templeft = cell.sides[j].left;
-                var tempright = cell.sides[j].right;
-                var tempmiddl = cell.sides[j].middle;
-                Rect r = new Rect((x - width - width / 2) + 10f, (y - height * 2), width, 20f);
-                cell.sides[j].right = (MyWFC.Connections)EditorGUI.EnumPopup(r, cell.sides[j].right);
-
-                r = new Rect(x, (y - height * 2), width, 20f);
-                cell.sides[j].middle = (MyWFC.Connections)EditorGUI.EnumPopup(r, cell.sides[j].middle);
-
-                r = new Rect((x + width + width / 2) - 10f, (y - height * 2), width, 20f);
-                cell.sides[j].left = (MyWFC.Connections)EditorGUI.EnumPopup(r, cell.sides[j].left);
-
-                r = new Rect(x, (y - height * 2) - 20f, 30f, 20f);
-                if (showAdds)
-                {
-                    if (!tile.cells.Exists(f => f.center.Equals(new Vector3(cell.center.x, cell.center.y, cell.center.z + (float)tile.size.z))))
-                        if (GUI.Button(r, "+"))
-                        {
-                            AddNewCell(cell.sides[j].side, cell, cell.sides[j]);
-                        }
-                    r = new Rect(x, y, 20f, 20f);
-                    if (GUI.Button(r, "-"))
-                    {
-                        tile.cells.Remove(cell);
-                        break;
-                    }
-                }
-                if (templeft != cell.sides[j].left || tempright != cell.sides[j].right || tempmiddl != cell.sides[j].middle)
-                    if (PrefabUtility.IsPartOfPrefabInstance(tile.gameObject))
-                        PrefabUtility.ApplyPrefabInstance(tile.gameObject, InteractionMode.UserAction);
-                    else
-                        PrefabUtility.SavePrefabAsset(tile.gameObject);
-                // PrefabUtility.SavePrefabAsset(tile.gameObject);
-            }
-            else if (cell.sides[j].side == MyWFC.Sides.Back)
-            {
-                var templeft = cell.sides[j].left;
-                var tempright = cell.sides[j].right;
-                var tempmiddl = cell.sides[j].middle;
-                Rect r = new Rect((x - width - width / 2) + 10f, (y + height * 2), width, 20f);
-                cell.sides[j].left = (MyWFC.Connections)EditorGUI.EnumPopup(r, cell.sides[j].left);
-
-                r = new Rect(x, (y + height * 2), width, 20f);
-                cell.sides[j].middle = (MyWFC.Connections)EditorGUI.EnumPopup(r, cell.sides[j].middle);
-
-                r = new Rect((x + width + width / 2) - 10f, (y + height * 2), width, 20f);
-                cell.sides[j].right = (MyWFC.Connections)EditorGUI.EnumPopup(r, cell.sides[j].right);
-
-
-                r = new Rect(x, (y + height * 2) + 20f, 30f, 20f);
-                if (showAdds)
-                {
-                    if (!tile.cells.Exists(f => f.center.Equals(new Vector3(cell.center.x, cell.center.y, cell.center.z - (float)tile.size.z))))
-                        if (GUI.Button(r, "+"))
-                        {
-                            AddNewCell(cell.sides[j].side, cell, cell.sides[j]);
-                        }
-                    r = new Rect(x, y, 20f, 20f);
-                    if (GUI.Button(r, "-"))
-                    {
-                        tile.cells.Remove(cell);
-                        break;
-                    }
-                }
-                if (templeft != cell.sides[j].left || tempright != cell.sides[j].right || tempmiddl != cell.sides[j].middle)
-                    // if (PrefabUtility.IsPartOfPrefabInstance(tile.gameObject))
-                    if (tile.gameObject.activeInHierarchy)
-                        PrefabUtility.ApplyPrefabInstance(tile.gameObject, InteractionMode.UserAction);
-                    else
-                        PrefabUtility.SavePrefabAsset(tile.gameObject);
-            }
-        }
-        if (name != "")
-        {
-            Rect c = new Rect(x - 50f, (y + height * 4), 100f, 20f);
-            GUI.Label(c, name);
+            c = paintable;
+            // if (PrefabUtility.IsPartOfPrefabInstance(tile.gameObject))
+            //     PrefabUtility.ApplyPrefabInstance(tile.gameObject, InteractionMode.UserAction);
+            // else
+            //     PrefabUtility.SavePrefabAsset(tile.gameObject);
         }
     }
+
+    void PaintAll(int index, int jindex)
+    {
+        tile.cells[index].sides[jindex].topLeft = paintable;
+        tile.cells[index].sides[jindex].topMiddle = paintable;
+        tile.cells[index].sides[jindex].topRight = paintable;
+        tile.cells[index].sides[jindex].left = paintable;
+        tile.cells[index].sides[jindex].middle = paintable;
+        tile.cells[index].sides[jindex].right = paintable;
+        tile.cells[index].sides[jindex].bottomLeft = paintable;
+        tile.cells[index].sides[jindex].bottomMiddle = paintable;
+        tile.cells[index].sides[jindex].bottomRight = paintable;
+
+        if (PrefabUtility.IsPartOfPrefabInstance(tile.gameObject))
+            PrefabUtility.ApplyPrefabInstance(tile.gameObject, InteractionMode.UserAction);
+        else
+            PrefabUtility.SavePrefabAsset(tile.gameObject);
+    }
+    // void DrawEditorRect(MyWFC.Cell cell, float x, float y, bool showAdds = false, string name = "")
+    // {
+    //     for (int j = 0; j < cell.sides.Count; j++)
+    //     {
+    //         if (cell.sides[j].side == MyWFC.Sides.Left)
+    //         {
+    //             var templeft = cell.sides[j].left;
+    //             var tempright = cell.sides[j].right;
+    //             var tempmiddl = cell.sides[j].middle;
+
+    //             Rect r = new Rect((x - width - width / 2), (y - height), width, 20f);
+    //             cell.sides[j].left = (MyWFC.Connections)EditorGUI.EnumPopup(r, cell.sides[j].left);
+
+    //             r = new Rect((x - width - width / 2), (y), width, 20f);
+    //             cell.sides[j].middle = (MyWFC.Connections)EditorGUI.EnumPopup(r, cell.sides[j].middle);
+
+    //             r = new Rect((x - width - width / 2), (y + height), width, 20f);
+    //             cell.sides[j].right = (MyWFC.Connections)EditorGUI.EnumPopup(r, cell.sides[j].right);
+
+    //             if (showAdds)
+    //             {
+    //                 r = new Rect((x - width * 3), (y), width, 20f);
+    //                 if (!tile.cells.Exists(f => f.center.Equals(new Vector3(cell.center.x - (float)tile.size.x, cell.center.y, cell.center.z))))
+    //                     if (GUI.Button(r, "+"))
+    //                     {
+    //                         AddNewCell(cell.sides[j].side, cell, cell.sides[j]);
+    //                     }
+    //                 r = new Rect(x, y, 20f, 20f);
+    //                 if (GUI.Button(r, "-"))
+    //                 {
+    //                     tile.cells.Remove(cell);
+    //                     break;
+    //                 }
+    //             }
+    //             if (templeft != cell.sides[j].left || tempright != cell.sides[j].right || tempmiddl != cell.sides[j].middle)
+    //                 if (PrefabUtility.IsPartOfPrefabInstance(tile.gameObject))
+    //                     PrefabUtility.ApplyPrefabInstance(tile.gameObject, InteractionMode.UserAction);
+    //                 else
+    //                     PrefabUtility.SavePrefabAsset(tile.gameObject);
+    //         }
+    //         else if (cell.sides[j].side == MyWFC.Sides.Right)
+    //         {
+    //             var templeft = cell.sides[j].left;
+    //             var tempright = cell.sides[j].right;
+    //             var tempmiddl = cell.sides[j].middle;
+    //             Rect r = new Rect((x + width + width / 2), (y - height), width, 20f);
+    //             cell.sides[j].right = (MyWFC.Connections)EditorGUI.EnumPopup(r, cell.sides[j].right);
+
+    //             r = new Rect((x + width + width / 2), (y), width, 20f);
+    //             cell.sides[j].middle = (MyWFC.Connections)EditorGUI.EnumPopup(r, cell.sides[j].middle);
+
+    //             r = new Rect((x + width + width / 2), (y + height), width, 20f);
+    //             cell.sides[j].left = (MyWFC.Connections)EditorGUI.EnumPopup(r, cell.sides[j].left);
+
+    //             r = new Rect((x + width * 3), (y), 30f, 20f);
+
+    //             if (showAdds)
+    //             {
+    //                 if (!tile.cells.Exists(f => f.center.Equals(new Vector3(cell.center.x + (float)tile.size.x, cell.center.y, cell.center.z))))
+    //                     if (GUI.Button(r, "+"))
+    //                     {
+    //                         AddNewCell(cell.sides[j].side, cell, cell.sides[j]);
+    //                     }
+    //                 r = new Rect(x, y, 20f, 20f);
+    //                 if (GUI.Button(r, "-"))
+    //                 {
+    //                     tile.cells.Remove(cell);
+    //                     break;
+    //                 }
+    //             }
+    //             if (templeft != cell.sides[j].left || tempright != cell.sides[j].right || tempmiddl != cell.sides[j].middle)
+    //                 if (PrefabUtility.IsPartOfPrefabInstance(tile.gameObject))
+    //                     PrefabUtility.ApplyPrefabInstance(tile.gameObject, InteractionMode.UserAction);
+    //                 else
+    //                     PrefabUtility.SavePrefabAsset(tile.gameObject);
+    //         }
+    //         else if (cell.sides[j].side == MyWFC.Sides.Front)
+    //         {
+    //             var templeft = cell.sides[j].left;
+    //             var tempright = cell.sides[j].right;
+    //             var tempmiddl = cell.sides[j].middle;
+    //             Rect r = new Rect((x - width - width / 2) + 10f, (y - height * 2), width, 20f);
+    //             cell.sides[j].right = (MyWFC.Connections)EditorGUI.EnumPopup(r, cell.sides[j].right);
+
+    //             r = new Rect(x, (y - height * 2), width, 20f);
+    //             cell.sides[j].middle = (MyWFC.Connections)EditorGUI.EnumPopup(r, cell.sides[j].middle);
+
+    //             r = new Rect((x + width + width / 2) - 10f, (y - height * 2), width, 20f);
+    //             cell.sides[j].left = (MyWFC.Connections)EditorGUI.EnumPopup(r, cell.sides[j].left);
+
+    //             r = new Rect(x, (y - height * 2) - 20f, 30f, 20f);
+    //             if (showAdds)
+    //             {
+    //                 if (!tile.cells.Exists(f => f.center.Equals(new Vector3(cell.center.x, cell.center.y, cell.center.z + (float)tile.size.z))))
+    //                     if (GUI.Button(r, "+"))
+    //                     {
+    //                         AddNewCell(cell.sides[j].side, cell, cell.sides[j]);
+    //                     }
+    //                 r = new Rect(x, y, 20f, 20f);
+    //                 if (GUI.Button(r, "-"))
+    //                 {
+    //                     tile.cells.Remove(cell);
+    //                     break;
+    //                 }
+    //             }
+    //             if (templeft != cell.sides[j].left || tempright != cell.sides[j].right || tempmiddl != cell.sides[j].middle)
+    //                 if (PrefabUtility.IsPartOfPrefabInstance(tile.gameObject))
+    //                     PrefabUtility.ApplyPrefabInstance(tile.gameObject, InteractionMode.UserAction);
+    //                 else
+    //                     PrefabUtility.SavePrefabAsset(tile.gameObject);
+    //             // PrefabUtility.SavePrefabAsset(tile.gameObject);
+    //         }
+    //         else if (cell.sides[j].side == MyWFC.Sides.Back)
+    //         {
+    //             var templeft = cell.sides[j].left;
+    //             var tempright = cell.sides[j].right;
+    //             var tempmiddl = cell.sides[j].middle;
+    //             Rect r = new Rect((x - width - width / 2) + 10f, (y + height * 2), width, 20f);
+    //             cell.sides[j].left = (MyWFC.Connections)EditorGUI.EnumPopup(r, cell.sides[j].left);
+
+    //             r = new Rect(x, (y + height * 2), width, 20f);
+    //             cell.sides[j].middle = (MyWFC.Connections)EditorGUI.EnumPopup(r, cell.sides[j].middle);
+
+    //             r = new Rect((x + width + width / 2) - 10f, (y + height * 2), width, 20f);
+    //             cell.sides[j].right = (MyWFC.Connections)EditorGUI.EnumPopup(r, cell.sides[j].right);
+
+
+    //             r = new Rect(x, (y + height * 2) + 20f, 30f, 20f);
+    //             if (showAdds)
+    //             {
+    //                 if (!tile.cells.Exists(f => f.center.Equals(new Vector3(cell.center.x, cell.center.y, cell.center.z - (float)tile.size.z))))
+    //                     if (GUI.Button(r, "+"))
+    //                     {
+    //                         AddNewCell(cell.sides[j].side, cell, cell.sides[j]);
+    //                     }
+    //                 r = new Rect(x, y, 20f, 20f);
+    //                 if (GUI.Button(r, "-"))
+    //                 {
+    //                     tile.cells.Remove(cell);
+    //                     break;
+    //                 }
+    //             }
+    //             if (templeft != cell.sides[j].left || tempright != cell.sides[j].right || tempmiddl != cell.sides[j].middle)
+    //                 // if (PrefabUtility.IsPartOfPrefabInstance(tile.gameObject))
+    //                 if (tile.gameObject.activeInHierarchy)
+    //                     PrefabUtility.ApplyPrefabInstance(tile.gameObject, InteractionMode.UserAction);
+    //                 else
+    //                     PrefabUtility.SavePrefabAsset(tile.gameObject);
+    //         }
+    //     }
+    //     if (name != "")
+    //     {
+    //         Rect c = new Rect(x - 50f, (y + height * 4), 100f, 20f);
+    //         GUI.Label(c, name);
+    //     }
+    // }
 
     void AddNewCell(MyWFC.Sides sides, MyWFC.Cell oldCell, MyWFC.TileSide tileSide)
     {

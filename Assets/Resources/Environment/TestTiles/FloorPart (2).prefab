@@ -18,7 +18,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2516286865430956745
 Transform:
   m_ObjectHideFlags: 0
@@ -26,7 +26,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2999526264807493747}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 119.32311, y: 7.6061335, z: -152.51021}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -103,29 +103,77 @@ MonoBehaviour:
   center: {x: 0, y: 0, z: 0}
   cells:
   - center: {x: 0, y: 0, z: 0}
-    side1:
+    right:
       side: 0
       connection: 0
-      left: 8
-      middle: 8
-      right: 8
-    side2:
+      left: 0
+      middle: 0
+      right: 0
+      topLeft: 0
+      topMiddle: 0
+      topRight: 0
+      bottomLeft: 0
+      bottomMiddle: 0
+      bottomRight: 0
+    left:
       side: 180
       connection: 0
-      left: 8
-      middle: 8
-      right: 8
-    side3:
+      left: 0
+      middle: 0
+      right: 0
+      topLeft: 0
+      topMiddle: 0
+      topRight: 0
+      bottomLeft: 0
+      bottomMiddle: 0
+      bottomRight: 0
+    front:
       side: 270
       connection: 0
-      left: 8
-      middle: 8
-      right: 8
-    side4:
+      left: 0
+      middle: 0
+      right: 0
+      topLeft: 0
+      topMiddle: 0
+      topRight: 0
+      bottomLeft: 0
+      bottomMiddle: 0
+      bottomRight: 0
+    back:
       side: 90
       connection: 0
-      left: 8
-      middle: 8
-      right: 8
-  showGizmo: 1
+      left: 0
+      middle: 0
+      right: 0
+      topLeft: 0
+      topMiddle: 0
+      topRight: 0
+      bottomLeft: 0
+      bottomMiddle: 0
+      bottomRight: 0
+    top:
+      side: 91
+      connection: 0
+      left: 0
+      middle: 0
+      right: 0
+      topLeft: 0
+      topMiddle: 0
+      topRight: 0
+      bottomLeft: 0
+      bottomMiddle: 0
+      bottomRight: 0
+    bottom:
+      side: 92
+      connection: 0
+      left: 0
+      middle: 0
+      right: 0
+      topLeft: 0
+      topMiddle: 0
+      topRight: 0
+      bottomLeft: 0
+      bottomMiddle: 0
+      bottomRight: 0
+  showGizmo: 0
   gizmoSize: 1

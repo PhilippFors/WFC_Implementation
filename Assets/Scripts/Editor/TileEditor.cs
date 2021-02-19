@@ -15,14 +15,18 @@ namespace MyWFC
             DrawDefaultInspector();
             if (GUILayout.Button("Fill sides"))
             {
+                if (t.cells == null || t.cells.Count == 0)
+                    t.cells.Add(new Cell());
+
                 foreach (Cell c in t.cells)
                 {
-                    c.side1 = new TileSide() { side = Sides.Left, connection = Connections.A };
-                    c.side2 = new TileSide() { side = Sides.Right, connection = Connections.A };
-                    c.side3 = new TileSide() { side = Sides.Front, connection = Connections.A };
-                    c.side4 = new TileSide() { side = Sides.Back, connection = Connections.A };
+                    c.right = new TileSide() { side = Sides.Left };
+                    c.left = new TileSide() { side = Sides.Right };
+                    c.front = new TileSide() { side = Sides.Front };
+                    c.back = new TileSide() { side = Sides.Back };
+                    c.top = new TileSide() { side = Sides.Top };
+                    c.bottom = new TileSide() { side = Sides.Bottom };
                 }
-                init = true;
             }
 
             t.cells[0].center = t.center;
@@ -32,8 +36,9 @@ namespace MyWFC
                 TileEditorWindow w = EditorWindow.GetWindow<TileEditorWindow>();
                 w.tile = t;
                 w.Show();
-                
+                t.showGizmo = true;
             }
+            
             if (GUI.changed)
                 EditorUtility.SetDirty(t);
         }

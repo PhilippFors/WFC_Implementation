@@ -15,6 +15,7 @@ namespace MyWFC
         /// <param name="connectionGroups"></param>
         public static void StartAdjacencyCheck(List<RuntimeTile> tileset, AdjacentModel model, ConnectionGroups connectionGroups)
         {
+            TileSide.c = 0;
             for (int i = 0; i < tileset.Count; i++)
             {
                 for (int j = i; j < tileset.Count; j++)
@@ -29,38 +30,51 @@ namespace MyWFC
                     {
                         foreach (TileSide sideB in tileB)
                         {
-                            if (sideA.Equals(sideB, connectionGroups, new[] { tileset[i].bID, tileset[j].bID }))
-                                switch (sideA.side)
-                                {
-                                    case Sides.Left:
-                                        if (sideB.side.Equals(Sides.Right))
-                                        {
-                                            model.AddAdjacency(new Tile(i), new Tile(j), -1, 0, 0);
-                                        }
-                                        break;
-                                    case Sides.Right:
-                                        if (sideB.side.Equals(Sides.Left))
-                                        {
-                                            model.AddAdjacency(new Tile(i), new Tile(j), 1, 0, 0);
-                                        }
-                                        break;
-                                    case Sides.Front:
-                                        if (sideB.side.Equals(Sides.Back))
-                                        {
-                                            model.AddAdjacency(new Tile(i), new Tile(j), 0, 0, 1);
-                                        }
-                                        break;
-                                    case Sides.Back:
-                                        if (sideB.side.Equals(Sides.Front))
-                                        {
-                                            model.AddAdjacency(new Tile(i), new Tile(j), 0, 0, -1);
-                                        }
-                                        break;
-                                }
+                            // if (sideA.Equals(sideB, connectionGroups, new[] { tileset[i].bID, tileset[j].bID }, rotA, rotB))
+                            switch (sideA.side)
+                            {
+                                case Sides.Left:
+                                    if (sideB.side.Equals(Sides.Right) && sideA.Equals(sideB, connectionGroups, new[] { tileset[i].bID, tileset[j].bID }, rotA, rotB))
+                                    {
+                                        model.AddAdjacency(new Tile(i), new Tile(j), -1, 0, 0);
+                                    }
+                                    break;
+                                case Sides.Right:
+                                    if (sideB.side.Equals(Sides.Left) && sideA.Equals(sideB, connectionGroups, new[] { tileset[i].bID, tileset[j].bID }, rotA, rotB))
+                                    {
+                                        model.AddAdjacency(new Tile(i), new Tile(j), 1, 0, 0);
+                                    }
+                                    break;
+                                case Sides.Front:
+                                    if (sideB.side.Equals(Sides.Back) && sideA.Equals(sideB, connectionGroups, new[] { tileset[i].bID, tileset[j].bID }, rotA, rotB))
+                                    {
+                                        model.AddAdjacency(new Tile(i), new Tile(j), 0, 0, 1);
+                                    }
+                                    break;
+                                case Sides.Back:
+                                    if (sideB.side.Equals(Sides.Front) && sideA.Equals(sideB, connectionGroups, new[] { tileset[i].bID, tileset[j].bID }, rotA, rotB))
+                                    {
+                                        model.AddAdjacency(new Tile(i), new Tile(j), 0, 0, -1);
+                                    }
+                                    break;
+                                case Sides.Top:
+                                    if (sideB.side.Equals(Sides.Bottom) && sideA.Equals(sideB, connectionGroups, new[] { tileset[i].bID, tileset[j].bID }, rotA, rotB))
+                                    {
+                                        model.AddAdjacency(new Tile(i), new Tile(j), 0, -1, 0);
+                                    }
+                                    break;
+                                case Sides.Bottom:
+                                    if (sideB.side.Equals(Sides.Top) && sideA.Equals(sideB, connectionGroups, new[] { tileset[i].bID, tileset[j].bID }, rotA, rotB))
+                                    {
+                                        model.AddAdjacency(new Tile(i), new Tile(j), 0, 1, 0);
+                                    }
+                                    break;
+                            }
                         }
                     }
                 }
             }
+            Debug.Log(TileSide.c);
         }
 
         #region unimportant
@@ -141,6 +155,17 @@ namespace MyWFC
                     subList.Add(sides[i].all[j]);
                 }
                 newSide.all = subList;
+
+                newSide.left = sides[i].left;
+                newSide.middle = sides[i].middle;
+                newSide.right = sides[i].right;
+                newSide.topLeft = sides[i].topLeft;
+                newSide.topMiddle = sides[i].topMiddle;
+                newSide.topRight = sides[i].topRight;
+                newSide.bottomLeft = sides[i].bottomLeft;
+                newSide.bottomMiddle = sides[i].bottomMiddle;
+                newSide.bottomRight = sides[i].bottomRight;
+
                 list.Add(newSide);
             }
             return list;

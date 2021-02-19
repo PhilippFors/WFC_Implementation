@@ -104,29 +104,77 @@ MonoBehaviour:
   center: {x: 0, y: 0, z: 0}
   cells:
   - center: {x: 0, y: 0, z: 0}
-    side1:
+    right:
       side: 0
       connection: 0
       left: 0
       middle: 5
       right: 0
-    side2:
+      topLeft: 0
+      topMiddle: 5
+      topRight: 0
+      bottomLeft: 0
+      bottomMiddle: 5
+      bottomRight: 0
+    left:
       side: 180
       connection: 0
       left: 0
       middle: 5
       right: 0
-    side3:
+      topLeft: 0
+      topMiddle: 5
+      topRight: 0
+      bottomLeft: 0
+      bottomMiddle: 5
+      bottomRight: 0
+    front:
       side: 270
       connection: 0
       left: 0
       middle: 0
       right: 0
-    side4:
+      topLeft: 0
+      topMiddle: 0
+      topRight: 0
+      bottomLeft: 0
+      bottomMiddle: 0
+      bottomRight: 0
+    back:
       side: 90
       connection: 0
       left: 0
       middle: 0
       right: 0
-  showGizmo: 1
+      topLeft: 0
+      topMiddle: 0
+      topRight: 0
+      bottomLeft: 0
+      bottomMiddle: 0
+      bottomRight: 0
+    top:
+      side: 91
+      connection: 0
+      left: 0
+      middle: 0
+      right: 0
+      topLeft: 0
+      topMiddle: 0
+      topRight: 0
+      bottomLeft: 0
+      bottomMiddle: 0
+      bottomRight: 0
+    bottom:
+      side: 92
+      connection: 0
+      left: 0
+      middle: 0
+      right: 0
+      topLeft: 0
+      topMiddle: 0
+      topRight: 0
+      bottomLeft: 0
+      bottomMiddle: 0
+      bottomRight: 0
+  showGizmo: 0
   gizmoSize: 1
