@@ -41,37 +41,59 @@ namespace MyWFC
             {
                 var xmin = x == 0;
                 var xmax = x == propagator.Topology.Width - 1;
+
                 for (int y = 0; y < propagator.Topology.Height; y++)
                 {
                     var ymin = y == 0;
                     var ymax = y == propagator.Topology.Height - 1;
+
                     for (int z = 0; z < propagator.Topology.Depth; z++)
                     {
                         var zmin = z == 0;
                         var zmax = z == propagator.Topology.Depth - 1;
 
                         bool cont = false;
+
                         if (c != null && respectFixedConstraint && c.useConstraint)
+                        {
                             foreach (MyTilePoint p in c.pointList)
+                            {
                                 if (x == p.point.x && y == p.point.y && z == p.point.z)
+                                {
                                     cont = true;
+                                }
+                            }
+                        }
+                        
                         if (cont)
                         {
                             continue;
                         }
                         else
                         {
-                            var match = Match(sides, xmin, xmax, ymin, ymax, zmin, zmax);
-
-                            if (match)
+                            if (Match(sides, xmin, xmax, ymin, ymax, zmin, zmax))
                             {
                                 if (ban)
                                 {
-                                    propagator.Ban(x, y, z, Tiles);
+                                    bool isBanned;
+                                    bool isSelected;
+                                    propagator.GetBannedSelected(x, y, z, Tiles, out isBanned, out isSelected);
+
+                                    if (!isSelected)
+                                    {
+                                        propagator.Ban(x, y, z, Tiles);
+                                    }
                                 }
                                 else
                                 {
+                                    bool isBanned;
+                                    bool isSelected;
+                                    propagator.GetBannedSelected(x, y, z, Tiles, out isBanned, out isSelected);
+
+                                    // if (!isBanned)
+                                    // {
                                     propagator.Select(x, y, z, Tiles);
+                                    // }
                                 }
 
                             }

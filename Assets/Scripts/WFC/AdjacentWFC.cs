@@ -23,9 +23,13 @@ namespace MyWFC
         public override Coroutine Generate(bool multithread = true)
         {
             if (multithread)
+            {
                 return StartCoroutine(StartGenerate());
+            }
             else
+            {
                 StartCoroutine(StartGenerate());
+            }
 
             return null;
         }
@@ -64,7 +68,9 @@ namespace MyWFC
             {
                 MyTile t = tileSet.tiles[i].GetComponent<MyTile>();
                 if (tileSet.tileUse[i])
+                {
                     if (t.hasRotation)
+                    {
                         for (int j = 0; j < rotations; j++)
                         {
                             for (int z = 0; z < t.cells.Count; z++)
@@ -73,7 +79,9 @@ namespace MyWFC
                                 if (rot == 0)
                                 {
                                     if (t.cells.Count > 1)
+                                    {
                                         t.runtimeIDs.Add(runtimeTiles.Count);
+                                    }
 
                                     runtimeTiles.Add(new RuntimeTile(t.gameObject.GetHashCode(), t.cells.Count > 1 ? bIDCounter : -1, rot, tileSet.frequenzies[i], false, t.gameObject, t.cells[z].sides));
                                 }
@@ -86,7 +94,9 @@ namespace MyWFC
                                     {
                                         int s = (int)l[sideIndex].side + rot;
                                         if (s >= 360)
+                                        {
                                             s -= 360;
+                                        }
 
                                         l[sideIndex].side = (Sides)s;
                                     }
@@ -100,6 +110,7 @@ namespace MyWFC
                             if (t.cells.Count > 1)
                                 bIDCounter++;
                         }
+                    }
                     else
                     {
                         for (int j = 0; j < t.cells.Count; j++)
@@ -110,6 +121,7 @@ namespace MyWFC
                             runtimeTiles.Add(new RuntimeTile(t.gameObject.GetHashCode(), (int)t.gameObject.transform.eulerAngles.y, tileSet.frequenzies[j], false, t.gameObject, t.cells[j].sides));
                         }
                     }
+                }
             }
 
             AdjacentUtil.StartAdjacencyCheck(runtimeTiles, model, ConnectionGroups);
@@ -169,7 +181,9 @@ namespace MyWFC
         void SetFrequencies()
         {
             for (int i = 0; i < runtimeTiles.Count; i++)
+            {
                 model.SetFrequency(new Tile(i), WFCUtil.FindTileFrequenzy(runtimeTiles.ToArray(), tileSet, i));
+            }
         }
 
         protected void PreparePropagator()
@@ -182,8 +196,9 @@ namespace MyWFC
             //DeBroglie constraints should be added into the propagator via constructor
             var p = GetPathConstraint();
             if (p != null)
+            {
                 options.Constraints = new[] { p };
-
+            }
             propagator = new TilePropagator(model, topology, options);
 
             //Most custom constraints only call Select or Ban on the propagator and don't need to be passed into the constructor
@@ -196,11 +211,13 @@ namespace MyWFC
         {
             CustomConstraint[] constraints = GetComponents<CustomConstraint>();
             if (constraints != null)
+            {
                 foreach (CustomConstraint c in constraints)
                 {
                     if (c.useConstraint)
                         c.SetConstraint(propagator, runtimeTiles.ToArray());
                 }
+            }
         }
 
         DeBroglie.Constraints.ITileConstraint GetPathConstraint()
@@ -209,10 +226,12 @@ namespace MyWFC
             if (pathC != null && pathC.useConstraint)
             {
                 pathC.SetConstraint(propagator, runtimeTiles.ToArray());
-                return pathC.ReturnConstraint();
+                return pathC.GetConstraint();
             }
             else
+            {
                 return null;
+            }
         }
 
         protected void ApplyMask()
@@ -237,7 +256,9 @@ namespace MyWFC
         public void DrawOutput()
         {
             for (int x = 0; x < modelOutput.GetLength(0); x++)
+            {
                 for (int y = 0; y < modelOutput.GetLength(1); y++)
+                {
                     for (int z = 0; z < modelOutput.GetLength(2); z++)
                     {
                         if (IsBigTile(x, y, z))
@@ -245,6 +266,8 @@ namespace MyWFC
                         else
                             DrawSingleTile(x, y, z);
                     }
+                }
+            }
         }
 
 

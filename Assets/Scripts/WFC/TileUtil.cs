@@ -66,10 +66,7 @@ public static class WFCUtil
             if (tileSet[j].ID == ID)
                 l.Add(new Tile(j));
 
-        Tile[] t = new Tile[l.Count];
-        for (int i = 0; i < t.Length; i++)
-            t[i] = l[i];
-        return t;
+        return l.ToArray();
     }
 
     /// <summary>
@@ -87,10 +84,7 @@ public static class WFCUtil
                 if (tileSet[i].ID == ID[j])
                     l.Add(new Tile(i));
 
-        Tile[] t = new Tile[l.Count];
-        for (int i = 0; i < t.Length; i++)
-            t[i] = l[i];
-        return t;
+        return l.ToArray();
     }
 
 

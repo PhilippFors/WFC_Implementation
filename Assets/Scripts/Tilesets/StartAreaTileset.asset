@@ -20,10 +20,10 @@ MonoBehaviour:
   - {fileID: 5696345470735553178, guid: 238733279dec8e84fb0f3115e7280d01, type: 3}
   entrance: {fileID: 5696345470735553178, guid: 238733279dec8e84fb0f3115e7280d01,
     type: 3}
+  empty: {fileID: 0}
   borderTiles:
   - {fileID: 5712118799407400280, guid: 158f3d6fbed590547826152bcfe6e6c2, type: 3}
   - {fileID: 7025768350363283284, guid: a4b4ebe62d6893c4b896d80c5dcbfa49, type: 3}
-  - {fileID: 5696345470735553178, guid: 238733279dec8e84fb0f3115e7280d01, type: 3}
   pathTiles: []
   frequenzies:
   - 1
@@ -32,4 +32,4 @@ MonoBehaviour:
   - 1
   tileUse: 01010101
   pathUse: 
-  borderUse: 010100
+  borderUse: 0101

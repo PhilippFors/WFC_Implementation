@@ -1,0 +1,228 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2805206305287786290
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2805206305287786288}
+  - component: {fileID: 2805206305287786254}
+  m_Layer: 0
+  m_Name: LevelGenerator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2805206305287786288
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2805206305287786290}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2805206305287786254
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2805206305287786290}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a63870fb68801014e8d5fac2738a6872, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  generateOnStart: 0
+  generatorPrefab: {fileID: 4313474062284804424, guid: 4e9cfa2a71eb81a4d9cf2055ed64f556,
+    type: 3}
+  startAreaTileset: {fileID: 11400000, guid: d8cb300966d28cc4c9c5489d346cda1b, type: 2}
+  tileSet: {fileID: 11400000, guid: 2f7b4dba5e79c09479978762db963f2c, type: 2}
+  connections: {fileID: 11400000, guid: c4f585c723c6e404a9c556796db27588, type: 2}
+  pathConstraintType: 0
+  modelConstraintAlgorithm: 0
+  backTrack: 1
+  backTrackDepth: 5
+  areaList:
+  - generated: 1
+    parent: {fileID: 0}
+    tileInfo:
+      position: {x: 5, y: 0, z: 189}
+      index: 0
+      width: 4
+      height: 4
+      bounds:
+        m_Center: {x: 5, y: 0, z: 189}
+        m_Extent: {x: 2, y: 5, z: 2}
+      entrance:
+        side: 0
+        position: {x: 0, y: 0, z: 0}
+      exit:
+        side: 2
+        position: {x: 0, y: 0, z: 1}
+    entrance:
+      side: 0
+      position: {x: 0, y: 0, z: 0}
+    exit:
+      side: 0
+      position: {x: 0, y: 0, z: 0}
+  - generated: 1
+    parent: {fileID: 0}
+    tileInfo:
+      position: {x: -70, y: 0, z: 189}
+      index: 1
+      width: 6
+      height: 5
+      bounds:
+        m_Center: {x: -70, y: 0, z: 189}
+        m_Extent: {x: 3, y: 5, z: 2.5}
+      entrance:
+        side: -2
+        position: {x: 5, y: 0, z: 1}
+      exit:
+        side: 1
+        position: {x: 1, y: 0, z: 4}
+    entrance:
+      side: 0
+      position: {x: 0, y: 0, z: 0}
+    exit:
+      side: 0
+      position: {x: 0, y: 0, z: 0}
+  - generated: 1
+    parent: {fileID: 0}
+    tileInfo:
+      position: {x: -70, y: 0, z: 265}
+      index: 2
+      width: 6
+      height: 8
+      bounds:
+        m_Center: {x: -70, y: 0, z: 265}
+        m_Extent: {x: 3, y: 5, z: 4}
+      entrance:
+        side: -1
+        position: {x: 3, y: 0, z: 0}
+      exit:
+        side: 1
+        position: {x: 1, y: 0, z: 7}
+    entrance:
+      side: 0
+      position: {x: 0, y: 0, z: 0}
+    exit:
+      side: 0
+      position: {x: 0, y: 0, z: 0}
+  - generated: 1
+    parent: {fileID: 0}
+    tileInfo:
+      position: {x: -70, y: 0, z: 351}
+      index: 3
+      width: 5
+      height: 5
+      bounds:
+        m_Center: {x: -70, y: 0, z: 351}
+        m_Extent: {x: 2.5, y: 5, z: 2.5}
+      entrance:
+        side: -1
+        position: {x: 2, y: 0, z: 0}
+      exit:
+        side: 2
+        position: {x: 0, y: 0, z: 2}
+    entrance:
+      side: 0
+      position: {x: 0, y: 0, z: 0}
+    exit:
+      side: 0
+      position: {x: 0, y: 0, z: 0}
+  - generated: 1
+    parent: {fileID: 0}
+    tileInfo:
+      position: {x: -145, y: 0, z: 351}
+      index: 4
+      width: 6
+      height: 7
+      bounds:
+        m_Center: {x: -145, y: 0, z: 351}
+        m_Extent: {x: 3, y: 5, z: 3.5}
+      entrance:
+        side: -2
+        position: {x: 5, y: 0, z: 3}
+      exit:
+        side: 0
+        position: {x: 0, y: 0, z: 0}
+    entrance:
+      side: 0
+      position: {x: 0, y: 0, z: 0}
+    exit:
+      side: 0
+      position: {x: 0, y: 0, z: 0}
+  generators:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  gridWidth: 40
+  gridHeight: 40
+  levelLength: 4
+  seed: 1654
+  randomSeed: 0
+  randomLength: 0
+  isLinear: 1
+  dic:
+    reorderableList:
+      canAdd: 1
+      canRemove: 1
+      draggable: 1
+      expandable: 1
+      multipleSelection: 1
+      isExpanded: 0
+      label:
+        m_Text: Keys
+        m_Image: {fileID: 0}
+        m_Tooltip: 
+      headerHeight: 18
+      footerHeight: 13
+      slideEasing: 0.15
+      verticalSpacing: 2
+      showDefaultBackground: 1
+      elementDisplayType: 0
+      elementNameProperty: 
+      elementNameOverride: 
+      elementIcon: {fileID: 0}
+    reqReferences: {fileID: 0}
+    isExpanded: 0
+    _keyValues:
+    - baseTileSize
+    - minTileWidth
+    - maxTileWidth
+    - minTileHeight
+    - maxTileHeight
+    - tileDistance
+    - gridSize
+    _keys:
+    - baseTileSize
+    - minTileWidth
+    - maxTileWidth
+    - minTileHeight
+    - maxTileHeight
+    - tileDistance
+    - gridSize
+    _values: 04000000050000000800000005000000080000000a00000006000000
+  directions:
+  - direction: 1
+    weight: 5
+  - direction: -1
+    weight: 0
+  - direction: 2
+    weight: 4
+  - direction: -2
+    weight: 4

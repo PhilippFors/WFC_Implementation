@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdf72dd0766490640b300beafa1f24d2, type: 3}
+  m_Name: ConnectionGroup
+  m_EditorClassIdentifier: 
+  groups:
+  - v: 01000000000000000000000000
+  - v: 00010001010100000000000000
+  - v: 00000101000101000000000000
+  - v: 00010100000000000000000000
+  - v: 00010000010000000000000000
+  - v: 00010100000000000000000000
+  - v: 00000100000001000000000000
+  - v: 00000000000000010000000000
+  - v: 00000000000000000001000000
+  - v: 00000000000000000101000000
+  - v: 00000000000000000000010000
+  - v: 00000000000000000000000100
+  - v: 00000000000000000000000001

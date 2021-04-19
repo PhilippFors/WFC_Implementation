@@ -14,8 +14,6 @@ namespace MyWFC
         [HideInInspector] public int bID;
         [HideInInspector] public List<int> runtimeIDs = new List<int>();
 
-        public bool use = true;
-
         /// <summary>
         /// The frequenzy of the tile placement
         /// </summary>
@@ -249,92 +247,6 @@ namespace MyWFC
                     return false;
             }
             return true;
-        }
-        public static int c = 0;
-        public bool Equals(TileSide sideB, ConnectionGroups connectionGroups, int[] bIDS = null, int rotationYA = 0, int rotationYB = 0)
-        {
-            c++;
-
-            if (this.Equals(Connections.None) || sideB.Equals(Connections.None))
-                return false;
-
-            // Connections[] arrayA = this.all.ToArray();
-            // Connections[] arrayB = sideB.all.ToArray();
-
-            Connections[,] a = RotateMatrix(this.sideInfo, rotationYA, this.side);
-            Connections[,] b = RotateMatrix(sideB.sideInfo, rotationYB, sideB.side);
-
-            for (int x = 0; x < a.GetLength(0); x++)
-                for (int i = 0, j = a.GetLength(1) - 1; i < a.GetLength(0); i++, j--)
-                {
-                    if (!AdjacentUtil.CheckConnections(a[i, x], b[j, x], connectionGroups))
-                        return false;
-                }
-
-            // if (bIDS[0] != -1 && bIDS[1] != -1)
-            // {
-            //     for (int i = 0, j = arrayA.Length - 1; i < arrayA.Length; i++, j--)
-            //     {
-            //         if (!AdjacentUtil.CheckConnections(arrayA[i], arrayB[j], connectionGroups) || bIDS[0] != bIDS[1])
-            //             return false;
-            //     }
-            // }
-            // else
-            // {
-            //     for (int i = 0, j = arrayA.Length - 1; i < arrayA.Length; i++, j--)
-            //     {
-            //         if (!AdjacentUtil.CheckConnections(arrayA[i], arrayB[j], connectionGroups))
-            //             return false;
-            //     }
-            // }
-            return true;
-        }
-
-        public Connections[,] RotateMatrix(Connections[,] connections, int rot, Sides side)
-        {
-            Connections[,] newArr = connections;
-
-            if (rot != 0 && (side.Equals(Sides.Top) || side.Equals(Sides.Bottom)))
-            {
-                int amount = rot / 90;
-                Debug.Log(rot);
-                Debug.Log(amount);
-                for (int i = 0; i < amount; i++)
-                {
-                    Transpose(ref newArr);
-                    Reverse(ref newArr);
-                }
-            }
-            return newArr;
-        }
-
-        void Transpose(ref Connections[,] connections)
-        {
-            for (int x = 0; x < connections.GetLength(0); x++)
-                for (int z = x; z < connections.GetLength(1); z++)
-                {
-                    var temp = connections[x, z];
-                    connections[x, z] = connections[z, x];
-                    connections[z, x] = temp;
-                }
-        }
-
-        void Reverse(ref Connections[,] connections)
-        {
-            var start = 0;
-            var end = connections.GetLength(1) - 1;
-
-            for (int i = 0; i < connections.Length; i++)
-            {
-                while (start < end)
-                {
-                    var temp = connections[i, start];
-                    connections[i, start] = connections[i, end];
-                    connections[i, end] = temp;
-                    start++;
-                    end--;
-                }
-            }
         }
     }
 

@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &4313474062284804424
+--- !u!1 &7151291481590411643
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,36 +8,39 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4313474062284804426}
-  - component: {fileID: 4313474062284804427}
+  - component: {fileID: 7151291481590411641}
+  - component: {fileID: 7151291481590411640}
+  - component: {fileID: 7151291482470334882}
+  - component: {fileID: 7151291482470334908}
+  - component: {fileID: 7151291482470334883}
   m_Layer: 0
-  m_Name: AdjacencyWFC
+  m_Name: AdjacencyWFCAlone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4313474062284804426
+--- !u!4 &7151291481590411641
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4313474062284804424}
+  m_GameObject: {fileID: 7151291481590411643}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -16.77456, y: 2.746669, z: 23.297081}
+  m_LocalPosition: {x: -27.5, y: 0, z: -11}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4313474062284804427
+--- !u!114 &7151291481590411640
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4313474062284804424}
+  m_GameObject: {fileID: 7151291481590411643}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9c4a89cf9df756c488f07062e26baa98, type: 3}
@@ -45,15 +48,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maskGenerator: {fileID: 0}
   useMask: 0
-  gridSize: 1
+  gridSize: 6
   size: {x: 10, y: 1, z: 10}
-  backTrack: 0
-  backTrackDepth: 10
+  backTrack: 1
+  backTrackDepth: 5
   periodicIN: 0
   periodicOUT: 0
   maxRetries: 10
-  tileSet: {fileID: 0}
-  ConnectionGroups: {fileID: 0}
+  tileSet: {fileID: 11400000, guid: 2f7b4dba5e79c09479978762db963f2c, type: 2}
+  ConnectionGroups: {fileID: 11400000, guid: c4f585c723c6e404a9c556796db27588, type: 2}
   rotations: 4
   runtimeTiles:
   - obj: {fileID: 3305408723479488368, guid: f8f8bb59043d2ec4e86ef7f652c7774e, type: 3}
@@ -5897,3 +5900,67 @@ MonoBehaviour:
     weight: 1
     symmetry: 0
   modelConstraintAlgorithm: 0
+--- !u!114 &7151291482470334882
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7151291481590411643}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 394b7253e3628814bbfbb8ce52126181, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  useConstraint: 1
+  pointList:
+  - point: {x: 3, y: 0, z: 0}
+    useRandomPoint: 0
+    tile: {fileID: 810519191481488274, guid: 238733279dec8e84fb0f3115e7280d01, type: 3}
+  - point: {x: 5, y: 0, z: 9}
+    useRandomPoint: 0
+    tile: {fileID: 810519191481488274, guid: 238733279dec8e84fb0f3115e7280d01, type: 3}
+--- !u!114 &7151291482470334908
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7151291481590411643}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0cceefb76161ff94c979b8d1c5e80c3c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  useConstraint: 1
+  borderTiles:
+  - {fileID: 2549257861737315828, guid: a4b4ebe62d6893c4b896d80c5dcbfa49, type: 3}
+  - {fileID: 5351743634916441337, guid: 158f3d6fbed590547826152bcfe6e6c2, type: 3}
+  - {fileID: 3350543891019322869, guid: 768c2ce37c2269942b8b41ed8c6b67bb, type: 3}
+  sides: 51
+  respectFixedConstraint: 1
+  ban: 0
+--- !u!114 &7151291482470334883
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7151291481590411643}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20f194f43020404499ba9f625823e9b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  useConstraint: 1
+  pathConstraintType: 0
+  endPoints:
+  - point: {x: 3, y: 0, z: 0}
+    useRandomPoint: 0
+    tile: {fileID: 0}
+  - point: {x: 5, y: 0, z: 9}
+    useRandomPoint: 0
+    tile: {fileID: 0}
+  pathTiles:
+  - {fileID: 7176558942273919362, guid: a2623a7b0c54e954587abd73a89d1464, type: 3}
+  - {fileID: 7937926520781656062, guid: eb195c3933258484fbcb077de450c0bc, type: 3}

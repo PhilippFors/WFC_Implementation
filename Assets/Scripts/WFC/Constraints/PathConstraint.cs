@@ -75,7 +75,7 @@ namespace MyWFC
 
         }
 
-        public DeBroglie.Constraints.ITileConstraint ReturnConstraint()
+        public DeBroglie.Constraints.ITileConstraint GetConstraint()
         {
             if (pathConstraintType.Equals(PathConstraintType.Connected))
                 return connectedConstraint;

@@ -43,41 +43,88 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8b07230a99b851448983f34e68545f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ID: 0
   bID: 0
   runtimeIDs: 
   use: 1
   weight: 1
   rotationDeg: 0
-  hasRotation: 0
+  hasRotation: 1
   coords: {x: 0, y: 0}
   size: {x: 6, y: 6, z: 6}
   center: {x: 0, y: 0, z: 0}
   cells:
   - center: {x: 0, y: 0, z: 0}
-    side1:
+    right:
       side: 0
       connection: 0
       left: 9
       middle: 9
       right: 9
-    side2:
+      topLeft: 9
+      topMiddle: 9
+      topRight: 9
+      bottomLeft: 9
+      bottomMiddle: 9
+      bottomRight: 9
+    left:
       side: 180
       connection: 0
       left: 9
       middle: 9
       right: 9
-    side3:
+      topLeft: 9
+      topMiddle: 9
+      topRight: 9
+      bottomLeft: 9
+      bottomMiddle: 9
+      bottomRight: 9
+    front:
       side: 270
       connection: 0
       left: 9
       middle: 9
       right: 9
-    side4:
+      topLeft: 9
+      topMiddle: 9
+      topRight: 9
+      bottomLeft: 9
+      bottomMiddle: 9
+      bottomRight: 9
+    back:
       side: 90
       connection: 0
       left: 9
       middle: 9
       right: 9
+      topLeft: 9
+      topMiddle: 9
+      topRight: 9
+      bottomLeft: 9
+      bottomMiddle: 9
+      bottomRight: 9
+    top:
+      side: 91
+      connection: 0
+      left: -3
+      middle: -3
+      right: -3
+      topLeft: -3
+      topMiddle: -3
+      topRight: -3
+      bottomLeft: -3
+      bottomMiddle: -3
+      bottomRight: -3
+    bottom:
+      side: 92
+      connection: 0
+      left: -3
+      middle: -3
+      right: -3
+      topLeft: -3
+      topMiddle: -3
+      topRight: -3
+      bottomLeft: -3
+      bottomMiddle: -3
+      bottomRight: -3
   showGizmo: 1
   gizmoSize: 0.5

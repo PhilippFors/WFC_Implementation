@@ -42,9 +42,11 @@ public class TileEditorWindow : EditorWindow
         //     DrawEditorRect(tile2.cells[0], x * 4, y, false, tile2.gameObject.name);
         // }
         // else 
-        Rect r = new Rect(10f, 10f, 50f, 20f);
+        Rect r = new Rect(10f, 10f, 120f, 20f);
+        EditorGUI.LabelField(r, "Paint Connection:");
+        r = new Rect(120f, 10f, 50f, 20f);
         paintable = (MyWFC.Connections)EditorGUI.EnumPopup(r, paintable);
-        r = new Rect(80f, 10f, 50f, 20f);
+        r = new Rect(200f, 10f, 50f, 20f);
         if (GUI.Button(r, "Save"))
         {
             if (PrefabUtility.IsPartOfPrefabInstance(tile.gameObject))
@@ -72,10 +74,10 @@ public class TileEditorWindow : EditorWindow
             }
     }
 
-    private void OnDestroy()
-    {
-        tile.showGizmo = false;
-    }
+    // private void OnDestroy()
+    // {
+    //     tile.showGizmo = false;
+    // }
     void DrawEditorRect(float x, float y, int index, int jindex)
     {
 
