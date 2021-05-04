@@ -133,7 +133,7 @@ namespace MyWFC
                             MyTile newTile = Instantiate(fab, new Vector3(), Quaternion.identity).GetComponent<MyTile>();
                             newTile.coords = new Vector2Int(x, z);
                             Vector3 fscale = newTile.transform.localScale;
-                            newTile.transform.parent = output.transform;
+                            newTile.transform.parent = outputObject.transform;
                             newTile.transform.localPosition = pos;
                             newTile.transform.localEulerAngles = new Vector3(0, 0, 0);
                             newTile.transform.localScale = fscale;

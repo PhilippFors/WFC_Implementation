@@ -14,12 +14,6 @@ namespace MyWFC
         [HideInInspector] public int bID;
         [HideInInspector] public List<int> runtimeIDs = new List<int>();
 
-        /// <summary>
-        /// The frequenzy of the tile placement
-        /// </summary>
-        public int weight;
-
-        public int rotationDeg;
         public bool hasRotation;
 
         public Vector2Int coords;

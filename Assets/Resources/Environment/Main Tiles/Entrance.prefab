@@ -175,5 +175,5 @@ MonoBehaviour:
       bottomLeft: -3
       bottomMiddle: -3
       bottomRight: -3
-  showGizmo: 1
+  showGizmo: 0
   gizmoSize: 1

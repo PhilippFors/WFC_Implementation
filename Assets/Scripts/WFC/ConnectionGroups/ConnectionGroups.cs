@@ -5,7 +5,7 @@ using UnityEditor;
 using System;
 namespace MyWFC
 {
-    [CreateAssetMenu(fileName = "new Connectiongroup", menuName = "WFC/Connection Group")]
+    [CreateAssetMenu(fileName = "new Connectiongroup", menuName = "Tiles/Connection Group")]
     public class ConnectionGroups : ScriptableObject
     {
         public BoolArrayHelper[] groups;

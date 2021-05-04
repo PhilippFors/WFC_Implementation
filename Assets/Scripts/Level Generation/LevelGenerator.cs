@@ -10,7 +10,7 @@ namespace LevelGeneration
         public bool generateOnStart = false;
 
         #region Area generation
-        
+
         [Header("Area Generation")]
         [SerializeField] GameObject generatorPrefab;
         public MyWFC.TileSet startAreaTileset;
@@ -142,7 +142,6 @@ namespace LevelGeneration
 
             generator.tileSet = t;
             generator.ConnectionGroups = connections;
-            generator.gridSize = t.GridSize;
             generator.size = new Vector3Int(tile.width, 1, tile.height);
             generator.modelConstraintAlgorithm = modelConstraintAlgorithm;
             generator.backTrackDepth = backTrackDepth;
@@ -163,7 +162,7 @@ namespace LevelGeneration
             MyWFC.FixedTileCostraint fixedC = null;
             MyWFC.PathConstraint pathC = null;
 
-            //Configuring fixed tile constraint
+            // Configuring fixed tile constraint
             if (t.entrance != null)
             {
                 fixedC = generator.gameObject.AddComponent<MyWFC.FixedTileCostraint>();
@@ -177,39 +176,37 @@ namespace LevelGeneration
                     fixedC.pointList.Add(new MyWFC.MyTilePoint() { point = exit.position, tile = t.entrance.GetComponent<MyWFC.MyTile>() });
             }
 
-            //Configuring border constraint
-            if (t.borderTiles.Count > 0)
+            // Configuring border constraint
+            borderC = generator.gameObject.AddComponent<MyWFC.BorderConstraint>();
+            borderC.respectFixedConstraint = fixedC != null;
+            borderC.sides = MyWFC.Borders.XMax | MyWFC.Borders.XMin | MyWFC.Borders.ZMax | MyWFC.Borders.ZMin;
+            for (int i = 0; i < t.tiles.Count; i++)
             {
-                borderC = generator.gameObject.AddComponent<MyWFC.BorderConstraint>();
-                borderC.respectFixedConstraint = fixedC != null;
-                borderC.sides = MyWFC.Borders.XMax | MyWFC.Borders.XMin | MyWFC.Borders.ZMax | MyWFC.Borders.ZMin;
-                for (int i = 0; i < t.borderTiles.Count; i++)
+                if (t.tileUse[i] && t.borderUse[i])
                 {
-                    if (!WFCUtil.FindTileUse(t, t.borderTiles[i]) || !t.borderUse[i])
-                        continue;
-                    else
-                        borderC.borderTiles.Add(t.borderTiles[i].GetComponent<MyWFC.MyTile>());
+                    borderC.borderTiles.Add(t.tiles[i].GetComponent<MyWFC.MyTile>());
                 }
             }
 
-            //Configuring path constraint
-            if (t.pathTiles.Count > 0)
+            // Configuring path constraint
+            pathC = generator.gameObject.AddComponent<MyWFC.PathConstraint>();
+            pathC.pathConstraintType = pathConstraintType;
+            if (fixedC != null && fixedC.useConstraint)
             {
-                pathC = generator.gameObject.AddComponent<MyWFC.PathConstraint>();
-                pathC.pathConstraintType = pathConstraintType;
-                if (fixedC != null && fixedC.useConstraint)
-                    foreach (MyWFC.MyTilePoint p in fixedC.pointList)
-                        pathC.endPoints.Add(p);
-
-                for (int i = 0; i < t.pathTiles.Count; i++)
+                foreach (MyWFC.MyTilePoint p in fixedC.pointList)
                 {
-                    if (!WFCUtil.FindTileUse(t, t.pathTiles[i]) || !t.pathUse[i])
-                        continue;
-                    else
-                        pathC.pathTiles.Add(t.pathTiles[i].GetComponent<MyWFC.MyTile>());
+                    pathC.endPoints.Add(p);
                 }
-                pathC.pathTiles.Add(t.entrance.GetComponent<MyWFC.MyTile>());
             }
+
+            for (int i = 0; i < t.tiles.Count; i++)
+            {
+                if (t.tileUse[i] && t.pathUse[i])
+                {
+                    pathC.pathTiles.Add(t.tiles[i].GetComponent<MyWFC.MyTile>());
+                }
+            }
+            pathC.pathTiles.Add(t.entrance.GetComponent<MyWFC.MyTile>());
         }
 
         /// <summary>

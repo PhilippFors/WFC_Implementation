@@ -96,7 +96,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bID: 0
   runtimeIDs: 
-  use: 1
   weight: 0
   rotationDeg: 0
   hasRotation: 1
@@ -133,49 +132,49 @@ MonoBehaviour:
       side: 270
       connection: 0
       left: 0
-      middle: 0
+      middle: 2
       right: 0
       topLeft: 0
-      topMiddle: 0
+      topMiddle: 2
       topRight: 0
       bottomLeft: 0
-      bottomMiddle: 0
+      bottomMiddle: 2
       bottomRight: 0
     back:
       side: 90
       connection: 0
       left: 0
       middle: 0
-      right: 0
+      right: 1
       topLeft: 0
       topMiddle: 0
-      topRight: 0
+      topRight: 1
       bottomLeft: 0
       bottomMiddle: 0
-      bottomRight: 0
+      bottomRight: 1
     top:
       side: 91
       connection: 0
-      left: 0
-      middle: 0
-      right: 0
-      topLeft: 0
-      topMiddle: 0
-      topRight: 0
-      bottomLeft: 0
-      bottomMiddle: 0
-      bottomRight: 0
+      left: -3
+      middle: -3
+      right: -3
+      topLeft: -3
+      topMiddle: -3
+      topRight: -3
+      bottomLeft: -3
+      bottomMiddle: -3
+      bottomRight: -3
     bottom:
       side: 92
       connection: 0
-      left: 0
-      middle: 0
-      right: 0
-      topLeft: 0
-      topMiddle: 0
-      topRight: 0
-      bottomLeft: 0
-      bottomMiddle: 0
-      bottomRight: 0
+      left: -3
+      middle: -3
+      right: -3
+      topLeft: -3
+      topMiddle: -3
+      topRight: -3
+      bottomLeft: -3
+      bottomMiddle: -3
+      bottomRight: -3
   showGizmo: 0
   gizmoSize: 1

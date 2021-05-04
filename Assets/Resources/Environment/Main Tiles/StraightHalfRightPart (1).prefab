@@ -96,7 +96,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bID: 0
   runtimeIDs: 
-  use: 1
   weight: 0
   rotationDeg: 0
   hasRotation: 1

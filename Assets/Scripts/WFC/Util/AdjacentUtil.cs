@@ -9,7 +9,7 @@ namespace MyWFC
     {
         private static int iterationCounter = 0;
         /// <summary>
-        /// Iterates through the tileset and the subsequent tilesides of each tile to check legal adjacencies.
+        /// Iterates through the tileset and the subsequent tile sides of each tile to check legal adjacencies.
         /// </summary>
         /// <param name="tileset"></param>
         /// <param name="model"></param>
@@ -24,93 +24,72 @@ namespace MyWFC
                     var rotA = tileset[i].rotation;
                     var rotB = tileset[j].rotation;
 
-                    var tileA = tileset[i].sides;
-                    var tileB = tileset[j].sides;
+                    var tileSidesA = tileset[i].sides;
+                    var tileSidesB = tileset[j].sides;
 
-                    foreach (TileSide sideA in tileA)
+                    foreach (TileSide sideA in tileSidesA)
                     {
-                        foreach (TileSide sideB in tileB)
+                        switch (sideA.side)
                         {
-                            // if (sideA.Equals(sideB, connectionGroups, new[] { tileset[i].bID, tileset[j].bID }, rotA, rotB))
-                            switch (sideA.side)
-                            {
-                                case Sides.Left:
-                                    if (sideB.side.Equals(Sides.Right) && CompairSides(sideA, sideB, connectionGroups))
-                                    {
-                                        model.AddAdjacency(new Tile(i), new Tile(j), -1, 0, 0);
-                                    }
-                                    break;
-                                case Sides.Right:
-                                    if (sideB.side.Equals(Sides.Left) && CompairSides(sideA, sideB, connectionGroups))
-                                    {
-                                        model.AddAdjacency(new Tile(i), new Tile(j), 1, 0, 0);
-                                    }
-                                    break;
-                                case Sides.Front:
-                                    if (sideB.side.Equals(Sides.Back) && CompairSides(sideA, sideB, connectionGroups))
-                                    {
-                                        model.AddAdjacency(new Tile(i), new Tile(j), 0, 0, 1);
-                                    }
-                                    break;
-                                case Sides.Back:
-                                    if (sideB.side.Equals(Sides.Front) && CompairSides(sideA, sideB, connectionGroups))
-                                    {
-                                        model.AddAdjacency(new Tile(i), new Tile(j), 0, 0, -1);
-                                    }
-                                    break;
-                                case Sides.Top:
-                                    if (sideB.side.Equals(Sides.Bottom) && CompairSides(sideA, sideB, connectionGroups))
-                                    {
-                                        model.AddAdjacency(new Tile(i), new Tile(j), 0, -1, 0);
-                                    }
-                                    break;
-                                case Sides.Bottom:
-                                    if (sideB.side.Equals(Sides.Top) && CompairSides(sideA, sideB, connectionGroups))
-                                    {
-                                        model.AddAdjacency(new Tile(i), new Tile(j), 0, 1, 0);
-                                    }
-                                    break;
-                            }
+                            case Sides.Left:
+                                if (CompairSides(sideA, tileSidesB.GetSide(Sides.Right), connectionGroups))
+                                {
+                                    model.AddAdjacency(new Tile(i), new Tile(j), -1, 0, 0);
+                                }
+                                break;
+                            case Sides.Right:
+                                if (CompairSides(sideA, tileSidesB.GetSide(Sides.Left), connectionGroups))
+                                {
+                                    model.AddAdjacency(new Tile(i), new Tile(j), 1, 0, 0);
+                                }
+                                break;
+                            case Sides.Front:
+                                if (CompairSides(sideA, tileSidesB.GetSide(Sides.Back), connectionGroups))
+                                {
+                                    model.AddAdjacency(new Tile(i), new Tile(j), 0, 0, 1);
+                                }
+                                break;
+                            case Sides.Back:
+                                if (CompairSides(sideA, tileSidesB.GetSide(Sides.Front), connectionGroups))
+                                {
+                                    model.AddAdjacency(new Tile(i), new Tile(j), 0, 0, -1);
+                                }
+                                break;
+                            case Sides.Top:
+                                if (CompairSides(sideA, tileSidesB.GetSide(Sides.Back), connectionGroups))
+                                {
+                                    model.AddAdjacency(new Tile(i), new Tile(j), 0, -1, 0);
+                                }
+                                break;
+                            case Sides.Bottom:
+                                if (CompairSides(sideA, tileSidesB.GetSide(Sides.Front), connectionGroups))
+                                {
+                                    model.AddAdjacency(new Tile(i), new Tile(j), 0, 1, 0);
+                                }
+                                break;
                         }
                     }
                 }
             }
-            Debug.Log(iterationCounter);
+            // Debug.Log(iterationCounter);
         }
 
-        #region unimportant
-        /// <summary>
-        /// Due to rotation garbage, the subsides need to be swapped up for proper comparison. Does not impact the original data.
-        /// Idk if there is a better way.
-        /// </summary>
-        /// <param name="tileSide"></param>
-        /// <param name="rot"></param>
-        /// <param name="side"></param>
-        /// <returns></returns>
-        // static Connections[] ShuffleArray(TileSide tileSide, int rot, Sides side)
-        // {
-        //     Connections[] arr = new Connections[3];
-        // if ((rot == 90 || rot == 180) && (side == Sides.Left || side == Sides.Right))
-        // {
-        // arr[0] = tileSide.all[2];
-        // arr[1] = tileSide.all[1];
-        // arr[2] = tileSide.all[0];
-        // }
-        // else if ((rot == 180 || rot == 270) && (side == Sides.Front || side == Sides.Back))
-        // {
-        //     arr[0] = tileSide.all[2];
-        //     arr[1] = tileSide.all[1];
-        //     arr[2] = tileSide.all[0];
-        // }
-        // else
-        // {
-        //     arr = tileSide.all.ToArray();
-        // }
-        //     return arr;
-        // }
-        #endregion
+        private static TileSide GetSide(this List<TileSide> sides, Sides side)
+        {
+            return sides.Find(x => x.side == side);
+        }
 
-        private static bool CompairSides(TileSide sideA, TileSide sideB, ConnectionGroups connectionGroups, int[] bIDS = null, int rotationYA = 0, int rotationYB = 0)
+        /// <summary>
+        /// Compaires two sides and their connection points.
+        /// </summary>
+        /// <param name="sideA"></param>
+        /// <param name="sideB"></param>
+        /// <param name="connectionGroups"></param>
+        /// <param name="bIDS"></param>
+        /// <param name="rotationYA"></param>
+        /// <param name="rotationYB"></param>
+        /// <returns></returns>
+        private static bool CompairSides(TileSide sideA, TileSide sideB, ConnectionGroups connectionGroups, int rotationYA = 0, int rotationYB = 0)
         {
             iterationCounter++;
 
@@ -181,7 +160,7 @@ namespace MyWFC
         }
 
         /// <summary>
-        /// Iterates through the connectiongroup and checks if two connections can connect.
+        /// Iterates through the connection group and checks if two connections can connect.
         /// </summary>
         /// <param name="connA"></param>
         /// <param name="connB"></param>

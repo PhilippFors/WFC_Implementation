@@ -45,7 +45,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bID: 0
   runtimeIDs: 
-  use: 1
   weight: 1
   rotationDeg: 0
   hasRotation: 1
@@ -126,5 +125,5 @@ MonoBehaviour:
       bottomLeft: -3
       bottomMiddle: -3
       bottomRight: -3
-  showGizmo: 1
+  showGizmo: 0
   gizmoSize: 0.5

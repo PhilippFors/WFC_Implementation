@@ -93,7 +93,7 @@ namespace MyWFC
                 if (!RotationTileIndexer.ContainsKey(tile.name + R.ToString()))
                 {
                     RotationTileIndexer.Add(tile.name + R.ToString(), index);
-                    runtimeTiles[index] = new RuntimeTile(TileIndexer[tile.name], R, MyTile.weight, MyTile.gameObject);
+                    runtimeTiles[index] = new RuntimeTile(TileIndexer[tile.name], R, MyTile.gameObject);
                     sample[X, Z] = new Tile(RotationTileIndexer[tile.name + R.ToString()]);
                     index++;
                 }
@@ -142,7 +142,7 @@ namespace MyWFC
         void RecordEmpty()
         {
             var tile = empty.GetComponent<MyTile>();
-            runtimeTiles[RotationTileIndexer.Count] = new RuntimeTile(tile.GetHashCode(), 0, tile.weight, false, empty.gameObject);
+            runtimeTiles[RotationTileIndexer.Count] = new RuntimeTile(tile.GetHashCode(), 0, false, empty.gameObject);
             for (int x = 0; x < sample.GetLength(0); x++)
             {
                 for (int z = 0; z < sample.GetLength(1); z++)

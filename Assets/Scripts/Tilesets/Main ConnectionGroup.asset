@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cdf72dd0766490640b300beafa1f24d2, type: 3}
-  m_Name: ConnectionGroup
+  m_Name: Main ConnectionGroup
   m_EditorClassIdentifier: 
   groups:
   - v: 01000000000000000000000000

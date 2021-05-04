@@ -4,10 +4,12 @@ using UnityEngine;
 using UnityEditor;
 namespace MyWFC
 {
-    [CreateAssetMenu(fileName = "tile set", menuName = "Tiles/Tileset")]
+    [CreateAssetMenu(fileName = "new tile set", menuName = "Tiles/Tileset")]
     public class TileSet : ScriptableObject
     {
-        public int GridSize;
+        [SerializeField] private int gridSize;
+        public int GridSize => gridSize;
+
         /// <summary>
         /// The main tilset. Every used tile should be in here.
         /// </summary>
@@ -16,8 +18,6 @@ namespace MyWFC
 
         [HideInInspector] public GameObject entrance;
         [HideInInspector] public GameObject empty;
-        [HideInInspector] public List<GameObject> borderTiles = new List<GameObject>();
-        [HideInInspector] public List<GameObject> pathTiles = new List<GameObject>();
 
         [HideInInspector] public List<double> frequenzies = new List<double>();
         [HideInInspector] public List<bool> tileUse = new List<bool>();
@@ -37,11 +37,7 @@ namespace MyWFC
             DrawDefaultInspector();
             TileEditor(t);
             GUILayout.Space(20f);
-            BorderTileEditor(t);
-            GUILayout.Space(20f);
-            PathTilesEditor(t);
             
-            //Entrance Tile
             GUILayout.Label("Entrance Tile");
             t.entrance = (GameObject)EditorGUILayout.ObjectField(t.entrance, typeof(GameObject), false);
             GUILayout.Label("Empty Tile");
@@ -75,6 +71,7 @@ namespace MyWFC
                             EditorGUI.DrawPreviewTexture(new Rect(0, 61f * (i + 0) + 75f, 60f, 60f), preview);
                     }
                     t.tiles[i] = (GameObject)EditorGUILayout.ObjectField(t.tiles[i], typeof(GameObject), false, GUILayout.MaxWidth(200f));
+
                     if (t.tiles[i] != null)
                     {
                         GUILayout.Label("Weight: ", GUILayout.MaxWidth(50f));
@@ -83,43 +80,21 @@ namespace MyWFC
                         GUILayout.Space(5f);
 
                         GUILayout.Label("Use: ", GUILayout.MaxWidth(25f));
-                        t.tileUse[i] = EditorGUILayout.Toggle(t.tileUse[i], GUILayout.MaxWidth(20f));
+                        t.tileUse[i] = EditorGUILayout.Toggle(t.tileUse[i], GUILayout.MaxWidth(25f));
+
+                        GUILayout.Label("B: ", GUILayout.MaxWidth(20f));
+                        t.borderUse[i] = EditorGUILayout.Toggle(t.borderUse[i], GUILayout.MaxWidth(20f));
+
+                        GUILayout.Label("P: ", GUILayout.MaxWidth(20f));
+                        t.pathUse[i] = EditorGUILayout.Toggle(t.pathUse[i], GUILayout.MaxWidth(20f));
                     }
 
-
-                    if (GUILayout.Button("B"))
-                    {
-                        if (!t.borderTiles.Contains(t.tiles[i]))
-                        {
-                            t.borderTiles.Add(t.tiles[i]);
-                            t.borderUse.Add(true);
-                        }
-                    }
-                    if (GUILayout.Button("P"))
-                    {
-                        if (!t.pathTiles.Contains(t.tiles[i]))
-                        {
-                            t.pathTiles.Add(t.tiles[i]);
-                            t.pathUse.Add(true);
-                        }
-                    }
                     if (GUILayout.Button("Remove"))
                     {
-                        if (t.pathTiles.Contains(t.tiles[i]))
-                        {
-                            int index = t.pathTiles.FindIndex(0, x => t.tiles[i]);
-                            t.pathUse.RemoveAt(index);
-                            t.pathTiles.RemoveAt(index);
-                        }
-                        if (t.borderTiles.Contains(t.tiles[i]))
-                        {
-                            int index = t.borderTiles.FindIndex(0, x => t.tiles[i]);
-                            t.borderUse.RemoveAt(index);
-                            t.borderTiles.RemoveAt(index);
-                        }
-
                         t.tiles.Remove(t.tiles[i]);
                         t.tileUse.RemoveAt(i);
+                        t.borderUse.RemoveAt(i);
+                        t.pathUse.RemoveAt(i);
                         t.frequenzies.RemoveAt(i);
                     }
                     GUILayout.EndHorizontal();
@@ -130,68 +105,9 @@ namespace MyWFC
             {
                 t.tiles.Add(null);
                 t.tileUse.Add(true);
+                t.borderUse.Add(false);
+                t.pathUse.Add(false);
                 t.frequenzies.Add(1);
-            }
-        }
-        void BorderTileEditor(TileSet t)
-        {
-
-            GUILayout.Label("Border tiles", EditorStyles.largeLabel);
-            if (t.borderTiles.Count > 0 && t.borderTiles != null)
-                for (int i = 0; i < t.borderTiles.Count; i++)
-                {
-                    GUILayout.BeginHorizontal();
-                    t.borderTiles[i] = (GameObject)EditorGUILayout.ObjectField(t.borderTiles[i], typeof(GameObject), false, GUILayout.MaxWidth(200f));
-                    if (t.borderTiles[i] != null)
-                    {
-                        GUILayout.Space(5f);
-
-                        GUILayout.Label("Use: ", GUILayout.MaxWidth(25f));
-                        t.borderUse[i] = EditorGUILayout.Toggle(t.borderUse[i], GUILayout.MaxWidth(20f));
-                    }
-
-                    if (GUILayout.Button("Remove"))
-                    {
-                        t.borderTiles.RemoveAt(i);
-                        t.borderUse.RemoveAt(i);
-                    }
-                    GUILayout.EndHorizontal();
-                }
-
-            if (GUILayout.Button("Add Tile"))
-            {
-                t.borderTiles.Add(null);
-                t.borderUse.Add(true);
-            }
-        }
-        void PathTilesEditor(TileSet t)
-        {
-            GUILayout.Label("Path tiles", EditorStyles.largeLabel);
-            if (t.pathTiles.Count != 0 && t.pathTiles != null)
-                for (int i = 0; i < t.pathTiles.Count; i++)
-                {
-                    GUILayout.BeginHorizontal();
-                    t.pathTiles[i] = (GameObject)EditorGUILayout.ObjectField(t.pathTiles[i], typeof(GameObject), false, GUILayout.MaxWidth(200f));
-                    if (t.pathTiles[i] != null)
-                    {
-                        GUILayout.Space(5f);
-
-                        GUILayout.Label("Use: ", GUILayout.MaxWidth(25f));
-                        t.pathUse[i] = EditorGUILayout.Toggle(t.pathUse[i], GUILayout.MaxWidth(20f));
-                    }
-
-                    if (GUILayout.Button("Remove"))
-                    {
-                        t.pathTiles.RemoveAt(i);
-                        t.pathUse.RemoveAt(i);
-                    }
-                    GUILayout.EndHorizontal();
-                }
-
-            if (GUILayout.Button("Add Tile"))
-            {
-                t.pathTiles.Add(null);
-                t.pathUse.Add(true);
             }
         }
     }
