@@ -74,10 +74,7 @@ namespace MyWFC
             // Debug.Log(iterationCounter);
         }
 
-        private static TileSide GetSide(this List<TileSide> sides, Sides side)
-        {
-            return sides.Find(x => x.side == side);
-        }
+        private static TileSide GetSide(this List<TileSide> sides, Sides side) => sides.Find(x => x.side == side);
 
         /// <summary>
         /// Compaires two sides and their connection points.

@@ -16,7 +16,8 @@ namespace LevelGeneration
 
         public DoorWay(DoorWay connected, Side side)
         {
-
+            this.connected = connected;
+            this.side = side;
         }
     }
 }
