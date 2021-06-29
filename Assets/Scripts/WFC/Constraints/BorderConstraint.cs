@@ -17,13 +17,14 @@ namespace MyWFC
         ZMax = 0x20,
         All = 0x3F,
     }
+    
     public class BorderConstraint : CustomConstraint
     {
         public List<MyTile> borderTiles = new List<MyTile>();
         public Borders sides;
         public bool respectFixedConstraint = true;
         public bool ban = false;
-        public override void SetConstraint(TilePropagator propagator, RuntimeTile[] tileSet)
+        public override void SetConstraint(RuntimeTile[] tileSet, TilePropagator propagator)
         {
             MyWFC.FixedTileCostraint c = GetComponent<MyWFC.FixedTileCostraint>();
 

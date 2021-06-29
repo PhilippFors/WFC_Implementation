@@ -23,8 +23,8 @@ namespace MyWFC
         private DeBroglie.Constraints.ConnectedConstraint connectedConstraint = null;
         private DeBroglie.Constraints.AcyclicConstraint acyclicConstraint = null;
         private DeBroglie.Constraints.LoopConstraint loopConstraint = null;
-
-        public override void SetConstraint(TilePropagator propagator, RuntimeTile[] tileSet)
+        
+        public override void SetConstraint(RuntimeTile[] tileSet, TilePropagator propagator = null)
         {
             var spec = new DeBroglie.Constraints.PathSpec();
             DeBroglie.Point[] points = new DeBroglie.Point[endPoints.Count];
@@ -60,13 +60,13 @@ namespace MyWFC
             switch (pathConstraintType)
             {
                 case PathConstraintType.Looped:
-                    LoopedConstrainConfig(propagator, spec);
+                    LoopedConstrainConfig(spec);
                     break;
                 case PathConstraintType.Acyclic:
-                    AcyclicConstrainConfig(propagator, spec);
+                    AcyclicConstrainConfig(spec);
                     break;
                 case PathConstraintType.Connected:
-                    ConnectedConstrainConfig(propagator, spec);
+                    ConnectedConstrainConfig(spec);
                     break;
                 case PathConstraintType.None:
 
@@ -87,19 +87,17 @@ namespace MyWFC
             return null;
         }
 
-        void ConnectedConstrainConfig(TilePropagator p, PathSpec spec)
+        void ConnectedConstrainConfig(PathSpec spec)
         {
             connectedConstraint = new DeBroglie.Constraints.ConnectedConstraint();
-
             connectedConstraint.PathSpec = spec;
-            // connectedConstraint.UsePickHeuristic = true;
         }
-        void AcyclicConstrainConfig(TilePropagator p, PathSpec spec)
+        void AcyclicConstrainConfig(PathSpec spec)
         {
             acyclicConstraint = new DeBroglie.Constraints.AcyclicConstraint();
             acyclicConstraint.PathSpec = spec;
         }
-        void LoopedConstrainConfig(TilePropagator p, PathSpec spec)
+        void LoopedConstrainConfig(PathSpec spec)
         {
             loopConstraint = new DeBroglie.Constraints.LoopConstraint();
             loopConstraint.PathSpec = spec;

@@ -17,7 +17,7 @@ namespace MyWFC
     {
         [Tooltip("Enter a list of tiles and a fixed point")]
         public List<MyTilePoint> pointList = new List<MyTilePoint>();
-        public override void SetConstraint(TilePropagator propagator, RuntimeTile[] tileSet)
+        public override void SetConstraint(RuntimeTile[] tileSet, TilePropagator propagator)
         {
             if (useConstraint)
             {
