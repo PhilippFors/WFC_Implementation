@@ -10,32 +10,31 @@ namespace MyWFC
     public abstract class ModelImplementation : MonoBehaviour
     {
         [SerializeField] protected int gridSize = 1;
-        public Vector3Int size = new Vector3Int(10, 1, 10);
-        public bool backTrack;
-        public int backTrackDepth = 5;
-
-        [Tooltip("Only useful when you have an existing input")]
-        public bool periodicIN;
-        public bool periodicOUT;
+        [SerializeField] protected Vector3Int size = new Vector3Int(10, 1, 10);
+        [SerializeField] protected bool backTrack;
+        [SerializeField] protected int backTrackDepth = 5;
+        [SerializeField] protected int maxRetries = 10;
+        [SerializeField] protected bool periodicIN;
+        [SerializeField] protected bool periodicOUT;
+        
         protected GameObject outputObject;
         protected int[,,] modelOutput;
-        public int maxRetries = 10;
         protected int retries;
-        protected GridTopology topology;
-        protected TilePropagator propagator;
         protected Coroutine mainCoroutine;
 
         /// <summary>
         /// Starting generation of WFC
         /// </summary>
-        /// <param name="multithread"></param>
+        /// <param name="useCoroutine"></param>
         /// <returns></returns>
-        public abstract Coroutine Generate(bool multithread = true);
-
+        public abstract Coroutine Generate(bool useCoroutine = true);
+        
+        protected abstract void ApplyConstraints(TilePropagator propagator);
+        
         /// <summary>
         /// Creates the output gameObject under which the output is going to be parented.
         /// </summary>
-        protected virtual void CreateOutputObject()
+        protected void CreateOutputObject()
         {
             var t = transform.Find("output-" + gameObject.name);
             if (t != null)
@@ -69,20 +68,23 @@ namespace MyWFC
             }
         }
 
+        protected GridTopology GetTopology()
+        {
+            return new GridTopology(size.x, size.y, size.z, periodicOUT);
+        }
+        
         private float timeout = 5f;
         /// <summary>
         /// Runs the model. Retries generation if it fails.
         /// </summary>
         /// <returns></returns>
-        protected virtual IEnumerator RunModel()
+        protected IEnumerator RunModel(TilePropagator propagator)
         {
             for (int i = 0; i < maxRetries; i++)
             {
-                var timeoutCoroutine = StartCoroutine(TimeOut());
-
                 propagator.Clear();
                 
-                ApplyConstraints();
+                ApplyConstraints(propagator);
 
                 DeBroglie.Resolution status = DeBroglie.Resolution.Undecided;
 
@@ -95,46 +97,15 @@ namespace MyWFC
 
                 if (status != DeBroglie.Resolution.Contradiction)
                 {
-                    StopCoroutine(timeoutCoroutine);
                     yield break;
                 }
 
                 yield return null;
-
-                StopCoroutine(timeoutCoroutine);
             }
+            
             Debug.Log("Generation not successful");
         }
 
-        private IEnumerator TimeOut()
-        {
-            float time = 0;
-            while (time < timeout)
-            {
-                time += Time.deltaTime;
-                yield return null;
-            }
-            if (mainCoroutine != null)
-            {
-                StopCoroutine(mainCoroutine);
-            }
-            Debug.Log("Timeout!");
-        }
-
-        protected virtual void RunModelSingle()
-        {
-            for (int i = 0; i < maxRetries; i++)
-            {
-                var status = propagator.Run();
-                modelOutput = propagator.ToValueArray<int>().ToArray3d();
-
-                if (status != DeBroglie.Resolution.Contradiction)
-                {
-                    return;
-                }
-            }
-        }
-        protected abstract void ApplyConstraints();
         void OnDrawGizmos()
         {
             Gizmos.color = Color.cyan;
@@ -143,6 +114,7 @@ namespace MyWFC
                                 new Vector3(size.x * gridSize, size.y * gridSize, size.z * gridSize));
         }
     }
+    
 #if UNITY_EDITOR
     [CustomEditor(typeof(ModelImplementation), true)]
     public class WFCEditor : Editor

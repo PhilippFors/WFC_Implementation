@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using DeBroglie;
+using DeBroglie.Models;
 using DeBroglie.Topo;
 
 namespace MyWFC
@@ -10,15 +11,20 @@ namespace MyWFC
     public class OverlapWFC : ModelImplementation
     {
         public int n = 2;
-        protected DeBroglie.Models.OverlappingModel model;
+
+        // protected DeBroglie.Models.OverlappingModel model;
         public InputSampler inputSampler;
         protected ITopoArray<Tile> sample;
 
-        public override Coroutine Generate(bool multithread)
+        public override Coroutine Generate(bool useCoroutine)
         {
             retries = 0;
+            
+#if UNITY_EDITOR
             inputSampler.Train();
-            if (multithread)
+#endif
+            
+            if (useCoroutine)
                 return StartCoroutine(StartGenerate());
             else
                 StartCoroutine(StartGenerate());
@@ -29,30 +35,27 @@ namespace MyWFC
         protected IEnumerator StartGenerate()
         {
             CreateOutputObject();
-            PrepareModel();
-            PreparePropagator();
 
-            yield return StartCoroutine(RunModel());
-            DrawOutput();
-        }
+            sample = TopoArray.Create<Tile>(inputSampler.Sample, periodicIN);
 
-        protected virtual void PrepareModel()
-        {
-            sample = TopoArray.Create<Tile>(inputSampler.sample, periodicIN);
+            var model = GetModel(sample);
+            var topology = GetTopology();
 
-            model = new DeBroglie.Models.OverlappingModel(n);
-            model.AddSample(sample);
-
-            topology = new GridTopology(size.x, size.y, size.z, periodicOUT);
-        }
-
-        protected virtual void PreparePropagator()
-        {
             TilePropagatorOptions options = new TilePropagatorOptions();
             options.BackTrackDepth = backTrackDepth;
             options.PickHeuristicType = PickHeuristicType.MinEntropy;
 
-            propagator = new TilePropagator(model, topology, options);
+            var propagator = new TilePropagator(model, topology, options);
+
+            yield return StartCoroutine(RunModel(propagator));
+            DrawOutput();
+        }
+
+        private OverlappingModel GetModel(ITopoArray<Tile> sample)
+        {
+            var m = new DeBroglie.Models.OverlappingModel(n);
+            m.AddSample(sample);
+            return m;
         }
 
         public virtual void DrawOutput()
@@ -73,26 +76,26 @@ namespace MyWFC
         {
             var tile = modelOutput[x, y, z];
 
-            if ((int)tile < inputSampler.runtimeTiles.Length)
+            if ((int) tile < inputSampler.RuntimeTiles.Length)
             {
                 Vector3 pos = new Vector3(x * gridSize, 0, z * gridSize);
-                GameObject fab = inputSampler.runtimeTiles[(int)tile].obj;
-                if (fab != null)
+                var obj = inputSampler.RuntimeTiles[(int) tile].obj.gameObject;
+                if (obj != null)
                 {
-                    MyTile newTile = Instantiate(fab, new Vector3(), Quaternion.identity).GetComponent<MyTile>();
+                    MyTile newTile = Instantiate(obj, new Vector3(), Quaternion.identity).GetComponent<MyTile>();
                     newTile.coords = new Vector2Int(x, z);
                     Vector3 fscale = newTile.transform.localScale;
                     newTile.transform.parent = outputObject.transform;
                     newTile.transform.localPosition = pos;
-                    newTile.transform.localEulerAngles = new Vector3(0, inputSampler.runtimeTiles[(int)tile].rotation, 0);
+                    newTile.transform.localEulerAngles =
+                        new Vector3(0, inputSampler.RuntimeTiles[(int) tile].rotation, 0);
                     newTile.transform.localScale = fscale;
                 }
             }
         }
 
-        protected override void ApplyConstraints()
+        protected override void ApplyConstraints(TilePropagator propagator)
         {
-            throw new System.NotImplementedException();
         }
     }
 }

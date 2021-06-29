@@ -77,20 +77,20 @@ namespace MyWFC
                 }
 
             maskInput = (InputSampler)EditorGUILayout.ObjectField(maskInput, typeof(InputSampler), true);
-            if (maskInput != null)
-                if (GUILayout.Button("Translate Input"))
-                {
-                    maskInput.Train();
-                    t.arr = new IntArrayHelper[maskInput.sample.GetLength(0)];
-                    for (int i = 0; i < maskInput.sample.GetLength(0); i++)
-                    {
-                        t.arr[i] = new IntArrayHelper(maskInput.sample.GetLength(1));
-                    }
-
-                    for (int i = 0; i < maskInput.sample.GetLength(0); i++)
-                        for (int j = 0; j < maskInput.sample.GetLength(1); j++)
-                            t.arr[i].v[j] = (int)maskInput.sample[i, j].Value == 0 ? 1 : 0;
-                }
+            // if (maskInput != null)
+            //     if (GUILayout.Button("Translate Input"))
+            //     {
+            //         maskInput.Train();
+            //         t.arr = new IntArrayHelper[maskInput.Sample.GetLength(0)];
+            //         for (int i = 0; i < maskInput.Sample.GetLength(0); i++)
+            //         {
+            //             t.arr[i] = new IntArrayHelper(maskInput.Sample.GetLength(1));
+            //         }
+            //
+            //         for (int i = 0; i < maskInput.Sample.GetLength(0); i++)
+            //             for (int j = 0; j < maskInput.Sample.GetLength(1); j++)
+            //                 t.arr[i].v[j] = (int)maskInput.Sample[i, j].Value == 0 ? 1 : 0;
+            //     }
 
             if (GUI.changed)
                 EditorUtility.SetDirty(t);

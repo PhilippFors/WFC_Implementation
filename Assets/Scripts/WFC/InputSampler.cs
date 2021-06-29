@@ -13,36 +13,41 @@ namespace MyWFC
     [ExecuteInEditMode]
     public class InputSampler : MonoBehaviour
     {
-        Dictionary<string, int> TileIndexer;
-        Dictionary<string, int> RotationTileIndexer;
-        public List<GameObject> availableTiles;
-        public RuntimeTile[] runtimeTiles;
+        public RuntimeTile[] RuntimeTiles => runtimeTiles;
+        public Tile[,,] Sample => sample;
+
+        [SerializeField] private List<GameObject> availableTiles;
+        [SerializeField] private RuntimeTile[] runtimeTiles;
         [SerializeField] GameObject empty;
-        public Tile[,] sample;
-        public int width = 10;
-        public int depth = 10;
-        public int height = 1;
-        public int gridSize = 1;
-        public bool drawGizmo;
+        [SerializeField] private int width = 10;
+        [SerializeField] private int depth = 10;
+        [SerializeField] private int height = 1;
+        [SerializeField] private int gridSize = 1;
+        [SerializeField] private bool drawGizmo;
+
+        private Tile[,,] sample;
+        private Dictionary<string, int> tileIndexer;
+        private Dictionary<string, int> rotationTileIndexer;
 
         public virtual void Train()
         {
-            TileIndexer = new Dictionary<string, int>();
-            RotationTileIndexer = new Dictionary<string, int>();
+            tileIndexer = new Dictionary<string, int>();
+            rotationTileIndexer = new Dictionary<string, int>();
             availableTiles = new List<GameObject>();
             runtimeTiles = new RuntimeTile[1000];
             empty = null;
             empty = Resources.Load("Environment/EmptyTile") as GameObject;
-            sample = new Tile[width, depth];
+            sample = new Tile[width, height, depth];
 
-            int count = transform.childCount;
+            var count = transform.childCount;
+            
             //Finding Available Tiles
             List<GameObject> empties = new List<GameObject>();
             for (int j = 0; j < count; j++)
             {
-                GameObject tile = this.transform.GetChild(j).gameObject;
-                Vector3 tilepos = tile.transform.localPosition;
-                UnityEngine.Object fab = tile;
+                GameObject tile = transform.GetChild(j).gameObject;
+
+                var fab = tile;
 
                 if (tile.GetHashCode() == empty.GetHashCode())
                 {
@@ -54,18 +59,19 @@ namespace MyWFC
                 fab = PrefabUtility.GetCorrespondingObjectFromSource(tile);
 
                 if (fab == null)
-                    fab = (GameObject)Resources.Load(tile.name);
+                    fab = (GameObject) Resources.Load(tile.name);
 
                 if (!fab)
                 {
                     fab = tile;
                 }
+
                 tile.name = fab.name;
 #endif
                 int id = tile.GetHashCode();
-                if (!TileIndexer.ContainsValue(id))
+                if (!tileIndexer.ContainsValue(id))
                 {
-                    TileIndexer.Add(tile.name, id);
+                    tileIndexer.Add(tile.name, id);
 
                     availableTiles.Add(tile);
                 }
@@ -73,7 +79,8 @@ namespace MyWFC
 
             foreach (GameObject o in empties)
             {
-                if (Application.isPlaying) Destroy(o); else DestroyImmediate(o);
+                if (Application.isPlaying) Destroy(o);
+                else DestroyImmediate(o);
             }
 
             count = transform.childCount;
@@ -86,26 +93,27 @@ namespace MyWFC
                 MyTile MyTile = tile.GetComponent<MyTile>();
                 Vector3 tilepos = tile.transform.localPosition;
 
-                int X = tilepos.x == 0 ? 0 : Mathf.RoundToInt((tilepos.x) / gridSize);
-                int Z = tilepos.z == 0 ? 0 : Mathf.RoundToInt((tilepos.z) / gridSize);
-                int R = AngleCorrection(tile, tile.transform.eulerAngles.y);
+                int x = tilepos.x == 0 ? 0 : Mathf.RoundToInt((tilepos.x) / gridSize);
+                int y = tilepos.x == 0 ? 0 : Mathf.RoundToInt((tilepos.y) / gridSize);
+                int z = tilepos.z == 0 ? 0 : Mathf.RoundToInt((tilepos.z) / gridSize);
+                int rot = AngleCorrection(tile, tile.transform.eulerAngles.y);
 
-                if (!RotationTileIndexer.ContainsKey(tile.name + R.ToString()))
+                if (!rotationTileIndexer.ContainsKey(tile.name + rot.ToString()))
                 {
-                    RotationTileIndexer.Add(tile.name + R.ToString(), index);
-                    runtimeTiles[index] = new RuntimeTile(TileIndexer[tile.name], R, MyTile.gameObject);
-                    sample[X, Z] = new Tile(RotationTileIndexer[tile.name + R.ToString()]);
+                    rotationTileIndexer.Add(tile.name + rot.ToString(), index);
+                    runtimeTiles[index] = new RuntimeTile(tileIndexer[tile.name], rot, MyTile.gameObject);
+                    sample[x, y, z] = new Tile(rotationTileIndexer[tile.name + rot.ToString()]);
                     index++;
                 }
                 else
                 {
-                    sample[X, Z] = new Tile(RotationTileIndexer[tile.name + R.ToString()]);
+                    sample[x, y, z] = new Tile(rotationTileIndexer[tile.name + rot.ToString()]);
                 }
 
-                MyTile.coords = new Vector2Int(X, Z);
+                MyTile.coords = new Vector2Int(x, z);
             }
 
-            runtimeTiles = runtimeTiles.MySubArray<RuntimeTile>(0, RotationTileIndexer.Count + 1);
+            runtimeTiles = runtimeTiles.MySubArray<RuntimeTile>(0, rotationTileIndexer.Count + 1);
             RecordEmpty();
         }
 
@@ -135,52 +143,46 @@ namespace MyWFC
                 if (R > 269f & R < 271f)
                     rot = 270;
             }
-            tile.transform.eulerAngles = new Vector3(tile.transform.localEulerAngles.x, rot, tile.transform.localEulerAngles.z);
-            return (int)rot;
+
+            tile.transform.eulerAngles =
+                new Vector3(tile.transform.localEulerAngles.x, rot, tile.transform.localEulerAngles.z);
+            return (int) rot;
         }
 
-        void RecordEmpty()
+        private void RecordEmpty()
         {
             var tile = empty.GetComponent<MyTile>();
-            runtimeTiles[RotationTileIndexer.Count] = new RuntimeTile(tile.GetHashCode(), 0, false, empty.gameObject);
+            runtimeTiles[rotationTileIndexer.Count] = new RuntimeTile(tile.gameObject.GetHashCode(), 0, false, tile);
             for (int x = 0; x < sample.GetLength(0); x++)
             {
-                for (int z = 0; z < sample.GetLength(1); z++)
+                for (int y = 0; y < sample.GetLength(1); y++)
                 {
-                    if (sample[x, z].Value == null)
+                    for (int z = 0; z < sample.GetLength(2); z++)
                     {
-                        // Debug.Log("is empty at: " + x + ", " + z);
-
-                        GameObject o = Instantiate(empty) as GameObject;
-
-                        if (!RotationTileIndexer.ContainsValue(tile.GetHashCode()))
+                        if (sample[x, y, z].Value == null)
                         {
-                            RotationTileIndexer.Add(empty.name, tile.GetHashCode());
+                            // Debug.Log("is empty at: " + x + ", " + z);
 
-                            if (!TileIndexer.ContainsValue(tile.GetHashCode()))
+                            GameObject o = Instantiate(empty) as GameObject;
+
+                            if (!rotationTileIndexer.ContainsValue(tile.GetHashCode()))
                             {
-                                TileIndexer.Add(empty.name, tile.GetHashCode());
-                                availableTiles.Add(o);
-                            }
-                        }
+                                rotationTileIndexer.Add(empty.name, tile.GetHashCode());
 
-                        sample[x, z] = WFCUtil.FindTile(runtimeTiles, tile.GetHashCode());
-                        o.transform.parent = this.transform;
-                        o.transform.localPosition = new Vector3(x * gridSize, 0, z * gridSize);
+                                if (!tileIndexer.ContainsValue(tile.GetHashCode()))
+                                {
+                                    tileIndexer.Add(empty.name, tile.GetHashCode());
+                                    availableTiles.Add(o);
+                                }
+                            }
+
+                            sample[x, y, z] = WFCUtil.FindTile(runtimeTiles, tile.GetHashCode());
+                            o.transform.parent = this.transform;
+                            o.transform.localPosition = new Vector3(x * gridSize, y * gridSize, z * gridSize);
+                        }
                     }
                 }
             }
-        }
-
-        int FindTile(int ID, int rot = 0)
-        {
-            int index = -1;
-            for (int j = 0; j < runtimeTiles.Length; j++)
-            {
-                if (runtimeTiles[j].ID == ID)
-                    index = j;
-            }
-            return index;
         }
 
         private void OnDrawGizmos()
@@ -189,8 +191,10 @@ namespace MyWFC
             Gizmos.color = Color.magenta;
             if (drawGizmo)
             {
-                Gizmos.DrawWireCube(new Vector3((width * gridSize / 2f) - gridSize * 0.5f, height * gridSize / 2f, (depth * gridSize / 2f) - gridSize * 0.5f),
-                                    new Vector3(width * gridSize, height * gridSize, depth * gridSize));
+                Gizmos.DrawWireCube(
+                    new Vector3((width * gridSize / 2f) - gridSize * 0.5f, height * gridSize / 2f,
+                        (depth * gridSize / 2f) - gridSize * 0.5f),
+                    new Vector3(width * gridSize, height * gridSize, depth * gridSize));
             }
 
             Gizmos.color = Color.cyan;
@@ -213,12 +217,13 @@ namespace MyWFC
     {
         public override void OnInspectorGUI()
         {
-            MyWFC.InputSampler t = (MyWFC.InputSampler)target;
+            MyWFC.InputSampler t = (MyWFC.InputSampler) target;
 
             if (GUILayout.Button("Train"))
             {
                 t.Train();
             }
+
             DrawDefaultInspector();
         }
     }

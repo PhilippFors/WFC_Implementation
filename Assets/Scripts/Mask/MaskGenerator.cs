@@ -22,53 +22,53 @@ namespace MyWFC
         public GameObject full;
         public GameObject empty;
 
-        private void Start()
-        {
-            full = (GameObject)Resources.Load("Full");
-            empty = (GameObject)Resources.Load("Empty");
-        }
-        public override Coroutine Generate(bool multithread = false)
-        {
-            // inputSampler.Train();
-            if (multithread)
-                return StartCoroutine(StartGenerate());
-            else
-                StartCoroutine(StartGenerate());
-
-            return null;
-        }
-
-        protected override void PrepareModel()
-        {
-            MaskSample r = maskInputSamples[Random.Range(0, maskInputSamples.Count)];
-            maskInput = TopoArray.Create<int>(r.sample, periodicIN);
-
-            model = new DeBroglie.Models.OverlappingModel(n);
-            model.AddSample(maskInput.ToTiles<int>());
-
-            topology = new GridTopology(size.x, size.z, periodicOUT);
-        }
-        protected override void PreparePropagator()
-        {
-            TilePropagatorOptions options = new TilePropagatorOptions();
-            options.BackTrackDepth = backTrackDepth;
-            options.PickHeuristicType = PickHeuristicType.MinEntropy;
-
-            propagator = new TilePropagator(model, topology, options);
-
-            AddConstraints();
-        }
-
-        protected void AddConstraints()
-        {
-            CustomConstraint[] constraints = GetComponents<CustomConstraint>();
-            if (constraints != null)
-                foreach (CustomConstraint c in constraints)
-                {
-                    if (c.useConstraint)
-                        c.SetConstraint(propagator, inputSampler.runtimeTiles);
-                }
-        }
+        // private void Start()
+        // {
+        //     full = (GameObject)Resources.Load("Full");
+        //     empty = (GameObject)Resources.Load("Empty");
+        // }
+        // public override Coroutine Generate(bool useCoroutine = false)
+        // {
+        //     // inputSampler.Train();
+        //     if (useCoroutine)
+        //         return StartCoroutine(StartGenerate());
+        //     else
+        //         StartCoroutine(StartGenerate());
+        //
+        //     return null;
+        // }
+        //
+        // protected override void PrepareModel()
+        // {
+        //     MaskSample r = maskInputSamples[Random.Range(0, maskInputSamples.Count)];
+        //     maskInput = TopoArray.Create<int>(r.sample, periodicIN);
+        //
+        //     model = new DeBroglie.Models.OverlappingModel(n);
+        //     model.AddSample(maskInput.ToTiles<int>());
+        //
+        //     topology = new GridTopology(size.x, size.z, periodicOUT);
+        // }
+        // protected override void PreparePropagator()
+        // {
+        //     TilePropagatorOptions options = new TilePropagatorOptions();
+        //     options.BackTrackDepth = backTrackDepth;
+        //     options.PickHeuristicType = PickHeuristicType.MinEntropy;
+        //
+        //     propagator = new TilePropagator(model, topology, options);
+        //
+        //     AddConstraints();
+        // }
+        //
+        // protected void AddConstraints()
+        // {
+        //     CustomConstraint[] constraints = GetComponents<CustomConstraint>();
+        //     if (constraints != null)
+        //         foreach (CustomConstraint c in constraints)
+        //         {
+        //             if (c.useConstraint)
+        //                 c.SetConstraint(propagator, inputSampler.RuntimeTiles);
+        //         }
+        // }
         public override void DrawOutput()
         {
             allAreas = new List<MaskArea>();

@@ -10,19 +10,17 @@ namespace MyWFC
     [AddComponentMenu("Adjacent WFC")]
     public class AdjacentWFC : ModelImplementation
     {
-        public TileSet tileSet;
-        public ConnectionGroups ConnectionGroups;
+        [SerializeField] private TileSet tileSet;
+        [SerializeField] private ConnectionGroups ConnectionGroups;
 
-        [Tooltip("Keep rotations to 1 if you have a complete tileset with all rotations")]
-        [HideInInspector] public int rotations = 4;
-        public List<RuntimeTile> runtimeTiles;
-        public DeBroglie.Wfc.ModelConstraintAlgorithm modelConstraintAlgorithm;
-        AdjacentModel model;
-        int bIDCounter = 0;
+        [Tooltip("Keep rotations to 1 if you have a complete tileset with all rotations")] [SerializeField]
+        private List<RuntimeTile> runtimeTiles;
 
-        public override Coroutine Generate(bool multithread = true)
+        [SerializeField] private DeBroglie.Wfc.ModelConstraintAlgorithm modelConstraintAlgorithm;
+
+        public override Coroutine Generate(bool useCoroutine = true)
         {
-            if (multithread)
+            if (useCoroutine)
             {
                 return StartCoroutine(StartGenerate());
             }
@@ -36,100 +34,103 @@ namespace MyWFC
 
         protected IEnumerator StartGenerate()
         {
+            CreateOutputObject();
+
             retries = 0;
             gridSize = tileSet.GridSize;
-            CreateOutputObject();
-            PrepareModel();
-            PreparePropagator();
+            runtimeTiles = new List<RuntimeTile>();
 
-            mainCoroutine = StartCoroutine(RunModel());
+            var model = GetModel();
+            var topology = GetTopology();
+
+            CreateTileRotations(model);
+
+            TilePropagatorOptions options = new TilePropagatorOptions();
+            options.BackTrackDepth = backTrack ? backTrackDepth : 0;
+            options.PickHeuristicType = PickHeuristicType.MinEntropy;
+            options.ModelConstraintAlgorithm = modelConstraintAlgorithm;
+
+            // DeBroglie constraints should be added into the propagator via constructor
+            var p = GetPathConstraint();
+            if (p != null)
+            {
+                options.Constraints = new[] {p};
+            }
+
+            var propagator = new TilePropagator(model, topology, options);
+
+            ApplyConstraints(propagator);
+
+            mainCoroutine = StartCoroutine(RunModel(propagator));
             yield return mainCoroutine;
 
             DrawOutput();
         }
 
-        protected void PrepareModel()
+        private AdjacentModel GetModel()
         {
-            bIDCounter = 0;
-            runtimeTiles = new List<RuntimeTile>();
-
-            model = new AdjacentModel();
+            var model = new AdjacentModel();
             model.SetDirections(DirectionSet.Cartesian3d);
-            topology = new GridTopology(size.x, size.y, size.z, periodicOUT);
-
-            CreateTileRotations();
+            return model;
         }
 
         /// <summary>
         /// Creates a unique verison of a tile in the tileset for each rotational axis.
         /// </summary>
-        private void CreateTileRotations()
+        private void CreateTileRotations(AdjacentModel model)
         {
             for (int i = 0; i < tileSet.tiles.Count; i++)
             {
-                MyTile t = tileSet.tiles[i].GetComponent<MyTile>();
+                MyTile tile = tileSet.tiles[i].GetComponent<MyTile>();
                 if (tileSet.tileUse[i])
                 {
-                    if (t.hasRotation)
+                    if (tile.hasRotation)
                     {
-                        for (int j = 0; j < rotations; j++)
+                        for (int j = 0; j < 4; j++)
                         {
-                            for (int z = 0; z < t.cells.Count; z++)
+                            var rot = j * 90;
+                            
+                            if (rot == 0)
                             {
-                                int rot = j * 90;
-                                if (rot == 0)
-                                {
-                                    if (t.cells.Count > 1)
-                                    {
-                                        t.runtimeIDs.Add(runtimeTiles.Count);
-                                    }
-
-                                    runtimeTiles.Add(new RuntimeTile(t.gameObject.GetHashCode(), t.cells.Count > 1 ? bIDCounter : -1, rot, false, t.gameObject, t.cells[z].sides));
-                                }
-                                else
-                                {
-                                    List<TileSide> l = AdjacentUtil.TileSideCopy(t.cells[z].sides);
-
-                                    //Hacky way for sides to keep their global orientation so adjacencies are much easier to compare later. See AdjacencyUtil class.
-                                    for (int sideIndex = 0; sideIndex < t.cells[z].sides.Count; sideIndex++)
-                                    {
-                                        int s = (int)l[sideIndex].side + rot;
-                                        if (s >= 360)
-                                        {
-                                            s -= 360;
-                                        }
-
-                                        l[sideIndex].side = (Sides)s;
-                                    }
-
-                                    if (t.cells.Count > 1)
-                                        t.runtimeIDs.Add(runtimeTiles.Count);
-
-                                    runtimeTiles.Add(new RuntimeTile(t.gameObject.GetHashCode(), t.cells.Count > 1 ? bIDCounter : -1, rot, false, t.gameObject, l));
-                                }
+                                var newTile = new RuntimeTile(tile.gameObject.GetHashCode(), rot, false, tile, tile.cells[0].sides);
+                                runtimeTiles.Add(newTile);
                             }
-                            if (t.cells.Count > 1)
-                                bIDCounter++;
+                            else
+                            {
+                                List<TileSide> l = AdjacentUtil.TileSideCopy(tile.cells[0].sides);
+
+                                //Hacky way for sides to keep their global orientation so adjacencies are much easier to compare later. See AdjacencyUtil class.
+                                for (int sideIndex = 0; sideIndex < tile.cells[0].sides.Count; sideIndex++)
+                                {
+                                    int s = (int) l[sideIndex].side + rot;
+                                    if (s >= 360)
+                                    {
+                                        s -= 360;
+                                    }
+
+                                    l[sideIndex].side = (Sides) s;
+                                }
+
+                                runtimeTiles.Add(new RuntimeTile(tile.gameObject.GetHashCode(), rot, false, tile, l));
+                            }
                         }
                     }
                     else
                     {
-                        for (int j = 0; j < t.cells.Count; j++)
+                        for (int j = 0; j < tile.cells.Count; j++)
                         {
-                            if (t.cells.Count > 1)
-                                t.runtimeIDs.Add(runtimeTiles.Count);
-
-                            runtimeTiles.Add(new RuntimeTile(t.gameObject.GetHashCode(), (int)t.gameObject.transform.eulerAngles.y, false, t.gameObject, t.cells[j].sides));
+                            var newTile = new RuntimeTile(tile.gameObject.GetHashCode(), (int) tile.gameObject.transform.eulerAngles.y, false, tile, tile.cells[j].sides);
+                            runtimeTiles.Add(newTile);
                         }
                     }
                 }
             }
 
             AdjacentUtil.StartAdjacencyCheck(runtimeTiles, model, ConnectionGroups);
-            SetFrequencies();
+            SetFrequencies(model);
         }
 
-        private void SetFrequencies()
+        private void SetFrequencies(AdjacentModel model)
         {
             for (int i = 0; i < runtimeTiles.Count; i++)
             {
@@ -139,24 +140,10 @@ namespace MyWFC
 
         protected void PreparePropagator()
         {
-            TilePropagatorOptions options = new TilePropagatorOptions();
-            options.BackTrackDepth = backTrack ? backTrackDepth : 0;
-            options.PickHeuristicType = PickHeuristicType.MinEntropy;
-            options.ModelConstraintAlgorithm = modelConstraintAlgorithm;
-
-            //DeBroglie constraints should be added into the propagator via constructor
-            var p = GetPathConstraint();
-            if (p != null)
-            {
-                options.Constraints = new[] { p };
-            }
-            propagator = new TilePropagator(model, topology, options);
-
             //Most custom constraints only call Select or Ban on the propagator and don't need to be passed into the constructor
-            ApplyConstraints();
         }
 
-        protected override void ApplyConstraints()
+        protected override void ApplyConstraints(TilePropagator propagator)
         {
             CustomConstraint[] constraints = GetComponents<CustomConstraint>();
             if (constraints != null)
@@ -164,7 +151,7 @@ namespace MyWFC
                 foreach (CustomConstraint c in constraints)
                 {
                     if (c.useConstraint)
-                        c.SetConstraint(propagator, runtimeTiles.ToArray());
+                        c.SetConstraint(runtimeTiles.ToArray(), propagator);
                 }
             }
         }
@@ -174,7 +161,7 @@ namespace MyWFC
             var pathC = GetComponent<MyWFC.PathConstraint>();
             if (pathC != null && pathC.useConstraint)
             {
-                pathC.SetConstraint(propagator, runtimeTiles.ToArray());
+                pathC.SetConstraint(runtimeTiles.ToArray());
                 return pathC.GetConstraint();
             }
             else
@@ -208,7 +195,8 @@ namespace MyWFC
             var tile = modelOutput[x, y, z];
 
             Vector3 pos = new Vector3(x * gridSize, y * gridSize, z * gridSize);
-            GameObject fab = runtimeTiles[(int)tile].obj;
+            GameObject fab = runtimeTiles[(int) tile].obj.gameObject;
+            
             if (fab != null)
             {
                 GameObject newTile = Instantiate(fab, new Vector3(), Quaternion.identity) as GameObject;
@@ -216,7 +204,7 @@ namespace MyWFC
                 newTile.transform.parent = outputObject.transform;
                 newTile.transform.localPosition = pos;
 
-                newTile.transform.localEulerAngles = new Vector3(0, runtimeTiles[(int)tile].rotation, 0);
+                newTile.transform.localEulerAngles = new Vector3(0, runtimeTiles[(int) tile].rotation, 0);
 
                 newTile.transform.localScale = fscale;
             }
