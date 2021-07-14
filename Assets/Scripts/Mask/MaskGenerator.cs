@@ -69,49 +69,49 @@ namespace MyWFC
         //                 c.SetConstraint(propagator, inputSampler.RuntimeTiles);
         //         }
         // }
-        public override void DrawOutput()
-        {
-            allAreas = new List<MaskArea>();
-            areaEdges = new List<Point>();
-            passages = new List<Point>();
-            passageEdges = new List<Point>();
-            checker = new bool[size.x, size.y, size.z];
-            maskOutput = new bool[size.x, size.y, size.z];
-            for (int x = 0; x < size.x; x++)
-                for (int y = 0; y < size.y; y++)
-                    for (int z = 0; z < size.z; z++)
-                        maskOutput[x, y, z] = false;
-
-            while (!AllTilesChecked())
-            {
-                for (int x = 0; x < size.x; x++)
-                    for (int y = 0; x < size.y; y++)
-                        for (int z = 0; z < size.z; z++)
-                        {
-                            if (modelOutput[x, y, z] == 1 && !PointExists(x, y, z))
-                            {
-                                List<Point> points = new List<Point>();
-                                FloodFill(points, x, y, z);
-                                MaskArea area = new MaskArea(points, allAreas.Count, modelOutput);
-                                allAreas.Add(area);
-                                checker[x, y, z] = true;
-                            }
-                            else
-                            {
-                                checker[x, y, z] = true;
-                            }
-                        }
-            }
-            UpdateModelOutput();
-
-            Smooth();
-
-            ProcessAreas();
-
-            UpdateEdges();
-            UpdateModelOutput();
-            Draw();
-        }
+        // public override void DrawOutput()
+        // {
+        //     allAreas = new List<MaskArea>();
+        //     areaEdges = new List<Point>();
+        //     passages = new List<Point>();
+        //     passageEdges = new List<Point>();
+        //     checker = new bool[size.x, size.y, size.z];
+        //     maskOutput = new bool[size.x, size.y, size.z];
+        //     for (int x = 0; x < size.x; x++)
+        //         for (int y = 0; y < size.y; y++)
+        //             for (int z = 0; z < size.z; z++)
+        //                 maskOutput[x, y, z] = false;
+        //
+        //     while (!AllTilesChecked())
+        //     {
+        //         for (int x = 0; x < size.x; x++)
+        //             for (int y = 0; x < size.y; y++)
+        //                 for (int z = 0; z < size.z; z++)
+        //                 {
+        //                     if (modelOutput[x, y, z] == 1 && !PointExists(x, y, z))
+        //                     {
+        //                         List<Point> points = new List<Point>();
+        //                         FloodFill(points, x, y, z);
+        //                         MaskArea area = new MaskArea(points, allAreas.Count, modelOutput);
+        //                         allAreas.Add(area);
+        //                         checker[x, y, z] = true;
+        //                     }
+        //                     else
+        //                     {
+        //                         checker[x, y, z] = true;
+        //                     }
+        //                 }
+        //     }
+        //     UpdateModelOutput();
+        //
+        //     Smooth();
+        //
+        //     ProcessAreas();
+        //
+        //     UpdateEdges();
+        //     UpdateModelOutput();
+        //     Draw();
+        // }
 
         void Draw()
         {

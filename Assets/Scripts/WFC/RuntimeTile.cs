@@ -1,5 +1,5 @@
-using UnityEngine;
 using System.Collections.Generic;
+
 namespace MyWFC
 {
     /// <summary>
@@ -8,7 +8,7 @@ namespace MyWFC
     [System.Serializable]
     public class RuntimeTile
     {
-        public RuntimeTile(int id, int r, bool sym = false, MyTile o = null, List<TileSide> sides = null)
+        public RuntimeTile(int id, int r, MyTile o = null, List<TileSide> sides = null)
         {
             ID = id;
             rotation = r;
@@ -16,10 +16,9 @@ namespace MyWFC
             this.sides = sides;
         }
 
-        public MyTile obj;
+        public MyTile obj; // A reference to the original object. Is instantiated.
         public List<TileSide> sides;
         public int ID;
-        public int rotation;
-        public bool symmetry;
+        public int rotation; // When instantiating, this rotation is applied.
     }
 }

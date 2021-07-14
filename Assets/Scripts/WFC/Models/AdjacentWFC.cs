@@ -92,7 +92,7 @@ namespace MyWFC
                             
                             if (rot == 0)
                             {
-                                var newTile = new RuntimeTile(tile.gameObject.GetHashCode(), rot, false, tile, tile.cells[0].sides);
+                                var newTile = new RuntimeTile(tile.gameObject.GetHashCode(), rot, tile, tile.cells[0].sides);
                                 runtimeTiles.Add(newTile);
                             }
                             else
@@ -111,7 +111,7 @@ namespace MyWFC
                                     l[sideIndex].side = (Sides) s;
                                 }
 
-                                runtimeTiles.Add(new RuntimeTile(tile.gameObject.GetHashCode(), rot, false, tile, l));
+                                runtimeTiles.Add(new RuntimeTile(tile.gameObject.GetHashCode(), rot, tile, l));
                             }
                         }
                     }
@@ -119,7 +119,7 @@ namespace MyWFC
                     {
                         for (int j = 0; j < tile.cells.Count; j++)
                         {
-                            var newTile = new RuntimeTile(tile.gameObject.GetHashCode(), (int) tile.gameObject.transform.eulerAngles.y, false, tile, tile.cells[j].sides);
+                            var newTile = new RuntimeTile(tile.gameObject.GetHashCode(), (int) tile.gameObject.transform.eulerAngles.y, tile, tile.cells[j].sides);
                             runtimeTiles.Add(newTile);
                         }
                     }

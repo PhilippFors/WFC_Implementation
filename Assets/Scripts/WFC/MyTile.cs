@@ -1,16 +1,13 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor;
+
 namespace MyWFC
 {
+    /// <summary>
+    /// Data that is used mainly for the Adjacent WFC Model.
+    /// </summary>
     public class MyTile : MonoBehaviour
     {
-        /// <summary>
-        /// Unique ID for the tile
-        /// </summary>
-
-        //used for big tiles
         [HideInInspector] public int bID;
         [HideInInspector] public List<int> runtimeIDs = new List<int>();
 
@@ -32,6 +29,11 @@ namespace MyWFC
             }
         }
 
+        public override int GetHashCode()
+        {
+            return name.GetHashCode();
+        }
+        
 #if UNITY_EDITOR
         private void OnDrawGizmosSelected()
         {
@@ -51,9 +53,6 @@ namespace MyWFC
 
                                             Gizmos.DrawCube(new Vector3((float)(-size.x) / 2 + 0.05f, i * (float)size.y / 3, (1 - j) * (float)size.z / 3) + c.center, new Vector3(gizmoSize, gizmoSize, gizmoSize));
                                         }
-                                    // ConnectionColor(s.connection);
-                                    // Gizmos.DrawCube(new Vector3(-size.x / 2, 0, 0), Vector3.one / 4f);
-
                                     break;
                                 case Sides.Right:
                                     for (int i = 0; i < s.sideInfo.GetLength(0); i++)
@@ -62,8 +61,6 @@ namespace MyWFC
                                             ConnectionColor(s.sideInfo[j, i]);
                                             Gizmos.DrawCube(new Vector3((float)size.x / 2 - 0.05f, i * (float)size.y / 3, (-1 + j) * (float)size.z / 3) + c.center, new Vector3(gizmoSize, gizmoSize, gizmoSize));
                                         }
-                                    // ConnectionColor(s.connection);
-                                    // Gizmos.DrawCube(new Vector3(size.x / 2, 0, 0), Vector3.one / 4f);
                                     break;
                                 case Sides.Back:
                                     for (int i = 0; i < s.sideInfo.GetLength(0); i++)
@@ -72,8 +69,6 @@ namespace MyWFC
                                             ConnectionColor(s.sideInfo[j, i]);
                                             Gizmos.DrawCube(new Vector3((-1 + j) * (float)size.x / 3, i * (float)size.y / 3, -(float)size.z / 2 + 0.05f) + c.center, new Vector3(gizmoSize, gizmoSize, gizmoSize));
                                         }
-                                    // ConnectionColor(s.connection);
-                                    // Gizmos.DrawCube(new Vector3(0, 0, -size.z / 2), Vector3.one / 4f);
                                     break;
                                 case Sides.Front:
                                     for (int i = 0; i < s.sideInfo.GetLength(0); i++)
@@ -82,8 +77,6 @@ namespace MyWFC
                                             ConnectionColor(s.sideInfo[j, i]);
                                             Gizmos.DrawCube(new Vector3((1 - j) * (float)size.x / 3, i * (float)size.y / 3, (float)size.z / 2 - 0.05f) + c.center, new Vector3(gizmoSize, gizmoSize, gizmoSize));
                                         }
-                                    // ConnectionColor(s.connection);
-                                    // Gizmos.DrawCube(new Vector3(0, 0, size.z / 2), Vector3.one / 4f);
                                     break;
                                 case Sides.Top:
                                     for (int i = 0; i < s.sideInfo.GetLength(0); i++)

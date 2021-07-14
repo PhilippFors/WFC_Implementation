@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 using DeBroglie;
-using DeBroglie.Rot;
+using Utils;
 
 namespace MyWFC
 {
@@ -18,7 +16,6 @@ namespace MyWFC
 
         [SerializeField] private List<GameObject> availableTiles;
         [SerializeField] private RuntimeTile[] runtimeTiles;
-        [SerializeField] GameObject empty;
         [SerializeField] private int width = 10;
         [SerializeField] private int depth = 10;
         [SerializeField] private int height = 1;
@@ -33,126 +30,79 @@ namespace MyWFC
         {
             tileIndexer = new Dictionary<string, int>();
             rotationTileIndexer = new Dictionary<string, int>();
-            availableTiles = new List<GameObject>();
             runtimeTiles = new RuntimeTile[1000];
-            empty = null;
-            empty = Resources.Load("Environment/EmptyTile") as GameObject;
             sample = new Tile[width, height, depth];
 
             var count = transform.childCount;
             
-            //Finding Available Tiles
-            List<GameObject> empties = new List<GameObject>();
+            // Indexing the availiable tiles
             for (int j = 0; j < count; j++)
             {
-                GameObject tile = transform.GetChild(j).gameObject;
-
-                var fab = tile;
-
-                if (tile.GetHashCode() == empty.GetHashCode())
-                {
-                    empties.Add(tile);
-                    continue;
-                }
+                var inputTile = transform.GetChild(j).gameObject;
 
 #if UNITY_EDITOR
-                fab = PrefabUtility.GetCorrespondingObjectFromSource(tile);
+                var prefab = PrefabUtility.GetCorrespondingObjectFromSource(inputTile);
 
-                if (fab == null)
-                    fab = (GameObject) Resources.Load(tile.name);
+                if (prefab == null)
+                    prefab = (GameObject) Resources.Load(inputTile.name);
 
-                if (!fab)
+                if (!prefab)
                 {
-                    fab = tile;
+                    prefab = inputTile;
                 }
 
-                tile.name = fab.name;
+                inputTile.name = prefab.name;
 #endif
-                int id = tile.GetHashCode();
+
+                var myTile = inputTile.GetComponent<MyTile>();
+                int id = myTile.GetHashCode();
+
+                var find = availableTiles.Find(x => x.GetComponent<MyTile>().GetHashCode() == myTile.GetHashCode());
+                if (find)
+                {
+                    inputTile.name = find.name;
+                }
+                
                 if (!tileIndexer.ContainsValue(id))
                 {
-                    tileIndexer.Add(tile.name, id);
-
-                    availableTiles.Add(tile);
+                    tileIndexer.Add(inputTile.name, id);
                 }
             }
-
-            foreach (GameObject o in empties)
-            {
-                if (Application.isPlaying) Destroy(o);
-                else DestroyImmediate(o);
-            }
-
-            count = transform.childCount;
+            
             int index = 0;
 
-            //Recording position and rotation of tiles
+            // Recording position and rotation of tiles
             for (int i = 0; i < count; i++)
             {
-                GameObject tile = this.transform.GetChild(i).gameObject;
-                MyTile MyTile = tile.GetComponent<MyTile>();
+                GameObject tile = transform.GetChild(i).gameObject;
+                MyTile myTile = tile.GetComponent<MyTile>();
                 Vector3 tilepos = tile.transform.localPosition;
 
                 int x = tilepos.x == 0 ? 0 : Mathf.RoundToInt((tilepos.x) / gridSize);
                 int y = tilepos.x == 0 ? 0 : Mathf.RoundToInt((tilepos.y) / gridSize);
                 int z = tilepos.z == 0 ? 0 : Mathf.RoundToInt((tilepos.z) / gridSize);
-                int rot = AngleCorrection(tile, tile.transform.eulerAngles.y);
+                int rot = Mathf.RoundToInt(tile.transform.eulerAngles.y);
 
-                if (!rotationTileIndexer.ContainsKey(tile.name + rot.ToString()))
+                if (!rotationTileIndexer.ContainsKey(tile.name + rot))
                 {
-                    rotationTileIndexer.Add(tile.name + rot.ToString(), index);
-                    runtimeTiles[index] = new RuntimeTile(tileIndexer[tile.name], rot, MyTile.gameObject);
-                    sample[x, y, z] = new Tile(rotationTileIndexer[tile.name + rot.ToString()]);
+                    rotationTileIndexer.Add(tile.name + rot, index);
+                    runtimeTiles[index] = new RuntimeTile(tileIndexer[tile.name], rot, myTile);
+                    sample[x, y, z] = new Tile(rotationTileIndexer[tile.name + rot]);
                     index++;
                 }
                 else
                 {
-                    sample[x, y, z] = new Tile(rotationTileIndexer[tile.name + rot.ToString()]);
+                    sample[x, y, z] = new Tile(rotationTileIndexer[tile.name + rot]);
                 }
-
-                MyTile.coords = new Vector2Int(x, z);
             }
 
-            runtimeTiles = runtimeTiles.MySubArray<RuntimeTile>(0, rotationTileIndexer.Count + 1);
+            runtimeTiles = runtimeTiles.TrimArray<RuntimeTile>(0, rotationTileIndexer.Count);
             RecordEmpty();
         }
 
-        int AngleCorrection(GameObject tile, float R)
-        {
-            int rot = 0;
-
-            if (R < 0f)
-            {
-                if (R >= -1f & R <= 1f || R <= -359f && R >= -361f)
-                    rot = 0;
-                if (R <= -89f & R >= -91f)
-                    rot = 270;
-                if (R <= -179f & R >= -181f)
-                    rot = 180;
-                if (R <= -269f & R >= -271f)
-                    rot = 90;
-            }
-            else if (R >= 0f)
-            {
-                if (R > -1f & R < 1f || R >= 359f && R <= 361f)
-                    rot = 0;
-                if (R > 89f & R < 91f)
-                    rot = 90;
-                if (R > 179f & R < 181f)
-                    rot = 180;
-                if (R > 269f & R < 271f)
-                    rot = 270;
-            }
-
-            tile.transform.eulerAngles =
-                new Vector3(tile.transform.localEulerAngles.x, rot, tile.transform.localEulerAngles.z);
-            return (int) rot;
-        }
-
+        // Any Empty spots in the sample get a value of -1
         private void RecordEmpty()
         {
-            var tile = empty.GetComponent<MyTile>();
-            runtimeTiles[rotationTileIndexer.Count] = new RuntimeTile(tile.gameObject.GetHashCode(), 0, false, tile);
             for (int x = 0; x < sample.GetLength(0); x++)
             {
                 for (int y = 0; y < sample.GetLength(1); y++)
@@ -161,24 +111,7 @@ namespace MyWFC
                     {
                         if (sample[x, y, z].Value == null)
                         {
-                            // Debug.Log("is empty at: " + x + ", " + z);
-
-                            GameObject o = Instantiate(empty) as GameObject;
-
-                            if (!rotationTileIndexer.ContainsValue(tile.GetHashCode()))
-                            {
-                                rotationTileIndexer.Add(empty.name, tile.GetHashCode());
-
-                                if (!tileIndexer.ContainsValue(tile.GetHashCode()))
-                                {
-                                    tileIndexer.Add(empty.name, tile.GetHashCode());
-                                    availableTiles.Add(o);
-                                }
-                            }
-
-                            sample[x, y, z] = WFCUtil.FindTile(runtimeTiles, tile.GetHashCode());
-                            o.transform.parent = this.transform;
-                            o.transform.localPosition = new Vector3(x * gridSize, y * gridSize, z * gridSize);
+                            sample[x, y, z] = new Tile(-1);
                         }
                     }
                 }
@@ -228,14 +161,4 @@ namespace MyWFC
         }
     }
 #endif
-
-    public static class MyExtension
-    {
-        public static T[] MySubArray<T>(this T[] data, int index, int length)
-        {
-            T[] result = new T[length];
-            Array.Copy(data, index, result, 0, length);
-            return result;
-        }
-    }
 }
